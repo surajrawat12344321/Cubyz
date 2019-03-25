@@ -1,0 +1,26 @@
+<div class="w3-top">
+	<div class="w3-bar w3-light-grey">
+		<a class="w3-bar-item w3-button w3-large" href="https://pixelguys.github.io">The Pixel Guys</a>
+		{% for item in site.data.navigation %}
+		<a class="w3-bar-item w3-button{% if page.url == item.link %} w3-green{% endif %}" href="/Cubyz{{item.link}}">
+				{{ item.name }}
+				{% if item.name == "Blog" %}
+				<script>
+				if (!document.cookie.split(';').filter(function(item) {
+					return item.indexOf('seenNews=') >= 0
+				}).length) {
+					console.log("No news cookie, adding one")
+					document.cookie = "seenNews=false"
+				}
+				if (document.cookie.split(';').filter(function(item) {
+					return item.indexOf('seenNews=false') >= 0
+				}).length) {
+					console.log("Append '!' badge")
+					document.write("<span class=\"badge\">!</span>")
+				}
+				</script>
+				{% endif %}
+		</a>
+		{% endfor %}
+	</div>
+</div>

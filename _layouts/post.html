@@ -1,0 +1,30 @@
+---
+layout: default
+---
+
+<script type="text/javascript">
+	console.log(document.cookie)
+	document.cookie = "seenNews=; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+	document.cookie = "seenNews=true";
+	console.log("del cookie")
+</script>
+
+	<div class="w3-container">
+		<div class="w3-container w3-teal">
+			<h1>{{ page.date | date_to_string }}: {{ page.title }}</h1>
+			<h5>Made by <a href="/authors/{{page.author}}.html">{{ page.author }}</a></h4>
+		</div>
+		
+		{{ content }}
+	</div>
+	
+	<footer class="w3-container w3-teal">
+		<ul class="">
+			{% if page.previous != nil %}
+			<li class="w3-btn w3-round-xlarge w3-white"><a href="/Cubz{{ page.previous.url }}"><< {{ page.previous.title }}</a></li>
+			{% endif %}
+			{% if page.next != nil %}
+			<li class="w3-btn w3-round-xlarge w3-white"><a href="/Cubz{{ page.next.url }}">{{ page.next.title }} >></a></li>
+			{% endif %}
+		</ul>
+	</footer>

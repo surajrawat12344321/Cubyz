@@ -1,0 +1,14 @@
+---
+layout: default
+title: Blog
+---
+<h1>Latest Posts</h1>
+
+<ul>
+	{% for post in site.posts %}
+		<li>
+			<h2><a href="/Cubz{{ post.url }}">{{ post.title }}</a> {% if post.next == nil %} <span class="label label-default">New!</span> {% endif %} </h2>
+			
+		</li>
+	{% endfor %}
+</ul>
