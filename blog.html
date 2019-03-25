@@ -8,6 +8,7 @@ title: Blog
 	{% for post in site.posts %}
 		<li>
 			<h2><a href="/Cubyz{{ post.url }}">{{ post.title }}</a> {% if post.next == nil %} <span class="label label-default">New!</span> {% endif %} </h2>
+			<h6>{{ post.author }}</h6>
 		</li>
 	{% endfor %}
 </ul>
