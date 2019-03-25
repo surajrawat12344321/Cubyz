@@ -2,6 +2,11 @@
 layout: default
 title: About
 ---
+<style>
+	body {
+		color: white;
+	}
+</style>
 # Cubz, a voxel video game
 
 [![Java](https://img.shields.io/badge/language-java-orange.svg?style=flat
