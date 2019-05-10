@@ -3,10 +3,33 @@ layout: default
 ---
 
 <script type="text/javascript">
-	console.log(document.cookie)
-	document.cookie = "seenNews=; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-	document.cookie = "seenNews=true";
-	console.log("del cookie")
+function getCookie(cname) {
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i <ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) == ' ') {
+			c = c.substring(1);
+		}
+		if (c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+		}
+	}
+	return "";
+}
+
+if (getCookie("seenNews") === "") {
+	var d = new Date();
+	d.setTime(d.getTime() + (24*60*60*1000));
+	document.cookie = "seenNews=false; expires=" + d.toUTCString() + "; path=/";
+}
+
+{% if page.previous == nil %}
+var d = new Date();
+d.setTime(d.getTime() + (24*60*60*1000));
+document.cookie = "seenNews=true; expires=" + d.toUTCString() + "; path=/";
+{% endif %}
 </script>
 
 	<div class="w3-container">
@@ -21,10 +44,10 @@ layout: default
 	<footer class="w3-container w3-teal">
 		<ul class="">
 			{% if page.previous != nil %}
-			<li class="w3-btn w3-round-xlarge w3-white"><a href="/Cubz{{ page.previous.url }}"><< {{ page.previous.title }}</a></li>
+			<li class="w3-btn w3-round-xlarge w3-white"><a href="/Cubyz{{ page.previous.url }}"><< {{ page.previous.title }}</a></li>
 			{% endif %}
 			{% if page.next != nil %}
-			<li class="w3-btn w3-round-xlarge w3-white"><a href="/Cubz{{ page.next.url }}">{{ page.next.title }} >></a></li>
+			<li class="w3-btn w3-round-xlarge w3-white"><a href="/Cubyz{{ page.next.url }}">{{ page.next.title }} >></a></li>
 			{% endif %}
 		</ul>
 	</footer>

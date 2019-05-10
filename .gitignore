@@ -1,2 +1,9 @@
+# Jekyll
 _site
 .sass-cache
+
+# Everything left behind by eclipse
+.metadata
+cubyz-client
+cubyz-common
+.recommenders
