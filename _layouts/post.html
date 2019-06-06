@@ -31,18 +31,18 @@ d.setTime(d.getTime() + (24*60*60*1000));
 document.cookie = "seenNews=true; expires=" + d.toUTCString() + "; path=/";
 {% endif %}
 </script>
-
+<div class="w3-container w3-teal">
+	<h1>{{ page.date | date_to_string }}: {{ page.title }}</h1>
+	<h5>Made by <a href="/Cubyz/authors/{{page.author}}.html">{{ page.author }}</a></h4>
+</div>
 	<div class="w3-container">
-		<div class="w3-container w3-teal">
-			<h1>{{ page.date | date_to_string }}: {{ page.title }}</h1>
-			<h5>Made by <a href="/authors/{{page.author}}.html">{{ page.author }}</a></h4>
+		<div style="color: white">
+			{{ content }}
 		</div>
-		
-		{{ content }}
 	</div>
 	
-	<footer class="w3-container w3-teal">
-		<ul class="">
+	<footer class="w3-container w3-teal w3-bottom">
+		<ul>
 			{% if page.previous != nil %}
 			<li class="w3-btn w3-round-xlarge w3-white"><a href="/Cubyz{{ page.previous.url }}"><< {{ page.previous.title }}</a></li>
 			{% endif %}

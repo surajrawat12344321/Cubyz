@@ -2,26 +2,25 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
 		<link rel="stylesheet" href="/Cubyz/assets/css/styles.css">
 		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 		<title>Cubyz - {{ page.title }}</title>
 		{% include navigation.html %}
 		<style>
-		body {
-			background-image: url("background.png");
-			background-repeat: no-repeat;
-			background-attachment: fixed;
-			background-size: cover;
-			position: relative;
-			top: 60px;
-		}
+			body {
+				background-image: url("/Cubyz/background.png");
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+				background-size: cover;
+				position: relative;
+				top: 60px;
+				color: white;
+			}
 		</style>
 	</head>
 	<body>
 		{{ content }}
 	</body>
-	<br/> <!-- manual margin -->
-	<!--<footer style="background-color=gray;" class="w3-container w3-teal">
-		<h6><span style="display: inline-block; transform: rotate(180deg);">&copy;</span> The Pixel Guys</h6>
-	</footer>-->
 </html>

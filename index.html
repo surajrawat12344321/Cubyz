@@ -2,71 +2,28 @@
 layout: default
 title: Home
 ---
-<style>
-	.presentation {
-		display: none;
-	}
-</style>
 
-<div class="w3-content" style="max-width:50%">
-	<div class="presentation w3-container w3-white">
+<div class="w3-content w3-animate-right" style="max-width:40%">
+	<div class="w3-panel w3-blue w3-round">
 		<h3>Open-Source</h3>
-		<p>To permit users to add the gameplay they want, the project is open-source!</p>
-		<a href="https://github.com/MunirkSoft/Cubz">Github</a>
+		<p>You can easily contribute to the game by very simply creating an issue on the GitHub page.<br/>
+		You can also yourself become a contributor and make miracles in Cubyz development!</p>
+		<a href="https://github.com/PixelGuys/Cubyz">GitHub</a>
+		<a href="https://github.com/PixelGuys/Cubyz/issues">Issues</a>
 	</div>
-	<div class="presentation w3-container w3-white">
+	<div class="w3-panel w3-blue w3-round">
 		<h3>No limits!</h3>
-		<p>A lot of blocks are available in Cubz, and if you think it's not enough, there is mods to add more! (WIP)</p>
-		<p>You can even do <kbd>Ctrl + F8</kbd> to take a screenshot and share your amazing builds!</p>
+		<p>A lot of blocks are available in Cubyz, and if you think it's not enough, there is mods to add more!</p>
+		<p>You can even do <kbd>Ctrl + F8</kbd> or <kbd>Prn. Screen</kbd> to take a screenshot and share your amazing builds!</p>
 		<a href="#">More Info..</a>
 	</div>
-	<div class="presentation w3-container w3-white">
+	<div class="w3-panel w3-blue w3-round">
 		<h3>Beautiful</h3>
-		<p>Although the core of the game is based on blocks, there is Polygon-Based Terrain Rendering which allow
-		for very smooth terrain, allowing for a extra level of details</p>
-		<a href="#">More Info..</a>
+		<p>Although the core of the game is based on blocks, it's not like the most popular one on market,
+		it's full of shadows, light, day and night. Watch a sunset and rest.</p>
+		<a href="screenshots.html">Screenshots</a>
 	</div>
+	<a href="https://github.com/PixelGuys/Cubyz/releases/latest" class="w3-animate-bottom">
+		<button class="w3-content w3-btn w3-green w3-round-large" style="width: 100%">Download</button>
+	</a>
 </div>
-
-<div class="w3-center">
-  <div class="w3-section">
-    <button class="w3-button w3-light-grey" onclick="plusDivs(-1)">❮ Prev</button>
-    <button class="w3-button w3-light-grey" onclick="plusDivs(1)">Next ❯</button>
-  </div>
-  <button class="w3-button slideDots" onclick="currentDiv(1)">1</button> 
-  <button class="w3-button slideDots" onclick="currentDiv(2)">2</button> 
-  <button class="w3-button slideDots" onclick="currentDiv(3)">3</button> 
-</div>
-
-<script>
-	var slideIndex = 1;
-	showDivs(slideIndex);
-	
-	function plusDivs(n) {
-		showDivs(slideIndex += n);
-	}
-	
-	function currentDiv(n) {
-		showDivs(slideIndex = n);
-	}
-	
-	function showDivs(n) {
-		var i;
-		var x = document.getElementsByClassName("presentation");
-		var dots = document.getElementsByClassName("slideDots");
-		if (n > x.length) {
-			slideIndex = 1;
-		}
-		if (n < 1) {
-			slideIndex = x.length;
-		}
-		for (i = 0; i < x.length; i++) {
-			x[i].style.display = "none";
-		}
-		for (i = 0; i < dots.length; i++) {
-			dots[i].className = dots[i].className.replace(" w3-red", "");
-		}
-		x[slideIndex-1].style.display = "block";
-		dots[slideIndex-1].className += " w3-red";
-	}
-</script>
