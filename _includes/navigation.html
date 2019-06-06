@@ -2,7 +2,7 @@
 	<div class="w3-bar w3-light-grey">
 		<a class="w3-bar-item w3-button w3-large" href="https://pixelguys.github.io">The Pixel Guys</a>
 		{% for item in site.data.navigation %}
-		<a class="w3-bar-item w3-button{% if page.url == item.link %} w3-green{% endif %}" href="/Cubyz{{item.link}}">
+		<a class="w3-bar-item w3-button{% if page.url == item.link %} w3-green{% endif %}" href="{% if page.url == item.link %}#{% endif %}{% if page.url != item.link %}/Cubyz{{item.link}}{% endif %}">
 				{{ item.name }}
 				{% if item.name == "Blog" %}
 				<script>
