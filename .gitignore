@@ -4,6 +4,7 @@ _site
 
 # Everything left behind by eclipse
 .metadata
+cubyz-server
 cubyz-client
 cubyz-common
 .recommenders
