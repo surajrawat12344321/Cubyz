@@ -5,7 +5,7 @@ title: Transparent Textures Support
 ---
 ### Transparent textures are finally supported!
 
-The main problem currently with Cubyz was that leaves were opaque, that's isn't logc and i wanted something better..
+The main problem currently with Cubyz was that leaves were opaque, that isn't logical and i wanted something better..
 
 Jungle Engine arleady supported them via GL_BLEND and other things, however, i looked in code and found out that
 it was the TextureConverter fault, which simply ONLY outputted RGB (no transparency) images!
@@ -20,5 +20,5 @@ to the cache not being deleted, i deleted it and it worked as seen below:
 
 ![Image2](https://cdn.discordapp.com/attachments/475297969609113600/559710948458233856/unknown.png)
 
-However, to avoid me having to think about the texture cache not being deleted, i made a mecanism that automatically deletes
+However, to avoid me having to think about the texture cache not being deleted, i made a mechanism that automatically deletes
 each cache entry **AT START**.
