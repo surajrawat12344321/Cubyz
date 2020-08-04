@@ -5,7 +5,7 @@ title: Update on the last Months
 ---
 In the last months a lot has happened. Especially in April/May 2020. This gets especially clear if you look at the commit history, where you can see a huge spike in april:
 
-![image](/assets/images/blog/github_contributions_2020-08-04.png)
+![image](/Cubyz/assets/images/blog/github_contributions_2020-08-04.png)
 
 In this blog post I try to give a summary of all those changes:
 
@@ -21,21 +21,21 @@ The names are generated from existing material names. Here are some example name
 
 For the texture I developed a simple system that is able to draw it's own pixel art:
 
-![image](/assets/images/blog/random_ore4×4.png)
+![image](/Cubyz/assets/images/blog/random_ore4x4.png)
 
 ## World Generation
 I reworked the biome generation multiple times which eventually lead to the kind of terrain that you can see in the background right now.
 
 I also added round trees, rivers, more biomes and a special cave type: Crystal caverns:
 
-![image](/assets/images/blog/crystal_caverns_2020-04-27.png)
+![image](/Cubyz/assets/images/blog/crystal_caverns_2020-04-27.png)
 
 ## Lighting
 I added a lighting system(similar to the ones in most other voxel games) which, unlike others, supports rgb colors instead of only grayscale.
 
 The system also allows for a finer control of absorption. For example under water the red and green parts of the spectrum get absorbed faster than the blue parts:
 
-![image](/assets/images/blog/underwater_lighting_2020-05-04.png)
+![image](/Cubyz/assets/images/blog/underwater_lighting_2020-05-04.png)
 
 ## Toruses
 We decided to make Cubyz a space exploration game with many planets to discover which each have new random ores and more.
