@@ -12,6 +12,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import io.cubyz.ClientSettings;
+import io.cubyz.Constants;
 import io.cubyz.blocks.Block;
 import io.cubyz.blocks.BlockInstance;
 import io.cubyz.client.Cubyz;
@@ -194,7 +195,7 @@ public class MainRenderer {
 			GameLauncher.instance.exit();
 		}
 		
-		if(Cubyz.world != null) {
+		if(Constants.world != null) {
 			if(Cubyz.playerInc.x != 0 || Cubyz.playerInc.z != 0) { // while walking
 				if(bobbingUp) {
 					playerBobbing += 0.005f;
@@ -220,7 +221,7 @@ public class MainRenderer {
 		while(!Cubyz.renderDeque.isEmpty()) {
 			Cubyz.renderDeque.pop().run();
 		}
-		if(Cubyz.world != null) {
+		if(Constants.world != null) {
 			// TODO: Handle colors and sun position in the surface.
 			ambient.x = ambient.y = ambient.z = Cubyz.surface.getGlobalLighting();
 			if(ambient.x < 0.1f) ambient.x = 0.1f;
@@ -244,13 +245,13 @@ public class MainRenderer {
 			}
 			light.setColor(clearColor);
 			 // TODO: Make light direction and sun position depend on relative position on the torus, to get realistic day-night patterns at the poles.
-			float lightY = (((float)Cubyz.world.getGameTime() % Cubyz.surface.getStellarTorus().getDayCycle()) / (float) (Cubyz.surface.getStellarTorus().getDayCycle()/2)) - 1f;
-			float lightX = (((float)Cubyz.world.getGameTime() % Cubyz.surface.getStellarTorus().getDayCycle()) / (float) (Cubyz.surface.getStellarTorus().getDayCycle()/2)) - 1f;
+			float lightY = (((float)Constants.world.getGameTime() % Cubyz.surface.getStellarTorus().getDayCycle()) / (float) (Cubyz.surface.getStellarTorus().getDayCycle()/2)) - 1f;
+			float lightX = (((float)Constants.world.getGameTime() % Cubyz.surface.getStellarTorus().getDayCycle()) / (float) (Cubyz.surface.getStellarTorus().getDayCycle()/2)) - 1f;
 			light.getDirection().set(lightY, 0, lightX);
 			// Set intensity:
 			light.setDirection(light.getDirection().mul(0.1f*Cubyz.surface.getGlobalLighting()/light.getDirection().length()));
 			window.setClearColor(clearColor);
-			render(window, ambient, light, Cubyz.world.getBlocks(), Cubyz.surface.getEntities(), worldSpatialList, Cubyz.player, Cubyz.surface.getSizeX(), Cubyz.surface.getSizeZ());
+			render(window, ambient, light, Constants.world.getBlocks(), Cubyz.surface.getEntities(), worldSpatialList, Cubyz.player, Cubyz.surface.getSizeX(), Cubyz.surface.getSizeZ());
 		} else {
 			clearColor.y = clearColor.z = 0.7f;
 			clearColor.x = 0.1f;

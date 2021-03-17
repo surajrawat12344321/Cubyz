@@ -3,6 +3,7 @@ package io.cubyz.ui;
 import java.io.File;
 
 import io.cubyz.ClientOnly;
+import io.cubyz.Constants;
 import io.cubyz.blocks.Block;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
@@ -44,7 +45,8 @@ public class SaveCreationGUI extends MenuGUI {
 		create.setBounds(10, 60, 200, 50, Component.ALIGN_BOTTOM_LEFT);
 		create.setText(TextKey.createTextKey("gui.cubyz.saves.create"));
 		create.setOnAction(() -> {
-			LocalWorld world = new LocalWorld(name.getText(), VisibleChunk.class);
+			Constants.chunkProvider = VisibleChunk.class;
+			LocalWorld world = new LocalWorld(name.getText());
 			Block[] blocks = world.generate();
 			for(Block bl : blocks) {
 				if (bl instanceof CustomObject) {

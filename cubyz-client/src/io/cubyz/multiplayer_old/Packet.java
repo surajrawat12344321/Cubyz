@@ -1,4 +1,4 @@
-package io.cubyz.multiplayer;
+package io.cubyz.multiplayer_old;
 
 public class Packet {
 

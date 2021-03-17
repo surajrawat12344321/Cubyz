@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import io.cubyz.Constants;
 import io.cubyz.api.CubyzRegistries;
 import io.cubyz.blocks.Block;
 import io.cubyz.blocks.Ore;
@@ -29,10 +30,8 @@ public class LocalWorld extends World {
 	private long gameTime;
 	public boolean inLqdUpdate;
 	private WorldIO wio;
-	private final Class<?> chunkProvider;
 	
-	public LocalWorld(String name, Class<?> chunkProvider) {
-		this.chunkProvider = chunkProvider;
+	public LocalWorld(String name) {
 		this.name = name;
 		wio = new WorldIO(this, new File("saves/" + name));
 		if (wio.hasWorldData()) {
@@ -47,8 +46,16 @@ public class LocalWorld extends World {
 		milliTime = System.currentTimeMillis();
 	}
 	
+	public LocalWorld(int seed) {
+		this.name = "multiplayer";
+		this.seed = seed;
+		rnd = new Random(seed);
+		milliTime = System.currentTimeMillis();
+	}
+	
 	public void forceSave() {
-		wio.saveWorldData();
+		if(wio!=null)
+			wio.saveWorldData();
 	}
 	
 	public String getName() {
@@ -90,7 +97,7 @@ public class LocalWorld extends World {
 	
 	public void setCurrentTorusID(long seed) {
 		LocalStellarTorus torus = new LocalStellarTorus(this, seed);
-		currentTorus = new LocalSurface(torus, chunkProvider);
+		currentTorus = new LocalSurface(torus, Constants.chunkProvider);
 		toruses.add(torus);
 	}
 	
@@ -102,7 +109,7 @@ public class LocalWorld extends World {
 		Random rand = new Random(seed);
 		if (currentTorus == null) {
 			LocalStellarTorus torus = new LocalStellarTorus(this, rand.nextLong());
-			currentTorus = new LocalSurface(torus, chunkProvider);
+			currentTorus = new LocalSurface(torus, Constants.chunkProvider);
 			toruses.add(torus);
 		}
 		ArrayList<Block> blockList = new ArrayList<>();
@@ -142,7 +149,8 @@ public class LocalWorld extends World {
 			player = (Player) CubyzRegistries.ENTITY_REGISTRY.getByID("cubyz:player").newEntity(currentTorus);
 			currentTorus.addEntity(player);
 		}
-		wio.saveWorldData();
+		if(wio!=null)
+			wio.saveWorldData();
 		blocks = blockList.toArray(new Block[0]);
 		currentTorus.setBlocks(blocks);
 		return blocks;

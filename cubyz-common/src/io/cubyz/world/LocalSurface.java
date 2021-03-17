@@ -662,7 +662,7 @@ public class LocalSurface extends Surface {
 				chunk.cleanup();
 			}
 			
-			metaChunks = null;
+			metaChunks.clear();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

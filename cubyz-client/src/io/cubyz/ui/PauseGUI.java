@@ -1,5 +1,6 @@
 package io.cubyz.ui;
 
+import io.cubyz.Constants;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
 import io.cubyz.input.Keybindings;
@@ -23,8 +24,8 @@ public class PauseGUI extends MenuGUI {
 	@Override
 	public void init(long nvg) {
 		GameLauncher.input.mouse.setGrabbed(false);
-		if (Cubyz.world != null) {
-			if (Cubyz.world.isLocal()) {
+		if (Constants.world != null) {
+			if (Constants.world.isLocal()) {
 				LocalSurface surface = (LocalSurface) Cubyz.surface;
 				surface.forceSave();
 			}

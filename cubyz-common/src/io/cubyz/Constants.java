@@ -3,12 +3,20 @@ package io.cubyz;
 import java.nio.charset.Charset;
 
 import io.cubyz.api.Side;
+import io.cubyz.world.LocalWorld;
 
 /**
  * A set of constant like version or math.
  */
 
 public class Constants {
+	
+	//world stuff
+	public static LocalWorld world;
+	public static Class<?> chunkProvider;
+	
+	
+	public static final int defaultPort = 3201;
 
 	public static final String CHARSET_NAME = "UTF-8";
 	public static final Charset CHARSET = Charset.forName(CHARSET_NAME);

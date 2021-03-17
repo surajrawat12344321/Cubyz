@@ -1,4 +1,4 @@
-package io.cubyz.multiplayer;
+package io.cubyz.multiplayer_old;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

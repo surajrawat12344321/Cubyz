@@ -1,4 +1,4 @@
-package io.cubyz.multiplayer.client;
+package io.cubyz.multiplayer_old.client;
 
 import java.util.ArrayList;
 

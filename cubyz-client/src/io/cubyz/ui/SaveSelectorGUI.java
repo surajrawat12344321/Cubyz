@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import io.cubyz.ClientOnly;
+import io.cubyz.Constants;
 import io.cubyz.blocks.Block;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
@@ -50,7 +51,8 @@ public class SaveSelectorGUI extends MenuGUI {
 			Button b = new Button(tk);
 			b.setBounds(10, y, 200, 40, Component.ALIGN_TOP_LEFT);
 			b.setOnAction(() -> {
-				LocalWorld world = new LocalWorld(name, VisibleChunk.class);
+				Constants.chunkProvider = VisibleChunk.class;
+				LocalWorld world = new LocalWorld(name);
 				Block[] blocks = world.generate();
 				for(Block bl : blocks) {
 					if (bl instanceof CustomObject) {

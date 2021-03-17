@@ -37,8 +37,8 @@ public class DebugOverlay extends MenuGUI {
 			NGraphics.drawText(0, 108, "Memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024/1024
 					+ "/" + (Runtime.getRuntime().totalMemory()/1024/1024) + "MiB (max " + (Runtime.getRuntime().maxMemory()/1024/1024) + "MiB)");
 			
-			if(Cubyz.world != null) {
-				World world = Cubyz.world;
+			if(Constants.world != null) {
+				World world = Constants.world;
 				Player p = Cubyz.player;
 				float x = p.getPosition().x;
 				float y = p.getPosition().y;

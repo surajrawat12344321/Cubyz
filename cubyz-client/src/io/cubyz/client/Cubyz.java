@@ -30,7 +30,7 @@ public class Cubyz {
 	
 	// World related stuff:
 	public static Surface surface;
-	public static World world;
+	//public static World world;
 	public static PlayerImpl player;
 	
 	// Other:

@@ -1,4 +1,4 @@
-package io.cubyz.multiplayer.client;
+package io.cubyz.multiplayer_old.client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import io.cubyz.blocks.BlockInstance;
 import io.cubyz.entity.Entity;
 import io.cubyz.entity.Player;
 import io.cubyz.math.Bits;
-import io.cubyz.multiplayer.GameProfile;
+import io.cubyz.multiplayer_old.GameProfile;
 import io.cubyz.save.BlockChange;
 import io.cubyz.world.NormalChunk;
 import io.cubyz.world.StellarTorus;

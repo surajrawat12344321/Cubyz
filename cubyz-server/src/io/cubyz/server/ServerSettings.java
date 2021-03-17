@@ -1,4 +1,4 @@
-package io.cubyz.multiplayer.server;
+package io.cubyz.server;
 
 public class ServerSettings {
 

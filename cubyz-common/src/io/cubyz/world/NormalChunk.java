@@ -65,7 +65,7 @@ public class NormalChunk extends Chunk {
 	
 	public final Region region;
 	
-	public NormalChunk(int cx, int cy, int cz, Surface surface) {
+	public NormalChunk(Integer cx, Integer cy, Integer cz, Surface surface) {
 		if(surface != null) {
 			cx = CubyzMath.worldModulo(cx, surface.getSizeX() >> chunkShift);
 			cz = CubyzMath.worldModulo(cz, surface.getSizeZ() >> chunkShift);

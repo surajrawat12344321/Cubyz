@@ -38,10 +38,10 @@ import io.cubyz.items.Item;
 import io.cubyz.items.ItemBlock;
 import io.cubyz.items.tools.Tool;
 import io.cubyz.modding.ModLoader;
-import io.cubyz.multiplayer.GameProfile;
-import io.cubyz.multiplayer.LoginToken;
-import io.cubyz.multiplayer.client.MPClient;
-import io.cubyz.multiplayer.client.PingResponse;
+import io.cubyz.multiplayer_old.GameProfile;
+import io.cubyz.multiplayer_old.LoginToken;
+import io.cubyz.multiplayer_old.client.MPClient;
+import io.cubyz.multiplayer_old.client.PingResponse;
 import io.cubyz.rendering.BlockPreview;
 import io.cubyz.rendering.FrameBuffer;
 import io.cubyz.rendering.Material;
@@ -95,7 +95,7 @@ public class GameLogic implements ClientConnection {
 		for (Handler handler : logger.getHandlers()) {
 			handler.close();
 		}
-		if(Cubyz.world != null) quitWorld();
+		if(Constants.world != null) quitWorld();
 		ClientSettings.save();
 		DiscordIntegration.closeRPC();
 		if (sound != null) {
@@ -113,8 +113,8 @@ public class GameLogic implements ClientConnection {
 				Cubyz.gameUI.removeOverlay(overlay);
 			}
 		}
-		Cubyz.world.cleanup();
-		Cubyz.world = null;
+		Constants.world.cleanup();
+		Constants.world = null;
 		Cubyz.chunkTree.cleanup();
 		
 		SoundSource ms = musicSource;
@@ -128,7 +128,7 @@ public class GameLogic implements ClientConnection {
 	}
 	
 	public void loadWorld(Surface surface) { // TODO: Seperate all the things out that are generated for the current surface.
-		if (Cubyz.world != null) {
+		if (Constants.world != null) {
 			quitWorld();
 		}
 		if (skySun == null || skyMoon == null) {
@@ -167,7 +167,7 @@ public class GameLogic implements ClientConnection {
 			}
 		}
 		// Make sure the world is null until the player position is known.
-		Cubyz.world = world;
+		Constants.world = (LocalWorld)world;
 		DiscordIntegration.setStatus("Playing");
 		Cubyz.gameUI.addOverlay(new GameOverlay());
 		
@@ -421,7 +421,7 @@ public class GameLogic implements ClientConnection {
 	}	
 	
 	public void update(float interval) {
-		if (!Cubyz.gameUI.doesGUIPauseGame() && Cubyz.world != null) {
+		if (!Cubyz.gameUI.doesGUIPauseGame() && Constants.world != null) {
 			if (!Cubyz.gameUI.doesGUIBlockInput()) {
 				Cubyz.player.move(Cubyz.playerInc.mul(0.11F), Cubyz.camera.getRotation(), Cubyz.surface.getSizeX(), Cubyz.surface.getSizeZ());
 				if (breakCooldown > 0) {
@@ -456,7 +456,7 @@ public class GameLogic implements ClientConnection {
 					Cubyz.player.resetBlockBreaking();
 				}
 				if (Keybindings.isPressed("place/use") && buildCooldown <= 0) {
-					if((Cubyz.msd.getSelected() instanceof BlockInstance) && ((BlockInstance)Cubyz.msd.getSelected()).getBlock().onClick(Cubyz.world, ((BlockInstance)Cubyz.msd.getSelected()).getPosition())) {
+					if((Cubyz.msd.getSelected() instanceof BlockInstance) && ((BlockInstance)Cubyz.msd.getSelected()).getBlock().onClick(Constants.world, ((BlockInstance)Cubyz.msd.getSelected()).getPosition())) {
 						// Interact with block(potentially do a hand animation, in the future).
 					} else if(Cubyz.player.getInventory().getItem(Cubyz.inventorySelection) instanceof ItemBlock) {
 						// Build block:
@@ -476,11 +476,11 @@ public class GameLogic implements ClientConnection {
 			Cubyz.playerInc.x = Cubyz.playerInc.y = Cubyz.playerInc.z = 0.0F; // Reset positions
 			NormalChunk ch = Cubyz.surface.getChunk((int)Cubyz.player.getPosition().x >> NormalChunk.chunkShift, (int)Cubyz.player.getPosition().y >> NormalChunk.chunkShift, (int)Cubyz.player.getPosition().z >> NormalChunk.chunkShift);
 			if (ch != null && ch.isLoaded()) {
-				Cubyz.world.update();
+				Constants.world.update();
 			}
 			Cubyz.surface.seek((int)Cubyz.player.getPosition().x, (int)Cubyz.player.getPosition().y, (int)Cubyz.player.getPosition().z, ClientSettings.RENDER_DISTANCE, ClientSettings.EFFECTIVE_RENDER_DISTANCE*NormalChunk.chunkSize*2);
 			Cubyz.chunkTree.update((int)Cubyz.player.getPosition().x, (int)Cubyz.player.getPosition().y, (int)Cubyz.player.getPosition().z, ClientSettings.RENDER_DISTANCE, ClientSettings.HIGHEST_LOD, ClientSettings.LOD_FACTOR);
-			float lightAngle = (float)Math.PI/2 + (float)Math.PI*(((float)Cubyz.world.getGameTime() % Cubyz.surface.getStellarTorus().getDayCycle())/(Cubyz.surface.getStellarTorus().getDayCycle()/2));
+			float lightAngle = (float)Math.PI/2 + (float)Math.PI*(((float)Constants.world.getGameTime() % Cubyz.surface.getStellarTorus().getDayCycle())/(Cubyz.surface.getStellarTorus().getDayCycle()/2));
 			skySun.setPositionRaw((float)Math.cos(lightAngle)*500, (float)Math.sin(lightAngle)*500, 0);
 			skySun.setRotation(0, 0, -lightAngle);
 		}

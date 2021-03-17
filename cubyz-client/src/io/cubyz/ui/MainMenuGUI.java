@@ -1,8 +1,10 @@
 package io.cubyz.ui;
 
+import io.cubyz.Constants;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
-import io.cubyz.multiplayer.server.CubyzServer;
+import io.cubyz.multiplayer.Connection;
+import io.cubyz.multiplayer.InitProtocol;
 import io.cubyz.rendering.Font;
 import io.cubyz.rendering.Window;
 import io.cubyz.translate.TextKey;
@@ -45,7 +47,16 @@ public class MainMenuGUI extends MenuGUI {
 		});
 		
 		mpPlay.setOnAction(() -> {
-			Thread th = new Thread(() -> {
+			
+
+			Connection connection = new Connection("localhost");
+			InitProtocol initProtocol = new InitProtocol();
+			initProtocol.send(connection);
+			
+			Cubyz.gameUI.setMenu(null, false); // hide from UISystem.back()
+			GameLauncher.logic.loadWorld(Constants.world.getCurrentTorus());
+			
+			/*Thread th = new Thread(() -> {
 				CubyzServer server = new CubyzServer(GameLauncher.logic.serverPort);
 				try {
 					server.start();
@@ -54,15 +65,15 @@ public class MainMenuGUI extends MenuGUI {
 				}
 			});
 			th.setName("Integrated Debug Server");
-			th.start();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			GameLauncher.logic.requestJoin("localhost");
-			Cubyz.gameUI.setMenu(null, false);
-			GameLauncher.logic.loadWorld(GameLauncher.logic.mpClient.getHandler().getWorld().getCurrentTorus());
+			th.start();*/
+			//try {
+			//	Thread.sleep(1000);
+			//} catch (InterruptedException e) {
+			//	e.printStackTrace();
+			//}
+			//GameLauncher.logic.requestJoin("localhost");
+			//Cubyz.gameUI.setMenu(null, false);
+			//GameLauncher.logic.loadWorld(GameLauncher.logic.mpClient.getHandler().getWorld().getCurrentTorus());
 		});
 		
 		exit.setOnAction(() -> {

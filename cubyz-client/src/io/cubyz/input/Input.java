@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 import io.cubyz.ClientSettings;
+import io.cubyz.Constants;
 import io.cubyz.api.CubyzRegistries;
 import io.cubyz.client.Cubyz;
 import io.cubyz.entity.Entity;
@@ -40,7 +41,7 @@ public class Input {
 			});
 			Keyboard.setKeyPressed(GLFW.GLFW_KEY_F11, false);
 		}
-		if(!Cubyz.gameUI.doesGUIBlockInput() && Cubyz.world != null) {
+		if(!Cubyz.gameUI.doesGUIBlockInput() && Constants.world != null) {
 			if(Keybindings.isPressed("forward")) {
 				if(Keyboard.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)) {
 					if(Cubyz.player.isFlying()) {
@@ -147,7 +148,7 @@ public class Input {
 			}
 			Cubyz.msd.selectSpatial(Cubyz.surface.getChunks(), Cubyz.player.getPosition(), Cubyz.camera.getViewMatrix().positiveZ(Cubyz.dir).negate(), Cubyz.player, Cubyz.surface);
 		}
-		if(Cubyz.world != null) {
+		if(Constants.world != null) {
 			if(Keybindings.isPressed("menu")) {
 				if(Cubyz.gameUI.getMenuGUI() != null) {
 					Cubyz.gameUI.setMenu(null);

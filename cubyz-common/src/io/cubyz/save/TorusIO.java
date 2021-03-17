@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import io.cubyz.blocks.Block;
 import io.cubyz.entity.Entity;
@@ -51,13 +52,16 @@ public class TorusIO {
 			torus.setName(ndt.getString("name"));
 			blockPalette = new Palette<Block>(ndt.getContainer("blockPalette"), surface.registries.blockRegistry);
 			itemPalette = new Palette<Item>(ndt.getContainer("itemPalette"), surface.registries.itemRegistry);
-			Entity[] entities = new Entity[ndt.getInteger("entityCount")];
-			for (int i = 0; i < entities.length; i++) {
+			ArrayList<Entity> entities = new ArrayList<Entity>();
+			
+			for (int i = 0; i < ndt.getInteger("entityCount"); i++) {
 				// TODO: Only load entities that are in loaded chunks.
-				entities[i] = EntityIO.loadEntity(in, surface);
+				Entity ent = EntityIO.loadEntity(in, surface);
+				if(ent != null)
+					entities.add(ent);
 			}
 			if (surface != null) {
-				surface.setEntities(entities);
+				surface.setEntities(entities.toArray(new Entity[0]));
 			}
 			in.close();
 		} catch (IOException e) {

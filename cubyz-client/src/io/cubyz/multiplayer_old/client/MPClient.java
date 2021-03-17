@@ -1,6 +1,6 @@
-package io.cubyz.multiplayer.client;
+package io.cubyz.multiplayer_old.client;
 
-import io.cubyz.multiplayer.GameProfile;
+import io.cubyz.multiplayer_old.GameProfile;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;

@@ -1,4 +1,4 @@
-package io.cubyz.multiplayer.client;
+package io.cubyz.multiplayer_old.client;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ import com.google.gson.JsonObject;
 import io.cubyz.Constants;
 import io.cubyz.CubyzLogger;
 import io.cubyz.client.GameLogic;
+import io.cubyz.multiplayer_old.BufUtils;
+import io.cubyz.multiplayer_old.Packet;
 import io.cubyz.client.GameLauncher;
-import io.cubyz.multiplayer.BufUtils;
-import io.cubyz.multiplayer.Packet;
 import io.cubyz.world.NormalChunk;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

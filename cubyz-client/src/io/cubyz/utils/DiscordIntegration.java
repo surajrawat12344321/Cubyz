@@ -7,6 +7,7 @@ import club.minnced.discord.rpc.DiscordEventHandlers.OnReady;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
 import club.minnced.discord.rpc.DiscordUser;
+import io.cubyz.Constants;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
 import io.cubyz.ui.ToastManager;
@@ -101,7 +102,7 @@ public class DiscordIntegration {
 	}
 	
 	public static void updateState() {
-		if(Cubyz.world != null) {
+		if(Constants.world != null) {
 			if(GameLauncher.logic.isIntegratedServer) {
 				presence.details = "Singleplayer";
 			} else {
