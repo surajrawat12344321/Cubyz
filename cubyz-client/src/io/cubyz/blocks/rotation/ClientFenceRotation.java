@@ -1,4 +1,4 @@
-package io.cubyz.base.rotation;
+package io.cubyz.blocks.rotation;
 
 import org.joml.RayAabIntersection;
 import org.joml.Vector3f;
@@ -8,7 +8,6 @@ import org.joml.Vector4f;
 import io.cubyz.api.Resource;
 import io.cubyz.blocks.Block;
 import io.cubyz.blocks.BlockInstance;
-import io.cubyz.blocks.RotationMode;
 import io.cubyz.client.Meshes;
 import io.cubyz.entity.Entity;
 import io.cubyz.models.Model;
@@ -18,7 +17,7 @@ import io.cubyz.util.IntFastList;
 import io.cubyz.world.NormalChunk;
 import io.cubyz.world.Surface;
 
-public class FenceRotation implements RotationMode {
+public class ClientFenceRotation implements ClientRotationMode {
 	Resource id = new Resource("cubyz", "fence");
 	@Override
 	public Resource getRegistryID() {

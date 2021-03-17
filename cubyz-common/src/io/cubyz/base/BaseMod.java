@@ -42,7 +42,7 @@ public class BaseMod {
 	
 	// Client Proxy is defined in cubyz-client, a normal mod would define it in the same mod of course.
 	// Proxies are injected at runtime.
-	@Proxy(clientProxy = "io.cubyz.base.ClientProxy", serverProxy = "io.cubyz.base.CommonProxy")
+	@Proxy(clientProxy = "io.cubyz.base.ClientProxy", serverProxy = "io.cubyz.base.ServerProxy")
 	static CommonProxy proxy;
 	
 	@EventHandler(type = "init")

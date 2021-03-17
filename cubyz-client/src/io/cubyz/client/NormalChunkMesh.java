@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import org.lwjgl.system.MemoryUtil;
 
 import io.cubyz.blocks.BlockInstance;
+import io.cubyz.blocks.rotation.ClientRotationMode;
 import io.cubyz.util.FastList;
 import io.cubyz.util.FloatFastList;
 import io.cubyz.util.IntFastList;
@@ -273,7 +274,7 @@ public class NormalChunkMesh {
 			if(!bi.getBlock().isTransparent()) {
 				bi.updateLighting(chunk.getWorldX(), chunk.getWorldZ(), chunk);
 				bi.renderIndex = index;
-				index = bi.getBlock().mode.generateChunkMesh(bi, vertices, normals, faces, lighting, texture, renderIndices, index);
+				index = ((ClientRotationMode)bi.getBlock().mode).generateChunkMesh(bi, vertices, normals, faces, lighting, texture, renderIndices, index);
 			}
 		}
 	}
@@ -287,7 +288,7 @@ public class NormalChunkMesh {
 			if(bi.getBlock().isTransparent()) {
 				bi.updateLighting(chunk.getWorldX(), chunk.getWorldZ(), chunk);
 				bi.renderIndex = index;
-				index = bi.getBlock().mode.generateChunkMesh(bi, vertices, normals, faces, lighting, texture, renderIndices, index);
+				index = ((ClientRotationMode)bi.getBlock().mode).generateChunkMesh(bi, vertices, normals, faces, lighting, texture, renderIndices, index);
 			}
 		}
 	}

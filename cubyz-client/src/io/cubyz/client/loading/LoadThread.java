@@ -1,23 +1,11 @@
 package io.cubyz.client.loading;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import io.cubyz.ClientOnly;
 import io.cubyz.ClientSettings;
-import io.cubyz.Constants;
 import io.cubyz.api.CubyzRegistries;
-import io.cubyz.api.Mod;
 import io.cubyz.api.Resource;
-import io.cubyz.api.Side;
-import io.cubyz.base.AddonsMod;
-import io.cubyz.base.BaseMod;
 import io.cubyz.blocks.Block;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
@@ -28,8 +16,6 @@ import io.cubyz.rendering.ModelLoader;
 import io.cubyz.ui.LoadingGUI;
 import io.cubyz.utils.ResourceContext;
 import io.cubyz.utils.ResourceManager;
-
-import static io.cubyz.CubyzLogger.logger;
 
 /**
  * Loads all mods.
@@ -53,85 +39,8 @@ public class LoadThread extends Thread {
 		
 		l.setStep(2, 0, 0); // load mods
 		
-		// Load Mods (via reflection)
-		ArrayList<File> modSearchPath = new ArrayList<>();
-		modSearchPath.add(new File("mods"));
-		modSearchPath.add(new File("mods/" + Constants.GAME_VERSION));
-		ArrayList<String> modPaths = new ArrayList<>();
-		
-		for (File sp : modSearchPath) {
-			if (!sp.exists()) {
-				sp.mkdirs();
-			}
-			for (File mod : sp.listFiles()) {
-				if (mod.isFile()) {
-					modPaths.add(mod.getAbsolutePath());
-					System.out.println("- Add " + mod.getName());
-				}
-			}
-		}
-		
-		logger.info("Seeking mods..");
-		long start = System.currentTimeMillis();
-		// Load all mods:
-		ArrayList<Class<?>> allClasses = new ArrayList<>();
-		for(String path : modPaths) {
-			loadModClasses(path, allClasses);
-		}
-		long end = System.currentTimeMillis();
-		logger.info("Took " + (end - start) + "ms for reflection");
-		if (!allClasses.contains(BaseMod.class)) {
-			allClasses.add(BaseMod.class);
-			allClasses.add(AddonsMod.class);
-			logger.info("Manually adding BaseMod (probably on distributed JAR)");
-		}
-		for (Class<?> cl : allClasses) {
-			logger.info("Mod class present: " + cl.getName());
-			try {
-				ModLoader.mods.add(cl.getConstructor().newInstance());
-			} catch (Exception e) {
-				logger.warning("Error while loading mod:");
-				e.printStackTrace();
-			}
-		}
-		logger.info("Mod list complete");
-		ModLoader.sortMods();
-		
-		// TODO re-add pre-init
-		l.setStep(2, 0, ModLoader.mods.size());
-		for (int i = 0; i < ModLoader.mods.size(); i++) {
-			l.setStep(2, i+1, ModLoader.mods.size());
-			Object mod = ModLoader.mods.get(i);
-			logger.info("Pre-initiating " + mod);
-			ModLoader.preInit(mod, Side.CLIENT);
-		}
-		
-		// Between pre-init and init code
-		l.setStep(3, 0, ModLoader.mods.size());
-		
-		for (int i = 0; i < ModLoader.mods.size(); i++) {
-			Object mod = ModLoader.mods.get(i);
-			ModLoader.registerEntries(mod, "block");
-		}
-		for (int i = 0; i < ModLoader.mods.size(); i++) {
-			Object mod = ModLoader.mods.get(i);
-			ModLoader.registerEntries(mod, "item");
-		}
-		for (int i = 0; i < ModLoader.mods.size(); i++) {
-			Object mod = ModLoader.mods.get(i);
-			ModLoader.registerEntries(mod, "entity");
-		}
-		for (int i = 0; i < ModLoader.mods.size(); i++) {
-			Object mod = ModLoader.mods.get(i);
-			ModLoader.registerEntries(mod, "biome");
-		}
-		
-		for (int i = 0; i < ModLoader.mods.size(); i++) {
-			l.setStep(3, i+1, ModLoader.mods.size());
-			Object mod = ModLoader.mods.get(i);
-			logger.info("Initiating " + mod);
-			ModLoader.init(mod);
-		}
+		ModLoader.loadMods();
+		// TODO: Make progress bars work again for mod loading and initing.
 		
 		Object lock = new Object();
 		run = new Runnable() {
@@ -183,12 +92,7 @@ public class LoadThread extends Thread {
 		}
 		
 		l.setStep(5, 0, ModLoader.mods.size());
-		for (int i = 0; i < ModLoader.mods.size(); i++) {
-			l.setStep(5, i+1, ModLoader.mods.size());
-			Object mod = ModLoader.mods.get(i);
-			logger.info("Post-initiating " + mod);
-			ModLoader.postInit(mod);
-		}
+		ModLoader.postInit();
 		l.finishLoading();
 		
 		for (Runnable r : runnables) {
@@ -196,32 +100,6 @@ public class LoadThread extends Thread {
 		}
 		
 		System.gc();
-	}
-	
-	public static void loadModClasses(String pathToJar, ArrayList<Class<?>> modClasses) {
-		try {
-			JarFile jarFile = new JarFile(pathToJar);
-			Enumeration<JarEntry> e = jarFile.entries();
-	
-			URL[] urls = { new URL("jar:file:" + pathToJar+"!/") };
-			URLClassLoader cl = URLClassLoader.newInstance(urls);
-	
-			while (e.hasMoreElements()) {
-			    JarEntry je = e.nextElement();
-			    if(je.isDirectory() || !je.getName().endsWith(".class") || je.getName().contains("module-info")){
-			        continue;
-			    }
-			    // -6 because of .class
-			    String className = je.getName().substring(0,je.getName().length()-6);
-			    className = className.replace('/', '.');
-			    Class<?> c = cl.loadClass(className);
-			    if(c.isAnnotationPresent(Mod.class)) modClasses.add(c);
-	
-			}
-			jarFile.close();
-		} catch(IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
 	}
 	
 }

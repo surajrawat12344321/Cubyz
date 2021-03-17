@@ -6,6 +6,7 @@ import org.joml.Vector3i;
 
 import io.cubyz.blocks.Block;
 import io.cubyz.blocks.BlockInstance;
+import io.cubyz.blocks.rotation.ClientRotationMode;
 import io.cubyz.entity.Entity;
 import io.cubyz.entity.Player;
 import io.cubyz.items.Inventory;
@@ -70,7 +71,7 @@ public class MeshSelectionDetector {
 					if (intersection.test(min.x, min.y, min.z, max.x, max.y, max.z)) {
 						float distance;
 						if(bi.getBlock().mode.changesHitbox()) {
-							distance = bi.getBlock().mode.getRayIntersection(intersection, bi, min, max, pos);
+							distance = ((ClientRotationMode)bi.getBlock().mode).getRayIntersection(intersection, bi, min, max, pos);
 						} else {
 							distance = min.sub(pos).length();
 						}

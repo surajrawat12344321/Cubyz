@@ -13,6 +13,7 @@ import org.joml.Vector4f;
 
 import io.cubyz.ClientSettings;
 import io.cubyz.Constants;
+import io.cubyz.base.entity_models.ClientEntityModel;
 import io.cubyz.blocks.Block;
 import io.cubyz.blocks.BlockInstance;
 import io.cubyz.client.Cubyz;
@@ -434,7 +435,7 @@ public class MainRenderer {
 					if(ent.getType().model != null) {
 						entityShader.setUniform("materialHasTexture", true);
 						entityShader.setUniform("light", ent.getSurface().getLight(x, y, z, ambientLight, ClientSettings.easyLighting));
-						ent.getType().model.render(Cubyz.camera.getViewMatrix(), entityShader, ent);
+						((ClientEntityModel)ent.getType().model).render(Cubyz.camera.getViewMatrix(), entityShader, ent);
 						continue;
 					}
 					if (ent instanceof CustomMeshProvider) {

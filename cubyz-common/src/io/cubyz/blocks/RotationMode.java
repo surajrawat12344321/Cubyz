@@ -20,19 +20,6 @@ import io.cubyz.world.Surface;
 
 public interface RotationMode extends RegistryElement {
 	/**
-	 * Called when generating the chunk mesh.
-	 * @param bi
-	 * @param vertices
-	 * @param normals
-	 * @param faces
-	 * @param lighting
-	 * @param texture
-	 * @param renderIndex
-	 * @return incremented renderIndex
-	 */
-	public int generateChunkMesh(BlockInstance bi, FloatFastList vertices, FloatFastList normals, IntFastList faces, IntFastList lighting, FloatFastList texture, IntFastList renderIndices, int renderIndex);
-	
-	/**
 	 * Update or place a block.
 	 * @param surface
 	 * @param x
@@ -77,16 +64,6 @@ public interface RotationMode extends RegistryElement {
 	 * @return Whether this RotationMode changes this blocks hitbox for player collision or block selection.
 	 */
 	public boolean changesHitbox();
-	
-	/**
-	 * 
-	 * @param intersection
-	 * @param bi
-	 * @param min minimal point of the surrounding block. May be overwritten.
-	 * @param max maximal point of the surrounding block. May be overwritten.
-	 * @return
-	 */
-	public float getRayIntersection(RayAabIntersection intersection, BlockInstance bi, Vector3f min, Vector3f max, Vector3f transformedPosition);
 
 	/**
 	 * Check if the entity would collide with the block.
