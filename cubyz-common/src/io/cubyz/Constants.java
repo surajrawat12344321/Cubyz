@@ -14,7 +14,7 @@ public class Constants {
 	//world stuff
 	public static LocalWorld world;
 	public static Class<?> chunkProvider;
-	
+	public static boolean multiplayer = false;
 	
 	public static final int defaultPort = 3201;
 

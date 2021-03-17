@@ -1,14 +1,22 @@
 package io.cubyz.multiplayer.protocols;
 
+import org.joml.Vector3f;
+
+import io.cubyz.ClientOnly;
 import io.cubyz.Constants;
 import io.cubyz.api.Resource;
+import io.cubyz.blocks.Block;
 import io.cubyz.math.Bits;
 import io.cubyz.multiplayer.Connection;
 import io.cubyz.multiplayer.Protocol;
+import io.cubyz.world.CustomObject;
 import io.cubyz.world.LocalWorld;
 
 public class InitProtocol extends Protocol {
 
+	public Vector3f position;
+	
+	
 	@Override
 	public Protocol generate() {
 		return new InitProtocol();
@@ -22,17 +30,38 @@ public class InitProtocol extends Protocol {
 	@Override
 	public void runClient(Connection conno, boolean initializer) {
 		//receive the universe :D
-		int seed = Bits.getInt(conno.receive(),0);
+		byte[] data = conno.receive();
+		
+		int seed = Bits.getInt(data,0);
+		
+		position = new Vector3f();
+		
+		position.x = Bits.getFloat(data,4);
+		position.y = Bits.getFloat(data,8);
+		position.z = Bits.getFloat(data,12);
+		
 		Constants.world = new LocalWorld(seed);
-		Constants.world.generate();
+		
+		//Constants.world.generate();
 	}
 
 	@Override
 	public void runServer(Connection conno, boolean initializer) {
 		//sendthe universe :D
-		byte seed[] = new byte[4];
-		Bits.putInt(seed, 0, Constants.world.getSeed());
-		conno.send(seed);
+		byte data[] = new byte[16];
+		Vector3f position = Constants.world.getLocalPlayer().getPosition();
+		
+		Bits.putInt(data, 0, Constants.world.getSeed());
+		Bits.putFloat(data,4,position.x);
+		Bits.putFloat(data,8,position.y);
+		Bits.putFloat(data,12,position.z);
+		
+		System.out.println("x:"+position.x);
+		System.out.println("y:"+position.y);
+		System.out.println("z:"+position.z);
+		
+		
+		conno.send(data);
 		
 		
 	}

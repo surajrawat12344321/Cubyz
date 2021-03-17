@@ -128,9 +128,6 @@ public class GameLogic implements ClientConnection {
 	}
 	
 	public void loadWorld(Surface surface) { // TODO: Seperate all the things out that are generated for the current surface.
-		if (Constants.world != null) {
-			quitWorld();
-		}
 		if (skySun == null || skyMoon == null) {
 			Mesh sunMesh = skyBodyMesh.cloneNoMaterial();
 			sunMesh.setMaterial(new Material(new Vector4f(1f, 1f, 0f, 1f), 1f)); // TODO: use textures for sun and moon
