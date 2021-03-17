@@ -1,12 +1,19 @@
-package io.cubyz.multiplayer;
+package io.cubyz.multiplayer.protocols;
 
 import io.cubyz.Constants;
 import io.cubyz.api.Resource;
 import io.cubyz.math.Bits;
+import io.cubyz.multiplayer.Connection;
+import io.cubyz.multiplayer.Protocol;
 import io.cubyz.world.LocalWorld;
 
 public class InitProtocol extends Protocol {
 
+	@Override
+	public Protocol generate() {
+		return new InitProtocol();
+	}
+	
 	@Override
 	public Resource getRegistryID() {
 		return new Resource("cubyz:protocol_init");

@@ -27,6 +27,9 @@ import io.cubyz.items.tools.Material;
 import io.cubyz.items.tools.Modifier;
 import io.cubyz.items.tools.modifiers.FallingApart;
 import io.cubyz.items.tools.modifiers.Regrowth;
+import io.cubyz.multiplayer.protocols.BlockInteractionProtocol;
+import io.cubyz.multiplayer.protocols.ChunkDataProtocol;
+import io.cubyz.multiplayer.protocols.InitProtocol;
 import io.cubyz.world.cubyzgenerators.biomes.Biome;
 import io.cubyz.world.cubyzgenerators.biomes.BlockStructure;
 import io.cubyz.world.cubyzgenerators.biomes.SimpleTreeModel;
@@ -59,6 +62,13 @@ public class BaseMod {
 		
 		// Init proxy
 		proxy.init();
+		
+		//protocols
+		CubyzRegistries.PROTOCOL_REGISTRY.register(new InitProtocol());
+		CubyzRegistries.PROTOCOL_REGISTRY.register(new BlockInteractionProtocol());
+		CubyzRegistries.PROTOCOL_REGISTRY.register(new ChunkDataProtocol());
+		
+		
 	}
 
 	@EventHandler(type = "preInit")

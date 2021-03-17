@@ -4,7 +4,7 @@ import io.cubyz.Constants;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
 import io.cubyz.multiplayer.Connection;
-import io.cubyz.multiplayer.InitProtocol;
+import io.cubyz.multiplayer.protocols.InitProtocol;
 import io.cubyz.rendering.Font;
 import io.cubyz.rendering.Window;
 import io.cubyz.translate.TextKey;

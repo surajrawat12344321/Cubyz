@@ -52,7 +52,6 @@ public class Connection extends Thread {
 			output.write(message);
 		} catch (IOException e) {
 			io.cubyz.CubyzLogger.logger.info("couldn't send : " + socket);
-			e.printStackTrace();
 		}
 	}
 	//receiving something from client
@@ -66,7 +65,6 @@ public class Connection extends Thread {
 			}
 		} catch (IOException e) {
 			io.cubyz.CubyzLogger.logger.info("couldn't receive: " + socket);
-			e.printStackTrace();
 		}
 		return new byte[0];
 	}
@@ -96,8 +94,8 @@ public class Connection extends Thread {
 		while(true) {
 			String id = new String(receive());
 			Protocol prot = CubyzRegistries.PROTOCOL_REGISTRY.getByID(id);
-			
-			prot.receiver(this);
+			Protocol copy = prot.generate();
+			copy.receiver(this);
 		}
 	}
 

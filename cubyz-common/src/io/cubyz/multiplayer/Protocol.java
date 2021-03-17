@@ -9,6 +9,8 @@ import io.cubyz.api.Side;
 
 public abstract class Protocol implements RegistryElement{
 	
+	abstract public Protocol generate();
+	
 	public void send(Connection connection) {
 		connection.send(getRegistryID().toString().getBytes());
 		
