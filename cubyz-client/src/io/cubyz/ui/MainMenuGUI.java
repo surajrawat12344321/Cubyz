@@ -1,10 +1,6 @@
 package io.cubyz.ui;
 
-import org.joml.Vector3f;
-
-import io.cubyz.ClientOnly;
 import io.cubyz.Constants;
-import io.cubyz.blocks.Block;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
 import io.cubyz.multiplayer.Connection;
@@ -16,9 +12,6 @@ import io.cubyz.ui.components.Button;
 import io.cubyz.ui.components.Label;
 import io.cubyz.ui.settings.SettingsGUI;
 import io.cubyz.utils.DiscordIntegration;
-import io.cubyz.world.CustomObject;
-import io.cubyz.world.LocalWorld;
-import io.cubyz.world.VisibleChunk;
 
 public class MainMenuGUI extends MenuGUI {
 	
@@ -56,29 +49,17 @@ public class MainMenuGUI extends MenuGUI {
 		
 		mpPlay.setOnAction(() -> {
 			
-		
-
-		
-			//Constants.chunkProvider = VisibleChunk.class;
-			
-			//Constants.world = new LocalWorld("Save 1");
 			Constants.multiplayer = true;
 			
 			Connection connection = new Connection("localhost");
 			InitProtocol initProtocol = new InitProtocol();
 			initProtocol.send(connection);
-			//System.out.println("lol");
-			Block[] blocks = Constants.world.generate();
-			for(Block bl : blocks) {
-				if (bl instanceof CustomObject) {
-					ClientOnly.createBlockMesh.accept(bl);
-				}
-			}
+			Constants.world.generate();
 			
 			Cubyz.gameUI.setMenu(null, false); // hide from UISystem.back()
 			GameLauncher.logic.loadWorld(Constants.world.getCurrentTorus());
 			
-			Constants.world.getLocalPlayer().setPosition(initProtocol.position);
+			Constants.world.getOnlinePlayers().get(0).setPosition(initProtocol.position);
 			
 			
 			/*Thread th = new Thread(() -> {

@@ -2,14 +2,11 @@ package io.cubyz.multiplayer.protocols;
 
 import org.joml.Vector3f;
 
-import io.cubyz.ClientOnly;
 import io.cubyz.Constants;
 import io.cubyz.api.Resource;
-import io.cubyz.blocks.Block;
 import io.cubyz.math.Bits;
 import io.cubyz.multiplayer.Connection;
 import io.cubyz.multiplayer.Protocol;
-import io.cubyz.world.CustomObject;
 import io.cubyz.world.LocalWorld;
 
 public class InitProtocol extends Protocol {
@@ -47,9 +44,10 @@ public class InitProtocol extends Protocol {
 
 	@Override
 	public void runServer(Connection conno, boolean initializer) {
-		//sendthe universe :D
+		//send the universe :D
 		byte data[] = new byte[16];
-		Vector3f position = Constants.world.getLocalPlayer().getPosition();
+		// TODO: Create a new player using the UUID.
+		Vector3f position = Constants.world.getOnlinePlayers().get(0).getPosition();
 		
 		Bits.putInt(data, 0, Constants.world.getSeed());
 		Bits.putFloat(data,4,position.x);

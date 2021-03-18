@@ -143,7 +143,7 @@ public class GameLogic implements ClientConnection {
 		}
 		Cubyz.surface = surface;
 		World world = surface.getStellarTorus().getWorld();
-		Cubyz.player = (PlayerImpl)world.getLocalPlayer();
+		Cubyz.player = (PlayerImpl)world.getOnlinePlayers().get(0);
 		if (world.isLocal()) {
 			Random rnd = new Random();
 			int dx = 0;

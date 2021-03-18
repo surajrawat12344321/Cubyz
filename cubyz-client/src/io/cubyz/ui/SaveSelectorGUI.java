@@ -8,16 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import io.cubyz.ClientOnly;
 import io.cubyz.Constants;
-import io.cubyz.blocks.Block;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
 import io.cubyz.rendering.Window;
 import io.cubyz.translate.ContextualTextKey;
 import io.cubyz.translate.TextKey;
 import io.cubyz.ui.components.Button;
-import io.cubyz.world.CustomObject;
 import io.cubyz.world.LocalWorld;
 import io.cubyz.world.VisibleChunk;
 
@@ -53,12 +50,7 @@ public class SaveSelectorGUI extends MenuGUI {
 			b.setOnAction(() -> {
 				Constants.chunkProvider = VisibleChunk.class;
 				LocalWorld world = new LocalWorld(name);
-				Block[] blocks = world.generate();
-				for(Block bl : blocks) {
-					if (bl instanceof CustomObject) {
-						ClientOnly.createBlockMesh.accept(bl);
-					}
-				}
+				world.generate();
 				Cubyz.gameUI.setMenu(null, false); // hide from UISystem.back()
 				GameLauncher.logic.loadWorld(world.getCurrentTorus());
 			});

@@ -1,8 +1,8 @@
 package io.cubyz.world;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import io.cubyz.blocks.Block;
 import io.cubyz.entity.Player;
 
 /**
@@ -13,11 +13,13 @@ public abstract class World {
 
 	protected int seed;
 	
-	public abstract Player getLocalPlayer();
+	/**
+	 * The first player in the list is guaranteed to be the local player, if it exists.
+	 * @return a list of all players online on this world.
+	 */
+	public abstract ArrayList<Player> getOnlinePlayers();
 
 	public abstract void cleanup();
-	
-	public abstract Block [] getBlocks();
 	
 	public abstract long getGameTime();
 	public abstract void setGameTime(long time);

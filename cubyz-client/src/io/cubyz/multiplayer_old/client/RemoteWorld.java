@@ -59,8 +59,8 @@ public class RemoteWorld extends World {
 	}
 	
 	@Override
-	public Player getLocalPlayer() {
-		return localPlayer;
+	public ArrayList<Player> getOnlinePlayers() {
+		return new ArrayList<Player>();
 	}
 	
 	@Override

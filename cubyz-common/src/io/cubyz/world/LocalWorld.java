@@ -7,19 +7,15 @@ import java.util.Random;
 
 import io.cubyz.Constants;
 import io.cubyz.api.CubyzRegistries;
-import io.cubyz.blocks.Block;
-import io.cubyz.blocks.Ore;
 import io.cubyz.entity.Entity;
 import io.cubyz.entity.Player;
 import io.cubyz.save.WorldIO;
-import io.cubyz.world.generator.LifelandGenerator;
 
 import static io.cubyz.CubyzLogger.logger;
 
 public class LocalWorld extends World {
 	
-	private Block[] blocks;
-	private Player player;
+	private ArrayList<Player> onlinePlayers = new ArrayList<Player>();
 	protected boolean generated;
 	protected Random rnd;
 	protected String name;
@@ -67,13 +63,8 @@ public class LocalWorld extends World {
 	}
 	
 	@Override
-	public Player getLocalPlayer() {
-		return player;
-	}
-
-	@Override
-	public Block[] getBlocks() {
-		return blocks;
+	public ArrayList<Player> getOnlinePlayers() {
+		return onlinePlayers;
 	}
 
 	@Override
@@ -102,7 +93,7 @@ public class LocalWorld extends World {
 	}
 	
 	// Returns the blocks, so their meshes can be created and stored.
-	public Block[] generate() {
+	public void generate() {
 		if (!generated) {
 			seed = rnd.nextInt();
 		}
@@ -112,48 +103,19 @@ public class LocalWorld extends World {
 			currentTorus = new LocalSurface(torus, Constants.chunkProvider);
 			toruses.add(torus);
 		}
-		ArrayList<Block> blockList = new ArrayList<>();
-		// Set the IDs again every time a new world is loaded. This is necessary, because the random block creation would otherwise mess with it.
-		int ID = 0;
-		ArrayList<Ore> ores = new ArrayList<Ore>();
-		for (Block b : CubyzRegistries.BLOCK_REGISTRY.registered(new Block[0])) {
-			if(!b.isTransparent()) {
-				b.ID = ID;
-				blockList.add(b);
-				ID++;
-			}
-		}
-		// Generate the ores of the current torus:
-		if(currentTorus != null && currentTorus instanceof LocalSurface) {
-			ID = currentTorus.generate(blockList, ores, ID);
-		}
-		// Put the truly transparent blocks at the end of the list to make sure the renderer calls the last.
-		for (Block b : CubyzRegistries.BLOCK_REGISTRY.registered(new Block[0])) {
-			if(b.isTransparent()) {
-				b.ID = ID;
-				blockList.add(b);
-				ID++;
-			}
-			if(b instanceof Ore) {
-				ores.add((Ore)b);
-			}
-		}
-		LifelandGenerator.initOres(ores.toArray(new Ore[ores.size()]));
 		generated = true;
 		for (Entity ent : currentTorus.getEntities()) {
 			if (ent instanceof Player) {
-				player = (Player) ent;
+				onlinePlayers.add((Player)ent);
 			}
 		}
-		if (player == null) {
-			player = (Player) CubyzRegistries.ENTITY_REGISTRY.getByID("cubyz:player").newEntity(currentTorus);
+		if (onlinePlayers.size() == 0) {
+			Player player = (Player) CubyzRegistries.ENTITY_REGISTRY.getByID("cubyz:player").newEntity(currentTorus);
 			currentTorus.addEntity(player);
+			onlinePlayers.add(player);
 		}
 		if(wio!=null)
 			wio.saveWorldData();
-		blocks = blockList.toArray(new Block[0]);
-		currentTorus.setBlocks(blocks);
-		return blocks;
 	}
 	
 	@Override

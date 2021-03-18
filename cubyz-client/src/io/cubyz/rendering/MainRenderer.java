@@ -252,7 +252,7 @@ public class MainRenderer {
 			// Set intensity:
 			light.setDirection(light.getDirection().mul(0.1f*Cubyz.surface.getGlobalLighting()/light.getDirection().length()));
 			window.setClearColor(clearColor);
-			render(window, ambient, light, Constants.world.getBlocks(), Cubyz.surface.getEntities(), worldSpatialList, Cubyz.player, Cubyz.surface.getSizeX(), Cubyz.surface.getSizeZ());
+			render(window, ambient, light, Cubyz.surface.getPlanetBlocks(), Cubyz.surface.getEntities(), worldSpatialList, Cubyz.player, Cubyz.surface.getSizeX(), Cubyz.surface.getSizeZ());
 		} else {
 			clearColor.y = clearColor.z = 0.7f;
 			clearColor.x = 0.1f;

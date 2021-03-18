@@ -11,7 +11,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import io.cubyz.ClientOnly;
 import io.cubyz.Settings;
+import io.cubyz.api.CubyzRegistries;
 import io.cubyz.api.CurrentSurfaceRegistries;
 import io.cubyz.blocks.Block;
 import io.cubyz.blocks.CustomBlock;
@@ -144,9 +146,29 @@ public class LocalSurface extends Surface {
 		}
 		
 		biomeMap = BiomeGenerator.generateTypeMap(localSeed, worldSizeX/Region.regionSize, worldSizeZ/Region.regionSize);
+		
+		generate();
+		for(Block block : customBlocks) {
+			ClientOnly.createBlockMesh.accept(block);
+		}
 	}
 	
-	public int generate(ArrayList<Block> blockList, ArrayList<Ore> ores, int ID) {
+	public void generate() {
+		ArrayList<Block> blockList = new ArrayList<>();
+		// Set the IDs again every time a new world is loaded. This is necessary, because the random block creation would otherwise mess with it.
+		int ID = 0;
+		ArrayList<Ore> ores = new ArrayList<Ore>();
+		for (Block b : CubyzRegistries.BLOCK_REGISTRY.registered(new Block[0])) {
+			b.ID = ID;
+			blockList.add(b);
+			ID++;
+			if(b instanceof Ore) {
+				ores.add((Ore)b);
+			}
+		}
+		
+		// Generate torus specific blocks:
+		
 		Random rand = new Random(localSeed);
 		int randomAmount = 9 + rand.nextInt(3); // TODO
 		int i = 0;
@@ -191,8 +213,9 @@ public class LocalSurface extends Surface {
 			tio.saveTorusData(this);
 		}
 		generated = true;
+		// Generate the ores of the current torus:
+		LifelandGenerator.initOres(ores.toArray(new Ore[ores.size()]));
 		torusBlocks = blockList.toArray(new Block[0]);
-		return ID;
 	}
 
 	
@@ -487,10 +510,6 @@ public class LocalSurface extends Surface {
 			lastY = yOld;
 			lastZ = zOld;
 		}
-	}
-	
-	public void setBlocks(Block[] blocks) {
-		torusBlocks = blocks;
 	}
 
 	@Override

@@ -2,9 +2,7 @@ package io.cubyz.ui;
 
 import java.io.File;
 
-import io.cubyz.ClientOnly;
 import io.cubyz.Constants;
-import io.cubyz.blocks.Block;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
 import io.cubyz.rendering.Font;
@@ -12,7 +10,6 @@ import io.cubyz.rendering.Window;
 import io.cubyz.translate.TextKey;
 import io.cubyz.ui.components.Button;
 import io.cubyz.ui.components.TextInput;
-import io.cubyz.world.CustomObject;
 import io.cubyz.world.LocalWorld;
 import io.cubyz.world.VisibleChunk;
 
@@ -47,12 +44,7 @@ public class SaveCreationGUI extends MenuGUI {
 		create.setOnAction(() -> {
 			Constants.chunkProvider = VisibleChunk.class;
 			LocalWorld world = new LocalWorld(name.getText());
-			Block[] blocks = world.generate();
-			for(Block bl : blocks) {
-				if (bl instanceof CustomObject) {
-					ClientOnly.createBlockMesh.accept(bl);
-				}
-			}
+			world.generate();
 			Cubyz.gameUI.setMenu(null, false); // hide from UISystem.back()
 			GameLauncher.logic.loadWorld(world.getCurrentTorus());
 		});
