@@ -55,11 +55,21 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
-					<mainClass>io.cubyz.client.GameLauncher</mainClass>
+					<executable>java</executable>
 					<arguments>
-						<argument>argument1</argument>
+						<argument>-classpath</argument>
+						<classpath />
+						<argument>io.cubyz.client.GameLauncher</argument>
 					</arguments>
+					<workingDirectory>${project.basedir}/..</workingDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

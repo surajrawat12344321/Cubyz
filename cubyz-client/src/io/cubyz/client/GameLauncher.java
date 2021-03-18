@@ -20,8 +20,7 @@ public abstract class GameLauncher {
 	public static GameLogic logic;
 	
 	public static void main(String[] args) {
-		Constants.chunkProvider = VisibleChunk.class; 
-		
+		Constants.chunkProvider = VisibleChunk.class;
 		try {
 			input = new Input();
 			instance = new Game();

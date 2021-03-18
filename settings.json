@@ -1,0 +1,33 @@
+{
+  "keybindings": {
+    "place/use": 78947,
+    "destroy": 78945,
+    "forward": 87,
+    "backward": 83,
+    "left": 65,
+    "right": 68,
+    "jump": 32,
+    "fall": 340,
+    "inventory": 73,
+    "menu": 256,
+    "hotbar 1": 49,
+    "hotbar 2": 50,
+    "hotbar 3": 51,
+    "hotbar 4": 52,
+    "hotbar 5": 53,
+    "hotbar 6": 54,
+    "hotbar 7": 55,
+    "hotbar 8": 56
+  },
+  "language": "en_US",
+  "discordIntegration": false,
+  "fogCoefficient": 10.0,
+  "useMipmaps": false,
+  "vsync": false,
+  "antiAliasSamples": 0,
+  "easyLighting": true,
+  "renderDistance": 4,
+  "highestLOD": 4,
+  "farDistanceFactor": 2.0,
+  "fieldOfView": 70.0
+}

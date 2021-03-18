@@ -25,7 +25,7 @@ public class ClientOnly {
 	
 	static {
 		createBlockMesh = (b) -> {
-			throw new UnsupportedOperationException("createBlockMesh");
+			return;
 		};
 		onBorderCrossing = (p) -> {
 			return; // This lambda is used for updating the Spatial position to be in correct relation to the player.
