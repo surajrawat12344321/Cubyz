@@ -4,10 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import io.cubyz.Constants;
-import io.cubyz.api.CubyzRegistries;
-import io.cubyz.entity.Entity;
 import io.cubyz.entity.Player;
 import io.cubyz.save.WorldIO;
 
@@ -21,7 +20,7 @@ public class LocalWorld extends World {
 	protected String name;
 	
 	private ArrayList<StellarTorus> toruses = new ArrayList<>();
-	private LocalSurface currentTorus;
+	private LocalSurface currentTorus; // TODO: Support multiple surfaces at the same time.
 	private long milliTime;
 	private long gameTime;
 	public boolean inLqdUpdate;
@@ -104,16 +103,6 @@ public class LocalWorld extends World {
 			toruses.add(torus);
 		}
 		generated = true;
-		for (Entity ent : currentTorus.getEntities()) {
-			if (ent instanceof Player) {
-				onlinePlayers.add((Player)ent);
-			}
-		}
-		if (onlinePlayers.size() == 0) {
-			Player player = (Player) CubyzRegistries.ENTITY_REGISTRY.getByID("cubyz:player").newEntity(currentTorus);
-			currentTorus.addEntity(player);
-			onlinePlayers.add(player);
-		}
 		if(wio!=null)
 			wio.saveWorldData();
 	}
@@ -151,6 +140,24 @@ public class LocalWorld extends World {
 		}
 		
 		currentTorus.update();
+	}
+
+	@Override
+	public Player connectPlayer(UUID playerID) {
+		Player player = currentTorus.connectPlayer(playerID);
+		onlinePlayers.add(player);
+		return player;
+	}
+
+	@Override
+	public void disconnectPlayer(UUID playerID) {
+		currentTorus.disconnectPlayer(playerID);
+		for(int i = 0; i < onlinePlayers.size(); i++) {
+			if(onlinePlayers.get(i).getPlayerID().equals(playerID)) {
+				onlinePlayers.remove(i);
+				i--;
+			}
+		}
 	}
 
 }

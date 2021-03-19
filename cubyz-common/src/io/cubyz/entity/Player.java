@@ -1,5 +1,7 @@
 package io.cubyz.entity;
 
+import java.util.UUID;
+
 import org.joml.Vector3f;
 
 import io.cubyz.api.CubyzRegistries;
@@ -33,5 +35,6 @@ public abstract class Player extends Entity implements CommandSource {
 	 * @param rot
 	 */
 	public abstract void move(Vector3f inc, Vector3f rot, int worldSizeX, int worldSizeZ);
+	public abstract UUID getPlayerID();
 	
 }

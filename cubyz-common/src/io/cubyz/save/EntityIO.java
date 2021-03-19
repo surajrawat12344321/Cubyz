@@ -38,8 +38,7 @@ public class EntityIO {
 			logger.warning("Could not load entity with id " + id.toString());
 			return null;
 		}
-		ent = type.newEntity(surface);
-		ent.loadFrom(ndt);
+		ent = type.newEntity(surface, ndt);
 		return ent;
 	}
 	

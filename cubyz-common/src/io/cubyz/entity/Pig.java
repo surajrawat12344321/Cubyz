@@ -8,6 +8,7 @@ import io.cubyz.api.CubyzRegistries;
 import io.cubyz.api.Resource;
 import io.cubyz.items.Item;
 import io.cubyz.items.ItemStack;
+import io.cubyz.ndt.NDTContainer;
 import io.cubyz.world.Surface;
 
 /**
@@ -22,12 +23,19 @@ public class Pig extends EntityType {
 	}
 
 	@Override
+	public Entity newEntity(Surface surface, NDTContainer ndt) {
+		Entity ent = new Entity(this, new PigAI(), surface, 6, 10, 1);
+		ent.loadFrom(ndt);
+		ent.height = 1;
+		return ent;
+	}
+
+	@Override
 	public Entity newEntity(Surface surface) {
 		Entity ent = new Entity(this, new PigAI(), surface, 6, 10, 1);
 		ent.height = 1;
 		return ent;
 	}
-	
 	
 	@Override
 	public void die(Entity ent) {

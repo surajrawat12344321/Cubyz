@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import io.cubyz.blocks.Block;
 import io.cubyz.entity.Entity;
+import io.cubyz.entity.Player;
 import io.cubyz.items.Item;
 import io.cubyz.math.Bits;
 import io.cubyz.ndt.NDTContainer;
@@ -75,7 +76,7 @@ public class TorusIO {
 			NDTContainer ndt = new NDTContainer();
 			ndt.setInteger("version", 2);
 			ndt.setString("name", torus.getName());
-			ndt.setInteger("entityCount", surface == null ? 0 : surface.getEntities().length);
+			ndt.setInteger("entityCount", surface == null ? 0 : (surface.getEntities().length + surface.getOfflinePlayers().size()));
 			ndt.setContainer("blockPalette", blockPalette.saveTo(new NDTContainer()));
 			ndt.setContainer("itemPalette", itemPalette.saveTo(new NDTContainer()));
 			byte[] len = new byte[4];
@@ -86,6 +87,10 @@ public class TorusIO {
 				for (Entity ent : surface.getEntities()) {
 					if(ent != null)
 						EntityIO.saveEntity(ent, out);
+				}
+				for (Player player : surface.getOfflinePlayers()) {
+					if(player != null)
+						EntityIO.saveEntity(player, out);
 				}
 			}
 			out.close();

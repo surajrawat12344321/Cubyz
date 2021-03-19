@@ -1,6 +1,7 @@
 package io.cubyz.world;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -10,6 +11,7 @@ import io.cubyz.blocks.Block;
 import io.cubyz.blocks.BlockEntity;
 import io.cubyz.entity.ChunkEntityManager;
 import io.cubyz.entity.Entity;
+import io.cubyz.entity.Player;
 import io.cubyz.handler.BlockVisibilityChangeHandler;
 import io.cubyz.handler.Handler;
 import io.cubyz.handler.PlaceBlockHandler;
@@ -101,4 +103,10 @@ public abstract class Surface {
 	}
 
 	public abstract boolean isValidSpawnLocation(int x, int z);
+	
+	public abstract Player connectPlayer(UUID playerID);
+	public abstract void disconnectPlayer(UUID playerID);
+
+	public abstract ArrayList<Player> getOnlinePlayers();
+	public abstract ArrayList<Player> getOfflinePlayers();
 }

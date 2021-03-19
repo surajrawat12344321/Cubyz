@@ -2,6 +2,7 @@ package io.cubyz.world;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import io.cubyz.entity.Player;
 
@@ -47,5 +48,8 @@ public abstract class World {
 	public abstract List<StellarTorus> getToruses();
 	
 	public void update() {}
+
+	public abstract Player connectPlayer(UUID playerID);
+	public abstract void disconnectPlayer(UUID playerID);
 
 }

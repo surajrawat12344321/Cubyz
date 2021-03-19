@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 import org.joml.Vector4f;
 import org.lwjgl.Version;
 import org.lwjgl.opengl.GL12;
@@ -143,26 +142,8 @@ public class GameLogic implements ClientConnection {
 		}
 		Cubyz.surface = surface;
 		World world = surface.getStellarTorus().getWorld();
-		Cubyz.player = (PlayerImpl)world.getOnlinePlayers().get(0);
-		if (world.isLocal()) {
-			Random rnd = new Random();
-			int dx = 0;
-			int dz = 0;
-			if (Cubyz.player.getPosition().x == 0 && Cubyz.player.getPosition().z == 0) {
-				logger.info("Finding position..");
-				while (true) {
-					dx = rnd.nextInt(surface.getSizeX());
-					dz = rnd.nextInt(surface.getSizeZ());
-					logger.info("Trying " + dx + " ? " + dz);
-					if(Cubyz.surface.isValidSpawnLocation(dx, dz)) 
-						break;
-				}
-				int startY = (int)surface.getRegion((int)dx, (int)dz, 1).getHeight(dx, dz);
-				Cubyz.surface.seek((int)dx, startY, (int)dz, ClientSettings.RENDER_DISTANCE, ClientSettings.EFFECTIVE_RENDER_DISTANCE*NormalChunk.chunkSize*2);
-				Cubyz.player.setPosition(new Vector3i(dx, startY+2, dz));
-				logger.info("OK!");
-			}
-		}
+		// Connect the player:
+		Cubyz.player = (PlayerImpl)world.connectPlayer(profile.getUUID());
 		// Make sure the world is null until the player position is known.
 		Constants.world = (LocalWorld)world;
 		DiscordIntegration.setStatus("Playing");

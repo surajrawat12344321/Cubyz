@@ -1,6 +1,8 @@
 
 package io.cubyz.entity;
 
+import java.util.UUID;
+
 import org.joml.Vector3f;
 
 import io.cubyz.ClientOnly;
@@ -27,9 +29,15 @@ public class PlayerEntity extends EntityType {
 		private long timeStarted = 0;
 		private int maxTime = -1;
 		private int breakingSlot = -1; // Slot used to break the block. Slot change results in restart of block breaking.
+		private UUID playerID;
 
-		public PlayerImpl(Surface surface) {
+		private PlayerImpl(Surface surface) {
 			super(surface);
+		}
+
+		public PlayerImpl(Surface surface, UUID playerID) {
+			super(surface);
+			this.playerID = playerID;
 		}
 		
 		@Override
@@ -88,12 +96,17 @@ public class PlayerEntity extends EntityType {
 			if (ndt.hasKey("inventory")) {
 				inv.loadFrom(ndt.getContainer("inventory"), surface.getCurrentRegistries());
 			}
+			long mostSig = ndt.getLong("playerIDMostSig");
+			long leastSig = ndt.getLong("playerIDLeastSig");
+			playerID = new UUID(mostSig, leastSig);
 		}
 		
 		@Override
 		public NDTContainer saveTo(NDTContainer ndt) {
 			ndt = super.saveTo(ndt);
 			ndt.setContainer("inventory", inv.saveTo(new NDTContainer()));
+			ndt.setLong("playerIDMostSig", playerID.getMostSignificantBits());
+			ndt.setLong("playerIDLeastSig", playerID.getLeastSignificantBits());
 			return ndt;
 		}
 		
@@ -145,11 +158,23 @@ public class PlayerEntity extends EntityType {
 		public Surface getSurface() {
 			return surface;
 		}
+
+		@Override
+		public UUID getPlayerID() {
+			return playerID;
+		}
+	}
+
+	@Override
+	public Entity newEntity(Surface surface, NDTContainer ndt) {
+		Player player = new PlayerImpl(surface);
+		player.loadFrom(ndt);
+		return player;
 	}
 
 	@Override
 	public Entity newEntity(Surface surface) {
-		return new PlayerImpl(surface);
+		throw new UnsupportedOperationException();
 	}
 	
 }

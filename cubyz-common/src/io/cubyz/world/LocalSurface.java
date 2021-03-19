@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.joml.Vector4f;
 
 import io.cubyz.ClientOnly;
@@ -24,6 +26,8 @@ import io.cubyz.blocks.CrystalTextureProvider;
 import io.cubyz.entity.ChunkEntityManager;
 import io.cubyz.entity.Entity;
 import io.cubyz.entity.ItemEntityManager;
+import io.cubyz.entity.Player;
+import io.cubyz.entity.PlayerEntity;
 import io.cubyz.handler.PlaceBlockHandler;
 import io.cubyz.handler.RemoveBlockHandler;
 import io.cubyz.items.BlockDrop;
@@ -82,6 +86,9 @@ public class LocalSurface extends Surface {
 	public CurrentSurfaceRegistries registries;
 
 	private ArrayList<CustomBlock> customBlocks = new ArrayList<>();
+	
+	private ArrayList<Player> onlinePlayers = new ArrayList<>();
+	private ArrayList<Player> offlinePlayers = new ArrayList<>();
 	
 	private class ChunkGenerationThread extends Thread {
 		volatile boolean running = true;
@@ -150,6 +157,15 @@ public class LocalSurface extends Surface {
 		generate();
 		for(Block block : customBlocks) {
 			ClientOnly.createBlockMesh.accept(block);
+		}
+		// Find all players:
+		for (int i = 0; i < entities.size(); i++) {
+			Entity ent = entities.get(i);
+			if (ent instanceof Player) {
+				entities.remove(i);
+				offlinePlayers.add((Player)ent);
+				i--;
+			}
 		}
 	}
 	
@@ -747,5 +763,66 @@ public class LocalSurface extends Surface {
 	@Override
 	public Type[][] getBiomeMap() {
 		return biomeMap;
+	}
+
+	@Override
+	public Player connectPlayer(UUID playerID) {
+		// Check if the player is already online:
+		for(Player player : onlinePlayers) {
+			if(player.getPlayerID().equals(playerID))
+				return player;
+		}
+		// Check if the player was online in the past:
+		for(int i = 0; i < offlinePlayers.size(); i++) {
+			if(offlinePlayers.get(i).getPlayerID().equals(playerID)) {
+				Player player = offlinePlayers.remove(i);
+				onlinePlayers.add(player);
+				entities.add(player);
+				return player;
+			}
+		}
+		// Otherwise add a new player:
+		Player player = new PlayerEntity.PlayerImpl(this, playerID);
+		// Search for a valid start position:
+		Random rnd = new Random();
+		int dx = 0;
+		int dz = 0;
+		logger.info("Finding position..");
+		while (true) {
+			dx = rnd.nextInt(worldSizeX);
+			dz = rnd.nextInt(worldSizeZ);
+			logger.info("Trying " + dx + " ? " + dz);
+			if(isValidSpawnLocation(dx, dz)) 
+				break;
+		}
+		int startY = (int)getRegion((int)dx, (int)dz, 1).getHeight(dx, dz);
+		player.setPosition(new Vector3i(dx, startY+2, dz));
+		logger.info("OK!");
+		onlinePlayers.add(player);
+		entities.add(player);
+		return player;
+	}
+
+	@Override
+	public void disconnectPlayer(UUID playerID) {
+		// Check if the player is actually online:
+		for(int i = 0; i < onlinePlayers.size(); i++) {
+			if(onlinePlayers.get(i).getPlayerID().equals(playerID)) {
+				Player player = onlinePlayers.remove(i);
+				offlinePlayers.add(player);
+				entities.remove(player);
+				return;
+			}
+		}
+	}
+
+	@Override
+	public ArrayList<Player> getOnlinePlayers() {
+		return onlinePlayers;
+	}
+
+	@Override
+	public ArrayList<Player> getOfflinePlayers() {
+		return offlinePlayers;
 	}
 }

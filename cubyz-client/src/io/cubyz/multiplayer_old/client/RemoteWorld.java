@@ -2,6 +2,7 @@ package io.cubyz.multiplayer_old.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.joml.Vector4f;
 
@@ -118,6 +119,18 @@ public class RemoteWorld extends World {
 	public List<StellarTorus> getToruses() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Player connectPlayer(UUID playerID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void disconnectPlayer(UUID playerID) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
