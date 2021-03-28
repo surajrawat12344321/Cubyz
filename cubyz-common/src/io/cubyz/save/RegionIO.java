@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+import io.cubyz.Constants;
 import io.cubyz.entity.ItemEntityManager;
 import io.cubyz.math.Bits;
 import io.cubyz.world.Region;
@@ -35,6 +36,8 @@ public class RegionIO {
 	}
 	
 	public void loadHeightMap(Region region) {
+
+		if(Constants.multiplayer)return;
 		heightMap = new int[Region.regionSize][Region.regionSize];
 		if(dir.exists()) {
 			try {
@@ -78,6 +81,8 @@ public class RegionIO {
 	}
 	
 	private void readFile() {
+		if(Constants.multiplayer)return;
+		
 		blockData = new ArrayList<>();
 		chunkData = new ArrayList<>();
 		if(dir.exists()) {
@@ -109,6 +114,8 @@ public class RegionIO {
 	}
 	
 	public void saveData() {
+		if(Constants.multiplayer)
+			return;
 		if(blockData == null) return;
 		if(!dir.exists()) dir.mkdirs();
 		try {
@@ -178,6 +185,9 @@ public class RegionIO {
 	}
 
 	public void saveChunk(NormalChunk ch) {
+
+		if(Constants.multiplayer)return;
+		
 		byte[] cb = ch.save(tio.blockPalette);
 		int[] cd = ch.getData();
 		if(cb.length <= 16) return;
@@ -216,6 +226,9 @@ public class RegionIO {
 	}
 	
 	public void saveItemEntities(ItemEntityManager manager) {
+
+		if(Constants.multiplayer)return;
+		
 		if(manager.size == 0) return;
 		File file = new File(dir, "itemEnt"+manager.chunk.getWorldX()+" "+manager.chunk.getWorldY()+" "+manager.chunk.getWorldZ());
 		if(!dir.exists()) dir.mkdirs();

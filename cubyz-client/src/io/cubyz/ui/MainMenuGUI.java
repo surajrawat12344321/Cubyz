@@ -3,6 +3,8 @@ package io.cubyz.ui;
 import io.cubyz.Constants;
 import io.cubyz.client.Cubyz;
 import io.cubyz.client.GameLauncher;
+import io.cubyz.entity.PlayerEntity;
+import io.cubyz.entity.PlayerEntity.PlayerImpl;
 import io.cubyz.multiplayer.Connection;
 import io.cubyz.multiplayer.protocols.InitProtocol;
 import io.cubyz.rendering.Font;
@@ -48,19 +50,29 @@ public class MainMenuGUI extends MenuGUI {
 		});
 		
 		mpPlay.setOnAction(() -> {
+		
 			
-			Constants.multiplayer = true;
+				GameLauncher.instance.pause();
 			
-			Connection connection = new Connection("localhost");
-			InitProtocol initProtocol = new InitProtocol();
-			initProtocol.send(connection);
-			Constants.world.generate();
+				Constants.multiplayer = true;
+				
+				Constants.connection  = new Connection("localhost");
+				InitProtocol initProtocol = new InitProtocol();
+				initProtocol.send(Constants.connection);
+				Constants.world.generate();
+				
+				Cubyz.gameUI.setMenu(null, false); // hide from UISystem.back()
+				
+				GameLauncher.logic.loadWorld(Constants.world.getCurrentTorus());
+				
+				
+				Constants.world.getOnlinePlayers().get(0).setPosition(initProtocol.position);
+				
+				GameLauncher.instance.resume();
+				
 			
-			Cubyz.gameUI.setMenu(null, false); // hide from UISystem.back()
-			GameLauncher.logic.loadWorld(Constants.world.getCurrentTorus());
 			
-			Constants.world.getOnlinePlayers().get(0).setPosition(initProtocol.position);
-			
+			//
 			
 			/*Thread th = new Thread(() -> {
 				CubyzServer server = new CubyzServer(GameLauncher.logic.serverPort);

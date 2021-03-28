@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import io.cubyz.Constants;
 import io.cubyz.blocks.Block;
 import io.cubyz.entity.Entity;
 import io.cubyz.entity.Player;
@@ -71,6 +72,8 @@ public class TorusIO {
 	}
 	
 	public void saveTorusData(LocalSurface surface) {
+		if(Constants.multiplayer)
+			return;
 		try {
 			OutputStream out = new FileOutputStream(new File(dir, "torus.dat"));
 			NDTContainer ndt = new NDTContainer();
