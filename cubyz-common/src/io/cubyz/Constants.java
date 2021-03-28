@@ -3,6 +3,7 @@ package io.cubyz;
 import java.nio.charset.Charset;
 
 import io.cubyz.api.Side;
+import io.cubyz.multiplayer.Connection;
 import io.cubyz.world.LocalWorld;
 
 /**
@@ -14,7 +15,9 @@ public class Constants {
 	//world stuff
 	public static LocalWorld world;
 	public static Class<?> chunkProvider;
+	
 	public static boolean multiplayer = false;
+	public static Connection connection;
 	
 	public static final int defaultPort = 3201;
 

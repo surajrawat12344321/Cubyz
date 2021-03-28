@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import io.cubyz.Constants;
+import io.cubyz.CubyzLogger;
 import io.cubyz.api.CubyzRegistries;
 import io.cubyz.api.Side;
 
@@ -91,6 +92,7 @@ public class Connection extends Thread {
 		}
 	}
 	public void runServer() {
+		CubyzLogger.logger.info("Player has joined the server");
 		while(true) {
 			String id = new String(receive());
 			Protocol prot = CubyzRegistries.PROTOCOL_REGISTRY.getByID(id);

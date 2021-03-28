@@ -4,6 +4,7 @@ public class Game {
 	protected volatile boolean running;
 	private Thread updateThread;
 	private Thread renderThread;
+	public boolean updatePause = false;
 	double secsPerUpdate = 1d / 30d;
 	private int targetFps = 60;
 	
@@ -38,11 +39,33 @@ public class Game {
 		return targetFps;
 	}
 	
+	public void pause() {
+		updatePause = true;
+	}
+	public void resume() {
+		updatePause = false;
+		synchronized(updateThread) {
+			updateThread.notify();			
+		}
+	}
+	
+	
 	public void updateLoop() {
 		double previous = getTime() + 1;
 		double loopStartTime = getTime();
 		int updates = 0;
 		while (running) {
+			
+			if(updatePause)
+				try {
+					synchronized(updateThread){
+						updateThread.wait();
+					}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
 			loopStartTime = getTime();
 			handleInput();
 			update();

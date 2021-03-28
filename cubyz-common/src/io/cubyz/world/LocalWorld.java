@@ -20,7 +20,7 @@ public class LocalWorld extends World {
 	protected String name;
 	
 	private ArrayList<StellarTorus> toruses = new ArrayList<>();
-	private LocalSurface currentTorus; // TODO: Support multiple surfaces at the same time.
+	public LocalSurface currentTorus; // TODO: Support multiple surfaces at the same time.
 	private long milliTime;
 	private long gameTime;
 	public boolean inLqdUpdate;

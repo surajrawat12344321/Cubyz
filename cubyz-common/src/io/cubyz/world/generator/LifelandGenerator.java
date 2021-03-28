@@ -18,7 +18,7 @@ import io.cubyz.world.cubyzgenerators.*;
 public class LifelandGenerator extends SurfaceGenerator {
 	
 	public static void init() {
-		GENERATORS.registerAll(new TerrainGenerator(), new OreGenerator(), new CaveGenerator(), new CrystalCavernGenerator(), new StructureGenerator());
+		GENERATORS.registerAll(new TerrainGenerator(), new OreGenerator(), new CaveGenerator(), new CrystalCavernGenerator(), new StructureGenerator(),new PuzzleDungeon());
 	}
 	
 	public static void initOres(Ore[] ores) {

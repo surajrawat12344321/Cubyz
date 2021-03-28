@@ -14,6 +14,7 @@ import org.joml.Vector3i;
 import org.joml.Vector4f;
 
 import io.cubyz.ClientOnly;
+import io.cubyz.Constants;
 import io.cubyz.Settings;
 import io.cubyz.api.CubyzRegistries;
 import io.cubyz.api.CurrentSurfaceRegistries;
@@ -33,6 +34,8 @@ import io.cubyz.handler.RemoveBlockHandler;
 import io.cubyz.items.BlockDrop;
 import io.cubyz.items.ItemStack;
 import io.cubyz.math.CubyzMath;
+import io.cubyz.multiplayer.Protocol;
+import io.cubyz.multiplayer.protocols.BlockInteractionProtocol;
 import io.cubyz.save.TorusIO;
 import io.cubyz.util.HashMapKey3D;
 import io.cubyz.world.cubyzgenerators.CrystalCavernGenerator;
@@ -281,6 +284,8 @@ public class LocalSurface extends Surface {
 	
 	@Override
 	public void removeBlock(int x, int y, int z) {
+		
+		
 		NormalChunk ch = getChunk(x >> NormalChunk.chunkShift, y >> NormalChunk.chunkShift, z >> NormalChunk.chunkShift);
 		if (ch != null) {
 			Block b = ch.getBlock(x & NormalChunk.chunkMask, y & NormalChunk.chunkMask, z & NormalChunk.chunkMask);
@@ -303,6 +308,17 @@ public class LocalSurface extends Surface {
 	
 	@Override
 	public void placeBlock(int x, int y, int z, Block b, byte data) {
+		
+		if(Constants.multiplayer) {
+			BlockInteractionProtocol prot = new BlockInteractionProtocol();
+			prot.position.x = x;
+			prot.position.y = y;
+			prot.position.z = z;
+			prot.placed = b;
+			
+			prot.send(Constants.connection);
+		}
+		
 		NormalChunk ch = getChunk(x >> NormalChunk.chunkShift, y >> NormalChunk.chunkShift, z >> NormalChunk.chunkShift);
 		if (ch != null) {
 			ch.addBlock(b, data, x & NormalChunk.chunkMask, y & NormalChunk.chunkMask, z & NormalChunk.chunkMask, false);

@@ -1,5 +1,7 @@
 package io.cubyz.multiplayer.protocols;
 
+import java.util.UUID;
+
 import org.joml.Vector3f;
 
 import io.cubyz.Constants;
@@ -47,6 +49,7 @@ public class InitProtocol extends Protocol {
 		//send the universe :D
 		byte data[] = new byte[16];
 		// TODO: Create a new player using the UUID.
+		Constants.world.connectPlayer(new UUID(257,24862));
 		Vector3f position = Constants.world.getOnlinePlayers().get(0).getPosition();
 		
 		Bits.putInt(data, 0, Constants.world.getSeed());
