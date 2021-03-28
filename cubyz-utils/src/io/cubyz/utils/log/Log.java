@@ -1,4 +1,4 @@
-package io.cubyz.log;
+package io.cubyz.utils.log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
