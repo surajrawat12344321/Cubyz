@@ -1,4 +1,4 @@
-package io.cubyz.rendering;
+package io.cubyz.gui;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -10,14 +10,14 @@ import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import static org.lwjgl.opengl.GL33.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL11C;
 import org.lwjgl.system.MemoryUtil;
 
 import io.cubyz.Settings;
-import io.cubyz.gui.Component;
 import io.cubyz.server.Constants;
 
-public class Window extends Component {
+public class Window extends Container {
 	private final long handle;
 	
 	private boolean fullscreen = false;
@@ -26,7 +26,9 @@ public class Window extends Component {
 	Matrix4f projectionMatrix = new Matrix4f();
 	
 	public Window(int width, int height) {
-		super(0,0,width,height);
+		super(0, 0, width, height);
+		this.width = width;
+		this.height = height;
 		
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -55,7 +57,7 @@ public class Window extends Component {
 	}
 	
 	public void setBackgroundColor(float red, float green, float blue, float alpha) {
-		glClearColor(red, green, blue, alpha);
+		GL11.glClearColor(red, green, blue, alpha);
 	}
 	
 	/**
@@ -64,9 +66,7 @@ public class Window extends Component {
 	 * @param height
 	 */
 	public void regenerateMatrix(int width, int height) {
-		if(height==0)
-			return;
-		glViewport(0, 0, width, height);
+		GL11C.glViewport(0, 0, width, height);
 		float aspectRatio = width / height;
 		projectionMatrix.identity();
 		projectionMatrix.perspective((float)Math.toRadians(Settings.FOV), aspectRatio, Settings.Z_NEAR, Settings.Z_FAR);
@@ -81,14 +81,14 @@ public class Window extends Component {
 	
 	public void render() {
 		// Set some gl parameters. These can be changed by nanoVG.
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		glfwSwapBuffers(handle);
 		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	
 	/**
