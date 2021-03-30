@@ -17,7 +17,7 @@ import io.cubyz.Settings;
 import io.cubyz.gui.Component;
 import io.cubyz.server.Constants;
 
-public class Window extends Component {
+public class Window {
 	private final long handle;
 	
 	private boolean fullscreen = false;
@@ -25,8 +25,12 @@ public class Window extends Component {
 	Vector3f backgroundColor = new Vector3f(0, 0, 0);
 	Matrix4f projectionMatrix = new Matrix4f();
 	
+	int width,height;
+	
 	public Window(int width, int height) {
-		super(0,0,width,height);
+		this.width = width;
+		this.height = height;
+		
 		
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -52,6 +56,8 @@ public class Window extends Component {
 		    this.height = newHeight;
 		    regenerateMatrix(this.width, this.height);
 		});
+		
+		Input.set(this);
 	}
 	
 	public void setBackgroundColor(float red, float green, float blue, float alpha) {
@@ -108,4 +114,11 @@ public class Window extends Component {
 			glfwSetWindowAttrib(handle, GLFW_DECORATED, GLFW_TRUE);
 		}
 	}
+	/*
+	 * get the handle of the window
+	 * */
+	public long getHandle() {
+		return handle;
+	}
+	
 }

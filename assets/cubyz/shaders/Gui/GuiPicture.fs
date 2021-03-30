@@ -4,51 +4,96 @@ layout (location=0) out vec4 frag_color;
 in vec2 frag_face_position;
 
 uniform vec2 shadow;
+uniform int mode;
+uniform float shadowIntensity;
+
+
+
 
 
 
 //	takes percentage position
 //	returns a color of the shadow
 
-vec4 getShadowPixel(vec2 face_pos){	
+vec4 brighten(vec4 color,float intensity){
+	return vec4(1,1,1,1)*intensity+(1-intensity)*color;
+}
+vec4 darken(vec4 color,float intensity){
+	return 	(1-intensity)*color;
+}
+
+vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){	
+	
 	//top
 	float closestBorderDistance = face_pos.y*shadow.x;
-	vec4 color = vec4(0,0,0,1);
+	vec4 color = inColor;
+	switch (mode) {
+			case 0: //unselected
+				color = brighten(inColor,shadowIntensity);
+			    break;
+			case 1:	//clicked
+				color = darken(inColor,shadowIntensity);
+				break;
+		}
 	
 	//left
 	if(face_pos.x*shadow.y<closestBorderDistance){
 		closestBorderDistance = face_pos.x*shadow.y;
-		color = vec4(1,0,0,1);
+		
+		switch (mode) {
+			case 0: //unselected
+				color = brighten(inColor,0.75*shadowIntensity);
+			    break;
+			case 1: //pressed
+				color = darken(inColor,0.75*shadowIntensity);
+				break;
+		}	
 	}
 	
 	//down
 	if((1-face_pos.y)*shadow.x<closestBorderDistance){
 		closestBorderDistance = (1-face_pos.y)*shadow.x;
-		color = vec4(0,1,0,1);
+		switch (mode) {
+			case 0: //unselected
+				color = darken(inColor,1*shadowIntensity);
+			    break;
+			case 1:	//clicked 
+				color = brighten(inColor,1*shadowIntensity);
+				break;
+		}
 	}
 	
 	//right
 	if((1-face_pos.x)*shadow.y<closestBorderDistance){
 		closestBorderDistance = (1-face_pos.x)*shadow.y;
-		color = vec4(0,0,1,1);
+		switch (mode) {
+			case 0: //unselected
+				color = darken(inColor,0.75*shadowIntensity);
+			    break;
+			case 1:	//clicked 
+				color = brighten(inColor,0.75*shadowIntensity);
+				break;
+		}
 	}
-	return color;	
+	return vec4(color.xyz,1);	
 }
+
+
+
 vec4 overlayShadow(vec2 face_pos,vec4 color){
-	float shadowIntensity = 0.75;
+	
 
 	if(
 		face_pos.x<shadow.x||
 		face_pos.y<shadow.y||
 		face_pos.x>=1-shadow.x||
 		face_pos.y>=1-shadow.y){
-			color = (1-shadowIntensity)*color;
-			color += shadowIntensity*getShadowPixel(frag_face_position);
+			color = getShadowOverlay(frag_face_position,color);
 		}
 	return color;
 }
 
 
 void main(){
-	frag_color = overlayShadow(frag_face_position,vec4(frag_face_position.xy,0,1));
+	frag_color = overlayShadow(frag_face_position,vec4(0,0,1,1));
 }

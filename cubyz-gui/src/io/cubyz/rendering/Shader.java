@@ -87,4 +87,8 @@ public class Shader {
 			glDeleteProgram(id);
 		}
 	}
+	
+	public int getUniformLocation(String string) {
+		return glGetUniformLocation(id, string);
+	}
 }
