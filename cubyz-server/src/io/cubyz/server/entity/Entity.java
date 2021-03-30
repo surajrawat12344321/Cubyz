@@ -1,5 +1,7 @@
 package io.cubyz.server.entity;
 
+import java.util.ArrayList;
+
 import org.joml.Vector3f;
 
 /**
@@ -23,6 +25,9 @@ public class Entity {
 	public float health, maxHealth;
 	/**Maximum speed attainable by normal motion.*/
 	public float maxSpeed;
+	
+	public ArrayList<EntityComponent> components = new ArrayList<EntityComponent>();
+	public ArrayList<Effect> activeEffects = new ArrayList<Effect>();
 	private EntityType type;
 	/**
 	 * Force that the entity can apply on itself or others.
@@ -98,4 +103,28 @@ public class Entity {
 		targetVelocity = Math.min(vel, maxSpeed);
 	}
 	
+	public void removeEffect(Effect effect) {
+		if(!effect.isActive()) return;
+		for(int i = 0; i < activeEffects.size(); i++) {
+			if(effect == activeEffects.get(i)) {
+				activeEffects.remove(i--);
+			}
+		}
+		effect.removeEffectFromEntitiy();
+		// Deactivate the effect, so it doesn't do anything in the future:
+		effect.deactivate();
+	}
+	
+	public void addEffect(Effect effect) {
+		// Check if the effect is already present and merge it:
+		for(Effect other : activeEffects) {
+			if(effect.testEqualityAndMerge(other)) {
+				return;
+			}
+		}
+		activeEffects.add(effect);
+		if(effect.time != Long.MAX_VALUE) {
+			Effects.addEffect(effect);
+		}
+	}
 }

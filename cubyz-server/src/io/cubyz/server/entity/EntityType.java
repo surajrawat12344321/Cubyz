@@ -22,6 +22,10 @@ public abstract class EntityType implements RegistryElement {
 	 * Mass of the entity. Used to calculate acceleration using Newton's law {@code F = ma}.
 	 */
 	public final float weight;
+	/**
+	 * width and height of the entity hitbox.
+	 */
+	public final float width, height;
 	
 	/**
 	 * Initializes the base
@@ -31,11 +35,13 @@ public abstract class EntityType implements RegistryElement {
 	 * @param force movement force and attack force without any effects.
 	 * @param weight
 	 */
-	public EntityType(float health, float hunger, float speed, float force, float weight) {
+	public EntityType(float health, float hunger, float speed, float force, float weight, float hitboxWidth, float hitboxHeight) {
 		maxHealth = health;
 		maxHunger = hunger;
 		maxSpeed = speed;
 		this.force = force;
 		this.weight = weight;
+		width = hitboxWidth;
+		height = hitboxHeight;
 	}
 }
