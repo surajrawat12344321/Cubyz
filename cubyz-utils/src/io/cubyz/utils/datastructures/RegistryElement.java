@@ -1,7 +1,5 @@
 package io.cubyz.utils.datastructures;
 
-public class RegistryElement {
-	public String getID() {
-		return "";
-	}
+public interface RegistryElement {
+	public String getID();
 }
