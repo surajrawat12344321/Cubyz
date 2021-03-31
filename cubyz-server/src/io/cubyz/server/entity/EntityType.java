@@ -27,6 +27,7 @@ public abstract class EntityType implements RegistryElement {
 	 */
 	public final float width, height;
 	
+	public final String ID;
 	/**
 	 * Initializes the base
 	 * @param health max health of the entity without any effects.
@@ -35,7 +36,8 @@ public abstract class EntityType implements RegistryElement {
 	 * @param force movement force and attack force without any effects.
 	 * @param weight
 	 */
-	public EntityType(float health, float hunger, float speed, float force, float weight, float hitboxWidth, float hitboxHeight) {
+	public EntityType(String ID, float health, float hunger, float speed, float force, float weight, float hitboxWidth, float hitboxHeight) {
+		this.ID = ID;
 		maxHealth = health;
 		maxHunger = hunger;
 		maxSpeed = speed;
@@ -43,5 +45,10 @@ public abstract class EntityType implements RegistryElement {
 		this.weight = weight;
 		width = hitboxWidth;
 		height = hitboxHeight;
+	}
+	
+	@Override
+	public String getID() {
+		return ID;
 	}
 }

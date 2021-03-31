@@ -4,22 +4,22 @@ import java.util.HashMap;
 
 import io.cubyz.utils.log.Log;
 
-public class Registry {
-	HashMap<String, RegistryElement> elements = new HashMap<String, RegistryElement>();
+public class Registry<T extends RegistryElement> {
+	HashMap<String, T> elements = new HashMap<String, T>();
 	
-	public Registry(RegistryElement...array){
-		for (RegistryElement registryElement : array) {
+	public Registry(T ...array){
+		for (T registryElement : array) {
 			add(registryElement);
 		}
 	}
 	
 	
-	public void add(RegistryElement element) {
+	public void add(T element) {
 		if(elements.containsKey(element.getID()))
 			Log.severe(new Exception("registryID duplicant."));
 		elements.put(element.getID(), element);
 	}
-	public RegistryElement getById(String string) {
+	public T getById(String string) {
 		return elements.get(string);
 	}
 }
