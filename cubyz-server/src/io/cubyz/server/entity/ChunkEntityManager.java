@@ -3,8 +3,8 @@ package io.cubyz.server.entity;
 import java.util.ArrayList;
 
 /**
- * Stores all entites that are inside one chunk.<br>
- * This allows to easily find and save all entites when a chunk gets unloaded.
+ * Stores all entities that are inside one chunk.<br>
+ * This allows to easily find and save all entities when a chunk gets unloaded.
  */
 public class ChunkEntityManager {
 	private ArrayList<Entity> entities = new ArrayList<>();
