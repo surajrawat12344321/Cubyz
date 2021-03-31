@@ -6,20 +6,17 @@ in vec2 frag_face_position;
 uniform vec2 shadow;
 uniform int mode;
 uniform float shadowIntensity;
-
-
-
-
+uniform vec3 color;
 
 
 //	takes percentage position
 //	returns a color of the shadow
 
-vec4 brighten(vec4 color,float intensity){
-	return vec4(1,1,1,1)*intensity+(1-intensity)*color;
+vec4 brighten(vec4 inColor,float intensity){
+	return vec4(1,1,1,1)*intensity+(1-intensity)*inColor;
 }
-vec4 darken(vec4 color,float intensity){
-	return 	(1-intensity)*color;
+vec4 darken(vec4 inColor,float intensity){
+	return 	(1-intensity)*inColor;
 }
 
 vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){	
@@ -90,10 +87,10 @@ vec4 overlayShadow(vec2 face_pos,vec4 color){
 		face_pos.y>=1-shadow.y){
 			color = getShadowOverlay(frag_face_position,color);
 		}
-	return color;
+	return vec4(color.xyz,1);	
 }
 
 
 void main(){
-	frag_color = overlayShadow(frag_face_position,vec4(0,0,1,1));
+	frag_color = overlayShadow(frag_face_position,vec4(color/255,1));
 }

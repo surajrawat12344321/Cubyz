@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -25,7 +26,7 @@ public class Scene{
 	
 	//data
 	public String name; 
-	public int left=0,top=0,width=1080,height=720;
+	public int width=1080,height=720;
 	
 	ArrayList<Component> children = new ArrayList<Component>();
 	
@@ -41,33 +42,51 @@ public class Scene{
 	}
 	
 	public void loadFromFile(String path) {
-		 Gson gson = new Gson();   
 		 try {
-			Scene scene = gson.fromJson(new FileReader(path), Scene.class);
-			
-			left = scene.left;
-			top = scene.top;
-			height = scene.height;
-			width = scene.width;
-			name = scene.name;
-			children = scene.children;
-		    
+			 JsonParser jsonParser = new JsonParser();
+			 FileReader reader = new FileReader(path);
+			 //Read JSON file
+		     JsonObject obj = (JsonObject) jsonParser.parse(reader);
+			loadFromJson(obj);
 		} catch (Exception e) {
 			Log.severe(e);
 		}
 	}
 	public void saveAsFile(String path) {
-		Gson gson = new Gson();
 		try {
 			FileWriter fw = new FileWriter(path);
-			fw.write(gson.toJson(this));
+			fw.write(saveAsJson().toString());
 			fw.flush();
 			fw.close();
 		} catch (Exception e) {
 			Log.warning(e);
 		}
 	}
-	
+	public void loadFromJson(JsonObject scene) {
+		height = scene.getAsJsonPrimitive("height").getAsInt();
+		width = scene.getAsJsonPrimitive("width").getAsInt();
+		name = scene.getAsJsonPrimitive("name").getAsString();
+		
+		JsonArray jchildren = scene.getAsJsonArray("children");
+		for (JsonElement jsonElement : jchildren) {
+			JsonObject jsonObject = (JsonObject)jsonElement;
+			children.add(ComponentRegistry.createByJson(jsonObject));
+		}
+	}
+	public JsonObject saveAsJson() {
+		JsonObject scene =  new JsonObject();
+		scene.addProperty("name", name);
+		scene.addProperty("height", height);
+		scene.addProperty("width", width);
+		
+		JsonArray jchildren = new JsonArray();
+		for (Component guiElement : children) {
+			jchildren.add(guiElement.toJson());
+		}
+		scene.add("children", jchildren);
+		
+		return scene;
+	}
 	float getRatio() {
 		return (float)width/height;
 	}

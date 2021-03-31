@@ -3,9 +3,12 @@ package io.cubyz;
 import java.io.FileWriter;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.element.Picture;
+import io.cubyz.rendering.Input;
 import io.cubyz.rendering.Window;
 import io.cubyz.gui.Init;
 import io.cubyz.gui.Scene;
@@ -26,8 +29,11 @@ public class Main {
 			window.setBackgroundColor(1, 0, 1, 1);
 	
 			
-			Scene scene = new Scene("name",720,1080);
-			scene.add(new Picture(245,145,490,290));
+			Scene scene = new Scene("cubyz-client/testScene.json");//new Scene("name",720,1080);
+			
+			//Component button = new Picture();
+			//button.create((JsonObject) JsonParser.parseString("{'left':'480','top':'415','width':'490','height':'290'}"));
+			//scene.add(button);
 			
 			//scene.saveAsFile("cubyz-client/testScene.json");
 			
@@ -37,6 +43,7 @@ public class Main {
 					Thread.sleep(10);
 				} catch(Exception e) {}
 				scene.draw();
+				Input.update();
 				window.render();
 			}
 			Log.info("Execution stopped.");
