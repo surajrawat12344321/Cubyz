@@ -1,12 +1,13 @@
-package io.cubyz.server.entity;
+package io.cubyz.world.entity;
 
+import io.cubyz.utils.datastructures.RegistryElement;
 import io.cubyz.utils.datastructures.Sortable;
 
 /**
  * Similar to entity component, but has no update functionality and gets removed after a certain time.<br>
  * Two effects of the same type get combined into one with longer effect time.
  */
-public abstract class Effect implements Sortable<Effect> {
+public abstract class Effect implements Sortable<Effect>, RegistryElement {
 	/**
 	 * Time the effect runs out. Given in system time.
 	 */

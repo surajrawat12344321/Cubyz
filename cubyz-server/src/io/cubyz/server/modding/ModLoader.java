@@ -1,7 +1,6 @@
 package io.cubyz.server.modding;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -10,7 +9,9 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import io.cubyz.utils.gui.StatusInfo;
 import io.cubyz.utils.log.Log;
+import io.cubyz.world.Registries;
 
 /**
  * Loads mods from the mods folder using java Reflections API.<br>
@@ -22,13 +23,21 @@ public class ModLoader {
 	/**
 	 * 
 	 * @param modNames path to the file that contains all the mod names.
+	 * @param modLoadingStatus info about the mod loading process that will be shown on the status bar.
 	 */
-	public ModLoader(File modNames) {
+	public ModLoader(File modNames, StatusInfo modLoadingStatus) {
+		// Ensure that there are no leftovers from the last universe:
+		Registries.clear();
+
+		modLoadingStatus.totalProcesses = 8;
+		modLoadingStatus.currentProcess = 0;
+		modLoadingStatus.processName = "Downloading Mods...";
 		// Read all mod names from the file:
 		String[] modIdentifier = new String[0];
 		try {
 			modIdentifier = Files.readAllLines(modNames.toPath()).toArray(modIdentifier);
-		} catch(IOException e) {
+			if(modIdentifier.length == 0) throw new Exception("No mods found.");
+		} catch(Exception e) {
 			Log.severe("Could not load any mods!");
 			Log.severe(e);
 		}
@@ -39,7 +48,9 @@ public class ModLoader {
 			if(modPath == null) continue;
 			loadList.add(modPath);
 		}
-		
+
+		modLoadingStatus.currentProcess = 1;
+		modLoadingStatus.processName = "Collecting Mods...";
 		// Find all jars in each folder:
 		ArrayList<String> modJars = new ArrayList<String>();
 		for(File file : loadList) {
@@ -72,7 +83,77 @@ public class ModLoader {
 		
 		mods = modList.toArray(new Mod[0]);
 		
-		// TODO: Load the mods and register stuff.
+		// Load the mods and register stuff.
+		StatusInfo modStatus = new StatusInfo();
+		modStatus.totalProcesses = mods.length;
+		
+		modLoadingStatus.currentProcess = 2;
+		modLoadingStatus.processName = "Initializing Mods...";
+		modLoadingStatus.subProcess = modStatus;
+		// Init:
+		for(int i = 0; i < mods.length; i++) {
+			Mod mod = mods[i];
+			modStatus.currentProcess = i;
+			modStatus.processName = mod.getName();
+			
+			mod.init();
+		}
+
+		modLoadingStatus.currentProcess = 3;
+		modLoadingStatus.processName = "Initializing Items...";
+		// Items:
+		for(int i = 0; i < mods.length; i++) {
+			Mod mod = mods[i];
+			modStatus.currentProcess = i;
+			modStatus.processName = mod.getName();
+			
+			mod.registerItems(Registries.ITEMS);
+		}
+
+		modLoadingStatus.currentProcess = 4;
+		modLoadingStatus.processName = "Initializing Blocks...";
+		// Blocks:
+		for(int i = 0; i < mods.length; i++) {
+			Mod mod = mods[i];
+			modStatus.currentProcess = i;
+			modStatus.processName = mod.getName();
+			
+			mod.registerBlocks(Registries.BLOCKS);
+		}
+
+		modLoadingStatus.currentProcess = 5;
+		modLoadingStatus.processName = "Initializing Entities...";
+		// Entities:
+		for(int i = 0; i < mods.length; i++) {
+			Mod mod = mods[i];
+			modStatus.currentProcess = i;
+			modStatus.processName = mod.getName();
+			
+			mod.registerEntities(Registries.ENTITIES);
+		}
+
+		modLoadingStatus.currentProcess = 6;
+		modLoadingStatus.processName = "Initializing Biomes...";
+		// Biomes:
+		for(int i = 0; i < mods.length; i++) {
+			Mod mod = mods[i];
+			modStatus.currentProcess = i;
+			modStatus.processName = mod.getName();
+			
+			mod.registerBiomes(Registries.BIOMES);
+		}
+
+		modLoadingStatus.currentProcess = 7;
+		modLoadingStatus.processName = "Post-Initializing Mods...";
+		// Post-Init:
+		for(int i = 0; i < mods.length; i++) {
+			Mod mod = mods[i];
+			modStatus.currentProcess = i;
+			modStatus.processName = mod.getName();
+			
+			mod.postInit();
+		}
+		
 	}
 	
 	public static void loadModsFromJar(String pathToJar, ArrayList<Class<?>> modClasses) {
