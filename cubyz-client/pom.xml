@@ -12,6 +12,10 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
 			</plugin>
 			<plugin>
 			<!-- Build an executable JAR -->
@@ -23,7 +27,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>io.cubyz.client.GameLauncher</mainClass>
+							<mainClass>io.cubyz.client.Main</mainClass>
 						</manifest>
 						</archive>
 				</configuration>
@@ -41,7 +45,10 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>../cubyz-common/src</source>
+								<source>../cubyz-gui/src</source>
+								<source>../cubyz-server/src</source>
+								<source>../cubyz-utils/src</source>
+								<source>../cubyz-world/src</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -63,7 +70,7 @@
 					<arguments>
 						<argument>-classpath</argument>
 						<classpath />
-						<argument>io.cubyz.client.GameLauncher</argument>
+						<argument>io.cubyz.client.Main</argument>
 					</arguments>
 					<workingDirectory>${project.basedir}/..</workingDirectory>
 				</configuration>

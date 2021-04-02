@@ -1,4 +1,4 @@
-package io.cubyz;
+package io.cubyz.client;
 
 import java.io.FileWriter;
 
