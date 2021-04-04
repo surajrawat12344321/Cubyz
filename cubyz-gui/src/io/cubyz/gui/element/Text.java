@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Array;
 import java.nio.FloatBuffer;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -52,7 +53,8 @@ public class Text extends Component {
 	public float[] color_hovered = 	{ 156, 166, 221}; // hovered colour
 	
 	//Text
-	public String text = new String("");
+	private String text = new String("");
+	private ArrayList<Glyph> tmp_glyphs = new ArrayList<Glyph>();
 	
 	static void initOpenGLStuff() {
 		if (vbo != -1)
@@ -110,7 +112,7 @@ public class Text extends Component {
 			color_pressed[2] = object.get("colorPressed").getAsJsonArray().get(2).getAsFloat();	
 		}
 		if(object.has("text")) {
-			text = object.get("text").getAsString();
+			setText(object.get("text").getAsString());
 		}
 		
 	}
@@ -149,6 +151,25 @@ public class Text extends Component {
 		return object;
 	}
 
+	void addText(String string) {
+		this.text += string;
+		for (int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			tmp_glyphs.add(font.getGlyph(c));
+		}
+	}
+	void setText(String string) {
+		this.text = string;	
+		tmp_glyphs.clear();
+		for (int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			tmp_glyphs.add(font.getGlyph(c));
+		}
+	}
+	String getText() {
+		return text;
+	}
+	
 	public void update(Scene scene) {
 		Vector2d mousepos = Input.getMousePosition(scene);
 		
@@ -178,10 +199,13 @@ public class Text extends Component {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 		float offset = 0;
-		for (int i = 0; i < text.length(); i++) {
-			char letter = text.charAt(i);
-			
-			Glyph glyph = font.getGlyph(letter);
+		float left_opengl = this.left/scene.width;
+		float top_opengl = this.top/scene.height;
+		float width_opengl = this.width/scene.width;
+		float height_opengl = this.height/scene.height;
+		
+		for (int i = 0; i < tmp_glyphs.size(); i++) {
+			Glyph glyph = tmp_glyphs.get(i);
 			
 			//System.out.println("Left:"+(((float)glyph.texture_left)/width));
 			//System.out.println("Top:"+(((float)glyph.texture_top)/height));
@@ -195,15 +219,13 @@ public class Text extends Component {
 			float tex_height = ((float)glyph.texture_height)/height;
 			
 			
-			float scalex = 0.5f;
-			float scaley = 0.5f;
 			
 			
 			glUniform4f(loc_texCoords, tex_left,tex_top,tex_width,tex_height);
-			glUniform4f(loc_rect, offset*scalex,0f,tex_width*scalex,tex_height*scalex);
+			glUniform4f(loc_rect, left_opengl+offset,top_opengl,tex_width*width_opengl,tex_height*height_opengl);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			
-			offset+=tex_width;
+			offset+=tex_width*width_opengl;
 		}
 		
 		font.getTexture().unbind();

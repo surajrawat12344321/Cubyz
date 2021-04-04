@@ -1,5 +1,8 @@
 package io.cubyz.gui;
 
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.glEnable;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -9,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.lwjgl.opengl.GL30;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -94,8 +99,11 @@ public class Scene{
 		children.add(component);
 	}
 	public void draw() {
+		GL30.glDisable(GL_DEPTH_TEST);
+		
 		for (Component component : children) {
 			component.draw(this);
 		}
+		GL30.glEnable(GL_DEPTH_TEST);
 	}
 }
