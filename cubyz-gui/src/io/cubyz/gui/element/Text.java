@@ -206,23 +206,31 @@ public class Text extends Component {
 		float left_opengl = this.left/scene.width;
 		float top_opengl = this.top/scene.height;
 		float height_opengl = this.height/scene.height;
-		
+		Glyph lastLetter = null;
 		for (int i = 0; i < tmp_glyphs.size(); i++) {
 			Glyph glyph = tmp_glyphs.get(i);
-			
-			//System.out.println("Left:"+(((float)glyph.texture_left)/width));
-			//System.out.println("Top:"+(((float)glyph.texture_top)/height));
-			//System.out.println("Width:"+(((float)glyph.texture_width)/width));
-			//System.out.println("Height:"+(((float)glyph.texture_height)/height));
-			
-			float tex_left = ((float)glyph.texture_left)/fontWidth;
-			float tex_top =	((float)glyph.texture_top)/fontHeight;
-			float tex_width = ((float)glyph.texture_width)/fontWidth; 
-			float tex_height = ((float)glyph.texture_height)/fontHeight;
 			
 			
 			float scene_ratio = scene.ratio();
 			float glyph_ratio = ((float)glyph.texture_width/glyph.texture_height);
+
+			
+			float tex_left = ((float)glyph.texture_left)/fontWidth;
+			float tex_top =	((float)glyph.texture_top)/fontHeight;
+			float tex_width = ((float)glyph.texture_width)/fontWidth;
+			float tex_height = ((float)glyph.texture_height)/fontHeight;
+			float effectiveWidth = (float)glyph.effectiveWidth/fontWidth;
+			float glyphOffset = glyph.xOffset;
+
+			// If this glyph is a character modifier remove the additional spacing of the previous glyph:
+			if(lastLetter != null && glyphOffset < 0) {
+				int spacing = lastLetter.effectiveWidth - lastLetter.texture_width - lastLetter.xOffset;
+				spacing = Math.max(spacing, 0);
+				System.out.println(spacing+" "+lastLetter);
+				glyphOffset -= spacing;
+			}
+
+			glyphOffset *= 1.0f/tex_width*glyph_ratio/scene_ratio*height_opengl/scene.width;
 			
 			
 			glUniform4f(loc_texCoords, 
@@ -231,13 +239,16 @@ public class Text extends Component {
 					tex_width,
 					tex_height);
 			glUniform4f(loc_rect, 
-					left_opengl+offset,
+					left_opengl+offset+glyphOffset,
 					top_opengl,
 					glyph_ratio/scene_ratio*height_opengl,
 					height_opengl);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			
-			offset+=glyph_ratio/scene_ratio*height_opengl;
+			offset += effectiveWidth/tex_width*glyph_ratio/scene_ratio*height_opengl;
+
+			if(glyphOffset >= 0)
+				lastLetter = glyph;
 		}
 		//safe the width
 		width = (int) (scene.width*offset);

@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.awt.Rectangle;
 
 import javax.imageio.ImageIO;
 
@@ -22,11 +23,17 @@ public class GraphicFont {
 		
 		public GraphicFont font;
 		public int 	texture_left = 0,
-				texture_top = 0,
-				texture_width = 0,
-				texture_height = 0;	
+					texture_top = 0,
+					texture_width = 0,
+					texture_height = 0,
+					xOffset = 0,
+					effectiveWidth = 0;
 		public BufferedImage getImage() {
 			return font.fontTexture.getSubimage(texture_left, texture_top, texture_width, texture_height);
+		}
+
+		public String toString() {
+			return "left: "+texture_left+", top: "+texture_top+", width: "+texture_width+", height: "+texture_height+", offset: "+xOffset+", render width: "+effectiveWidth;
 		}
 	}
 	
@@ -40,7 +47,7 @@ public class GraphicFont {
 	private HashMap<Character, Glyph> glyphs = new HashMap<Character, Glyph>();
 	
 	/**
-	 * Load the font from the standart Library
+	 * Load the font from the standard Library
 	 */
 	public void loadFromAwt() {
 		font = new Font("Arial", Font.PLAIN, 144);
@@ -63,7 +70,7 @@ public class GraphicFont {
 	 * @param letter
 	 * @return the Glyph
 	 */
-	public  Glyph getGlyph(char letter) {
+	public Glyph getGlyph(char letter) {
 		//does the glyph already exist?
 		if(glyphs.containsKey(letter))
 			return glyphs.get(letter);
@@ -71,14 +78,16 @@ public class GraphicFont {
 		
 		//letter metrics
 		FontMetrics metrics = fontGraphics.getFontMetrics();
+
+		Rectangle bounds = font.createGlyphVector(metrics.getFontRenderContext(), new char[]{letter}).getGlyphPixelBounds(0, metrics.getFontRenderContext(), 0, 0);
 		
 		//create 1 Letter
-		int charWidth = metrics.charWidth(letter);
-		int charHeight = metrics.getHeight();
+		int charWidth = bounds.width;
+		int charHeight = bounds.height;
 		
 		
 		//make the fontTexture bigger
-		BufferedImage newFontTexture = new BufferedImage(fontTexture.getWidth()+charWidth,charHeight,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage newFontTexture = new BufferedImage(fontTexture.getWidth()+charWidth,metrics.getHeight(),BufferedImage.TYPE_INT_ARGB);
 		Graphics2D newGraphic = newFontTexture.createGraphics();
 		
 		//drawing the old stuff
@@ -87,7 +96,7 @@ public class GraphicFont {
 		//drawing the new letter
 		newGraphic.setFont(font);
 		newGraphic.setColor(Color.red);
-		newGraphic.drawString(""+letter, newFontTexture.getWidth()-charWidth,metrics.getAscent());
+		newGraphic.drawString(""+letter, newFontTexture.getWidth()-charWidth-bounds.x,metrics.getAscent());
 		
 		//replace the old by the new 
 		fontTexture = newFontTexture;
@@ -104,7 +113,9 @@ public class GraphicFont {
 		glyph.texture_left = newFontTexture.getWidth()-charWidth;
 		glyph.texture_top = 0;
 		glyph.texture_width = charWidth;
-		glyph.texture_height = charHeight;
+		glyph.texture_height = metrics.getHeight();
+		glyph.effectiveWidth = metrics.charWidth(letter);
+		glyph.xOffset = bounds.x;
 		
 		glyphs.put(letter,glyph);
 	    return glyph;
