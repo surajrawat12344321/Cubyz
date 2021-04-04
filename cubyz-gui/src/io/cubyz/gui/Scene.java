@@ -106,4 +106,8 @@ public class Scene{
 		}
 		GL30.glEnable(GL_DEPTH_TEST);
 	}
+	
+	public float ratio() {
+		return (float)width/height;
+	}
 }

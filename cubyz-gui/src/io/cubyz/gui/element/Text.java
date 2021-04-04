@@ -182,6 +182,10 @@ public class Text extends Component {
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
 		if(!pressed&&old_pressed&&onAction!=null)
 			onAction.run();
+		
+		System.out.println(hovered);
+		System.out.println("Mousex"+mousepos.x);
+		
 	}
 	@Override
 	public void draw(Scene scene) {
@@ -193,15 +197,14 @@ public class Text extends Component {
 		int loc_texCoords = shader.getUniformLocation("texture_rect");
 		int loc_rect = shader.getUniformLocation("rect");
 		
-		int height = font.getTexture().height;
-		int width = font.getTexture().width;
+		int fontHeight = font.getTexture().height;
+		int fontWidth = font.getTexture().width;
 		
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 		float offset = 0;
 		float left_opengl = this.left/scene.width;
 		float top_opengl = this.top/scene.height;
-		float width_opengl = this.width/scene.width;
 		float height_opengl = this.height/scene.height;
 		
 		for (int i = 0; i < tmp_glyphs.size(); i++) {
@@ -211,22 +214,33 @@ public class Text extends Component {
 			//System.out.println("Top:"+(((float)glyph.texture_top)/height));
 			//System.out.println("Width:"+(((float)glyph.texture_width)/width));
 			//System.out.println("Height:"+(((float)glyph.texture_height)/height));
-
 			
-			float tex_left = ((float)glyph.texture_left)/width;
-			float tex_top =	((float)glyph.texture_top)/height;
-			float tex_width = ((float)glyph.texture_width)/width; 
-			float tex_height = ((float)glyph.texture_height)/height;
-			
+			float tex_left = ((float)glyph.texture_left)/fontWidth;
+			float tex_top =	((float)glyph.texture_top)/fontHeight;
+			float tex_width = ((float)glyph.texture_width)/fontWidth; 
+			float tex_height = ((float)glyph.texture_height)/fontHeight;
 			
 			
+			float scene_ratio = scene.ratio();
+			float glyph_ratio = ((float)glyph.texture_width/glyph.texture_height);
 			
-			glUniform4f(loc_texCoords, tex_left,tex_top,tex_width,tex_height);
-			glUniform4f(loc_rect, left_opengl+offset,top_opengl,tex_width*width_opengl,tex_height*height_opengl);
+			
+			glUniform4f(loc_texCoords, 
+					tex_left,
+					tex_top,
+					tex_width,
+					tex_height);
+			glUniform4f(loc_rect, 
+					left_opengl+offset,
+					top_opengl,
+					glyph_ratio/scene_ratio*height_opengl,
+					height_opengl);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			
-			offset+=tex_width*width_opengl;
+			offset+=glyph_ratio/scene_ratio*height_opengl;
 		}
+		//safe the width
+		width = (int) (scene.width*offset);
 		
 		font.getTexture().unbind();
 		shader.unbind();
