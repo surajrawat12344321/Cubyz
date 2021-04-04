@@ -11,11 +11,11 @@ public class ComponentRegistry {
 	//List of all Components
 	public static final Registry ComponentList = new Registry(new Button(),new Text());	
 	
-	public static Component createByJson(JsonObject jsonObject) {
+	public static Component createByJson(JsonObject jsonObject, Component parent) {
 		Component component = (Component)ComponentList.getById(jsonObject.getAsJsonPrimitive("type").getAsString());
 		try {
 			Component c = component.getClass().getConstructor().newInstance();
-			c.create(jsonObject);
+			c.create(jsonObject, parent);
 			return c;
 		} catch (Exception e) {
 			Log.severe(e);

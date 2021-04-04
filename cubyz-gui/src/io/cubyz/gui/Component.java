@@ -2,7 +2,7 @@ package io.cubyz.gui;
 
 import java.util.ArrayList;
 
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import io.cubyz.utils.datastructures.RegistryElement;
 
@@ -23,7 +23,13 @@ public abstract class Component implements RegistryElement{
 	 * 	IMPORTANT: DO NOT USE MULTIPLE PARAMETER IN THE CONSTRUCTOR OF YOUR SUBCLASS
 	 */
 	public Component() {}
-	public void create(JsonObject object){
+	public void create(JsonObject object, Component parent) {
+		// Default to center of parent if nothing more is specified:
+		if(parent != null) {
+			left = parent.width/2;
+			top = parent.height/2;
+		}
+
 		if(object.has("left"))
 			this.left = object.getAsJsonPrimitive("left").getAsFloat();
 		if(object.has("top"))
@@ -34,6 +40,19 @@ public abstract class Component implements RegistryElement{
 			this.height = object.getAsJsonPrimitive("height").getAsFloat();
 		if(object.has("name"))
 			this.name = object.getAsJsonPrimitive("name").getAsString();
+		// Translate the component by its parent position:
+		if(parent != null) {
+			top += parent.top;
+			left += parent.left;
+		}
+
+		JsonArray jchildren = object.getAsJsonArray("children");
+		if(jchildren != null) {
+			for (JsonElement jsonElement : jchildren) {
+				JsonObject jsonObject = (JsonObject)jsonElement;
+				children.add(ComponentRegistry.createByJson(jsonObject, this));
+			}
+		}
 	}
 	public  JsonObject toJson() {
 		JsonObject obj = new JsonObject();
@@ -45,7 +64,16 @@ public abstract class Component implements RegistryElement{
 		obj.addProperty("name", name);
 		return obj;
 	}
-	public abstract void draw(Design design);
+
+	/**
+		When overriding: Make sure to call super.draw(design); at the <b>end</b> of the function.
+		@param design
+	*/
+	public void draw(Design design) {
+		for (Component component : children) {
+			component.draw(design);
+		}
+	}
 
 	public void setScene(Scene scene) {
 		this.scene = scene;

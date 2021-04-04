@@ -4,8 +4,10 @@
 {"type":"cubyz:button","name":"gray","left":20.0,"top":530.0,"width":245.0,"height":145.0,"shadowIntensity":0.2},
 
 {"type":"cubyz:button","name":"red_green","left":690,"top":450,"width":270,"height":180,"color":[100,100,100],"colorHovered":[100,255,100],"colorPressed":[255,100,100],
-	"text":"okay"},
-	{"type":"cubyz:text","left":300,"top":180,"width":270,"height":60,"color":[0,0,0],"colorHovered":[0,25,0],"colorPressed":[25,0,0],
+	"text":"okay",
+	"children":[{"type":"cubyz:text","height":60, "text":"Press me! I'll get red!"}]
+},
+	{"type":"cubyz:text","left":300,"top":180,"height":60,"color":[0,0,0],"colorHovered":[0,25,0],"colorPressed":[25,0,0],
 	"text":"Überra⃗sch⃗ụung்்்ண்"}
 
 ]}

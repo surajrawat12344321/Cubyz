@@ -79,7 +79,7 @@ public class Design {
 		JsonArray jchildren = design.getAsJsonArray("children");
 		for (JsonElement jsonElement : jchildren) {
 			JsonObject jsonObject = (JsonObject)jsonElement;
-			children.add(ComponentRegistry.createByJson(jsonObject));
+			children.add(ComponentRegistry.createByJson(jsonObject, null));
 		}
 		
 		// Get the fitting scene and give it all of its children:

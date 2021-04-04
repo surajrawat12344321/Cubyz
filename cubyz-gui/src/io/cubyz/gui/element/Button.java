@@ -78,8 +78,8 @@ public class Button extends Component {
 	}
 
 	@Override
-	public void create(JsonObject object) {
-		super.create(object);
+	public void create(JsonObject object, Component parent) {
+		super.create(object, parent);
 		initOpenGLStuff();
 		
 		if(object.has("color")) {
@@ -198,5 +198,7 @@ public class Button extends Component {
 	
 		}
 		shader.unbind();
+		
+		super.draw(design);
 	}
 }
