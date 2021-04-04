@@ -1,4 +1,4 @@
-{"name":"name","height":720,"width":1080,"children":[
+{"name":"name","width":1920,"height":1080,"children":[
  {"type":"cubyz:button","left":20.0,"top":290.0,"width":245.0,"height":145.0},
 {"type":"cubyz:button","left":20.0,"top":50.0,"width":245.0,"height":145.0},
 {"type":"cubyz:button","left":20.0,"top":530.0,"width":245.0,"height":145.0,"shadowIntensity":0.2},

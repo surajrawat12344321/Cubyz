@@ -27,7 +27,7 @@ vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){
 	switch (mode) {
 			case 0: //unselected
 				color = brighten(inColor,shadowIntensity);
-			    break;
+				break;
 			case 1:	//clicked
 				color = darken(inColor,shadowIntensity);
 				break;
@@ -40,7 +40,7 @@ vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){
 		switch (mode) {
 			case 0: //unselected
 				color = brighten(inColor,0.75*shadowIntensity);
-			    break;
+				break;
 			case 1: //pressed
 				color = darken(inColor,0.75*shadowIntensity);
 				break;
@@ -53,7 +53,7 @@ vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){
 		switch (mode) {
 			case 0: //unselected
 				color = darken(inColor,1*shadowIntensity);
-			    break;
+				break;
 			case 1:	//clicked 
 				color = brighten(inColor,1*shadowIntensity);
 				break;
@@ -66,7 +66,7 @@ vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){
 		switch (mode) {
 			case 0: //unselected
 				color = darken(inColor,0.75*shadowIntensity);
-			    break;
+				break;
 			case 1:	//clicked 
 				color = brighten(inColor,0.75*shadowIntensity);
 				break;

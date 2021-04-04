@@ -27,11 +27,11 @@ import io.cubyz.utils.datastructures.Registry;
 import io.cubyz.utils.log.Log;
 
 
-public class Scene{
+public class Scene {
 	
 	//data
 	public String name; 
-	public int width=1080,height=720;
+	public int width=1920,height=1080;
 	
 	ArrayList<Component> children = new ArrayList<Component>();
 	
