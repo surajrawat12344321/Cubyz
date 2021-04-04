@@ -13,6 +13,7 @@ public abstract class Component implements RegistryElement{
 	ArrayList<Component> children = new ArrayList<Component>();
 	
 	public float left,top,width,height;
+	public String name = new String();
 	
 	@Override
 	public abstract String getID();
@@ -21,10 +22,16 @@ public abstract class Component implements RegistryElement{
 	 */
 	public Component() {}
 	public void create(JsonObject object){
-		this.left = object.getAsJsonPrimitive("left").getAsFloat();
-		this.top = object.getAsJsonPrimitive("top").getAsFloat();
-		this.width = object.getAsJsonPrimitive("width").getAsFloat();
-		this.height = object.getAsJsonPrimitive("height").getAsFloat();
+		if(object.has("left"))
+			this.left = object.getAsJsonPrimitive("left").getAsFloat();
+		if(object.has("top"))
+			this.top = object.getAsJsonPrimitive("top").getAsFloat();
+		if(object.has("width"))
+			this.width = object.getAsJsonPrimitive("width").getAsFloat();
+		if(object.has("height"))
+			this.height = object.getAsJsonPrimitive("height").getAsFloat();
+		if(object.has("name"))
+			this.name = object.getAsJsonPrimitive("name").getAsString();
 	}
 	public  JsonObject toJson() {
 		JsonObject obj = new JsonObject();
@@ -33,6 +40,7 @@ public abstract class Component implements RegistryElement{
 		obj.addProperty("top", top);
 		obj.addProperty("width", width);
 		obj.addProperty("height", height);
+		obj.addProperty("name", name);
 		return obj;
 	}
 	public abstract void draw(Scene scene);
