@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import io.cubyz.gui.Component;
-import io.cubyz.gui.element.Picture;
+import io.cubyz.rendering.GraphicFont;
 import io.cubyz.rendering.Input;
 import io.cubyz.rendering.Window;
 import io.cubyz.gui.Init;
@@ -26,7 +26,7 @@ public class Main {
 			Init.init();
 			
 			Window window = new Window(960, 540);
-			window.setBackgroundColor(1, 0, 1, 1);
+			window.setBackgroundColor(0.8f, 0.8f, 1, 1);
 	
 			
 			Scene scene = new Scene("cubyz-client/testScene.json");//new Scene("name",720,1080);
