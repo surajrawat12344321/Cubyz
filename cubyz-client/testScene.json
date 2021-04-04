@@ -3,6 +3,9 @@
 {"type":"cubyz:button","left":20.0,"top":50.0,"width":245.0,"height":145.0},
 {"type":"cubyz:button","left":20.0,"top":530.0,"width":245.0,"height":145.0,"shadowIntensity":0.2},
 
-{"type":"cubyz:text","left":0,"top":0,"width":1080,"height":720,"color":[0,0,0],"colorHovered":[0,25,0],"colorPressed":[25,0,0],
-	"text":"okay"}
+{"type":"cubyz:button","left":690,"top":450,"width":270,"height":180,"color":[100,100,100],"colorHovered":[100,255,100],"colorPressed":[255,100,100],
+	"text":"okay"},
+	{"type":"cubyz:text","left":540,"top":180,"width":270,"height":180,"color":[0,0,0],"colorHovered":[0,25,0],"colorPressed":[25,0,0],
+	"text":"Überraschung"}
+
 ]}
