@@ -14,6 +14,14 @@ public class Shader {
 
 	int id= 0;
 	
+	private String getShaderType(int type) {
+		if(type == GL_VERTEX_SHADER)
+			return"Couldn't create vertexshader.";
+		if(type == GL_FRAGMENT_SHADER)
+			return "Coudln't create fragmentshader.";
+		return null;
+	}
+	
 	//shader creation
 	int compileShaderFromString(int type,String code) throws Throwable {
 		
@@ -30,7 +38,8 @@ public class Shader {
 		
 		
 		if (glGetShaderi(id, GL_COMPILE_STATUS) == 0) {
-			throw new Exception("Couldn't compile shader. " + glGetShaderInfoLog(id, 1024));
+			
+			throw new Exception("Couldn't compile "+(getShaderType(type))+"shader. " + glGetShaderInfoLog(id, 1024));
 		}
 		
 		return id;

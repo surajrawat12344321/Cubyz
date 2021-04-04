@@ -3,9 +3,28 @@
 layout (location=0) out vec4 frag_color;
 
 in vec2 frag_face_pos;
+
 uniform sampler2D texture_sampler;
+
+//in pxls
 uniform vec4 texture_rect;
+uniform vec2 font_size;
+
+
+vec2 convert2Proportional(vec2 original,vec2 full){
+	return vec2(original.x/full.x,original.y/full.y);
+}
+
 
 void main(){
-	frag_color = vec4(0.1,0,0,0.1)+texture(texture_sampler,vec2(texture_rect.x+frag_face_pos.x*texture_rect.z,texture_rect.y+frag_face_pos.y*texture_rect.w));
+	vec4 texture_rect_percentage =  vec4(convert2Proportional(texture_rect.xy,font_size),convert2Proportional(texture_rect.zw,font_size));
+	
+	frag_color = vec4(0.1,0,0,0.1)+texture(texture_sampler,
+		vec2(
+				texture_rect_percentage.x+
+				frag_face_pos.x*texture_rect_percentage.z
+			,
+				texture_rect_percentage.y+
+				frag_face_pos.y*texture_rect_percentage.w
+			));
 }

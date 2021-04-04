@@ -50,7 +50,7 @@ public class GraphicFont {
 	 * Load the font from the standard Library
 	 */
 	public void loadFromAwt() {
-		font = new Font("Arial", Font.PLAIN, 144);
+		font = new Font("Calibri", Font.PLAIN, 144);
 		fontGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		fontGraphics.setFont(font);
 		

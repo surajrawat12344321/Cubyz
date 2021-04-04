@@ -183,8 +183,8 @@ public class Text extends Component {
 		if(!pressed&&old_pressed&&onAction!=null)
 			onAction.run();
 		
-		System.out.println(hovered);
-		System.out.println("Mousex"+mousepos.x);
+		//System.out.println(hovered);
+		//System.out.println("Mousex"+mousepos.x);
 		
 	}
 	@Override
@@ -193,64 +193,47 @@ public class Text extends Component {
 		shader.bind();
 		font.getTexture().bind();
 		
-		
+		//vertex and shader
 		int loc_texCoords = shader.getUniformLocation("texture_rect");
-		int loc_rect = shader.getUniformLocation("rect");
+
+		int loc_scene = shader.getUniformLocation("scene");
+		int loc_ComponentRect = shader.getUniformLocation("componentRect");
+		int loc_offset = shader.getUniformLocation("offset");
+
+		//fragment
+		int loc_fontSize = shader.getUniformLocation("font_size");
+
+		glUniform4f(loc_ComponentRect,left,top,width,height);
+		glUniform2f(loc_scene,scene.width,scene.height);
+		glUniform2f(loc_fontSize,font.getTexture().width, font.getTexture().height);
 		
-		int fontHeight = font.getTexture().height;
-		int fontWidth = font.getTexture().width;
 		
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 		float offset = 0;
-		float left_opengl = this.left/scene.width;
-		float top_opengl = this.top/scene.height;
-		float height_opengl = this.height/scene.height;
+		
 		Glyph lastLetter = null;
 		for (int i = 0; i < tmp_glyphs.size(); i++) {
 			Glyph glyph = tmp_glyphs.get(i);
 			
+			float xOffsetInPxl = ((float)glyph.xOffset)/glyph.texture_height*height;
 			
-			float scene_ratio = scene.ratio();
-			float glyph_ratio = ((float)glyph.texture_width/glyph.texture_height);
-
-			
-			float tex_left = ((float)glyph.texture_left)/fontWidth;
-			float tex_top =	((float)glyph.texture_top)/fontHeight;
-			float tex_width = ((float)glyph.texture_width)/fontWidth;
-			float tex_height = ((float)glyph.texture_height)/fontHeight;
-			float effectiveWidth = (float)glyph.effectiveWidth/fontWidth;
-			float glyphOffset = glyph.xOffset;
-
-			// If this glyph is a character modifier remove the additional spacing of the previous glyph:
-			if(lastLetter != null && glyphOffset < 0) {
-				int spacing = lastLetter.effectiveWidth - lastLetter.texture_width - lastLetter.xOffset;
-				spacing = Math.max(spacing, 0);
-				System.out.println(spacing+" "+lastLetter);
-				glyphOffset -= spacing;
+			if(lastLetter != null && xOffsetInPxl < 0) {
+				xOffsetInPxl -= ((float)lastLetter.effectiveWidth - lastLetter.texture_width - lastLetter.xOffset)/glyph.texture_height*height;
 			}
-
-			glyphOffset *= 1.0f/tex_width*glyph_ratio/scene_ratio*height_opengl/scene.width;
+			glUniform1f(loc_offset, offset+xOffsetInPxl);
+			glUniform4f(loc_texCoords, glyph.texture_left,glyph.texture_top,glyph.texture_width,glyph.texture_height);
 			
 			
-			glUniform4f(loc_texCoords, 
-					tex_left,
-					tex_top,
-					tex_width,
-					tex_height);
-			glUniform4f(loc_rect, 
-					left_opengl+offset+glyphOffset,
-					top_opengl,
-					glyph_ratio/scene_ratio*height_opengl,
-					height_opengl);
+			offset += ((float)glyph.effectiveWidth)/glyph.texture_height*height;
+			
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			
-			offset += effectiveWidth/tex_width*glyph_ratio/scene_ratio*height_opengl;
 
-			if(glyphOffset >= 0)
+			if(xOffsetInPxl >= 0)
 				lastLetter = glyph;
 		}
-		//safe the width
+		
 		width = (int) (scene.width*offset);
 		
 		font.getTexture().unbind();
