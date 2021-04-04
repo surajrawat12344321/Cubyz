@@ -10,8 +10,10 @@ import io.cubyz.gui.Component;
 import io.cubyz.rendering.GraphicFont;
 import io.cubyz.rendering.Input;
 import io.cubyz.rendering.Window;
+import io.cubyz.gui.Design;
 import io.cubyz.gui.Init;
 import io.cubyz.gui.Scene;
+import io.cubyz.gui.SceneManager;
 import io.cubyz.utils.log.Log;
 
 /**
@@ -29,13 +31,9 @@ public class Main {
 			window.setBackgroundColor(0.8f, 0.8f, 1, 1);
 	
 			
-			Scene scene = new Scene("cubyz-client/testScene.json");//new Scene("name",720,1080);
-			
-			//Component button = new Picture();
-			//button.create((JsonObject) JsonParser.parseString("{'left':'480','top':'415','width':'490','height':'290'}"));
-			//scene.add(button);
-			
-			//scene.saveAsFile("cubyz-client/testScene.json");
+			Design testDesign = new Design("cubyz-client/testScene.json");
+			Scene scene = SceneManager.getScene("test");
+			scene.designs.add(testDesign);
 			
 			
 			while(!window.shouldClose()) {

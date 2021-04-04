@@ -25,7 +25,7 @@ public class Window {
 	Vector3f backgroundColor = new Vector3f(0, 0, 0);
 	Matrix4f projectionMatrix = new Matrix4f();
 	
-	int width,height;
+	public static int width,height;
 	
 	public Window(int width, int height) {
 		this.width = width;

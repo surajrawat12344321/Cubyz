@@ -14,6 +14,8 @@ public abstract class Component implements RegistryElement{
 	
 	public float left,top,width,height;
 	public String name = new String();
+
+	protected Scene scene;
 	
 	@Override
 	public abstract String getID();
@@ -43,6 +45,13 @@ public abstract class Component implements RegistryElement{
 		obj.addProperty("name", name);
 		return obj;
 	}
-	public abstract void draw(Scene scene);
+	public abstract void draw(Design design);
+
+	public void setScene(Scene scene) {
+		this.scene = scene;
+		for(Component child : children) {
+			child.setScene(scene);
+		}
+	}
 	
 }

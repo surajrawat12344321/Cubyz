@@ -18,7 +18,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import io.cubyz.gui.Component;
-import io.cubyz.gui.Scene;
+import io.cubyz.gui.Design;
 import io.cubyz.rendering.GraphicFont;
 import io.cubyz.rendering.GraphicFont.Glyph;
 import io.cubyz.rendering.Input;
@@ -170,8 +170,8 @@ public class Text extends Component {
 		return text;
 	}
 	
-	public void update(Scene scene) {
-		Vector2d mousepos = Input.getMousePosition(scene);
+	public void update(Design design) {
+		Vector2d mousepos = Input.getMousePosition(design);
 		
 		hovered = (left<=mousepos.x&&
 			top<=mousepos.y&&
@@ -188,8 +188,8 @@ public class Text extends Component {
 		
 	}
 	@Override
-	public void draw(Scene scene) {
-		update(scene);
+	public void draw(Design design) {
+		update(design);
 		shader.bind();
 		font.getTexture().bind();
 		
@@ -204,7 +204,7 @@ public class Text extends Component {
 		int loc_fontSize = shader.getUniformLocation("font_size");
 
 		glUniform4f(loc_ComponentRect,left,top,width,height);
-		glUniform2f(loc_scene,scene.width,scene.height);
+		glUniform2f(loc_scene,design.width,design.height);
 		glUniform2f(loc_fontSize,font.getTexture().width, font.getTexture().height);
 		
 		
@@ -234,7 +234,7 @@ public class Text extends Component {
 				lastLetter = glyph;
 		}
 		
-		width = (int) (scene.width*offset);
+		width = (int) (design.width*offset);
 		
 		font.getTexture().unbind();
 		shader.unbind();

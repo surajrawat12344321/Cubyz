@@ -14,7 +14,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 import io.cubyz.gui.Component;
-import io.cubyz.gui.Scene;
+import io.cubyz.gui.Design;
 import io.cubyz.utils.log.Log;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -29,10 +29,10 @@ public final class Input {
 	static Window window;
 	
 	private static Vector2d mousePosition = new Vector2d();
-	public static Vector2d getMousePosition(Scene scene) {
+	public static Vector2d getMousePosition(Design design) {
 		Vector2d output = new Vector2d();
-		output.x = mousePosition.x/Input.window.width*scene.width;
-		output.y = mousePosition.y/Input.window.height*scene.height;
+		output.x = mousePosition.x/Input.window.width*design.width;
+		output.y = mousePosition.y/Input.window.height*design.height;
 		
 		return output;
 	}

@@ -16,7 +16,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import io.cubyz.gui.Component;
-import io.cubyz.gui.Scene;
+import io.cubyz.gui.Design;
 import io.cubyz.rendering.Input;
 import io.cubyz.rendering.Keys;
 import io.cubyz.rendering.Shader;
@@ -31,9 +31,6 @@ public class Button extends Component {
 	//state of the button
 	public boolean pressed;
 	public boolean hovered;
-	
-	//action
-	public Runnable onAction;
 	
 	//colors
 	public float[] color_std 	 = 	{ 156, 166, 191}; // standart colour
@@ -78,10 +75,6 @@ public class Button extends Component {
 	@Override
 	public String getID() {
 		return "cubyz:button";
-	}
-	
-	public void setOnAction(Runnable onAction) {
-		this.onAction = onAction;
 	}
 
 	@Override
@@ -154,8 +147,8 @@ public class Button extends Component {
 		return object;
 	}
 
-	public void update(Scene scene) {
-		Vector2d mousepos = Input.getMousePosition(scene);
+	public void update(Design design) {
+		Vector2d mousepos = Input.getMousePosition(design);
 		
 		hovered = (left<=mousepos.x&&
 			top<=mousepos.y&&
@@ -164,12 +157,12 @@ public class Button extends Component {
 
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
-		if(!pressed&&old_pressed&&onAction!=null)
-			onAction.run();
+		if(!pressed && old_pressed && scene != null && hovered)
+			scene.triggerEvent(this, "button_release");
 	}
 	@Override
-	public void draw(Scene scene) {
-		update(scene);
+	public void draw(Design design) {
+		update(design);
 		
 		//fragment
 		int loc_shadow = shader.getUniformLocation("shadow");
@@ -195,7 +188,7 @@ public class Button extends Component {
 			
 			//vertex
 			
-			glUniform2f(loc_scene_size, scene.width, scene.height);
+			glUniform2f(loc_scene_size, design.width, design.height);
 			glUniform2f(loc_position,left,top);
 			glUniform2f(loc_size,width,height);
 			
