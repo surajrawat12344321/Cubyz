@@ -1,14 +1,14 @@
-package io.cubyz.server.blocks;
+package io.cubyz.world.items;
 
 import io.cubyz.utils.datastructures.RegistryElement;
 
 /**
  * TODO
  */
-public class Block implements RegistryElement {
+public class Item implements RegistryElement {
 	private final String ID;
 	
-	public Block(String ID) {
+	public Item(String ID) {
 		this.ID = ID;
 	}
 	

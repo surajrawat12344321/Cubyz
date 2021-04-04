@@ -1,4 +1,4 @@
-package io.cubyz.server.entity;
+package io.cubyz.world.entity;
 
 import java.util.ArrayList;
 

@@ -1,11 +1,10 @@
 package io.cubyz.server.modding;
 
-import io.cubyz.server.blocks.Block;
-import io.cubyz.server.entity.EntityType;
-import io.cubyz.server.items.Item;
 import io.cubyz.utils.datastructures.Registry;
-import io.cubyz.world.World;
 import io.cubyz.world.biomes.Biome;
+import io.cubyz.world.blocks.Block;
+import io.cubyz.world.entity.EntityType;
+import io.cubyz.world.items.Item;
 
 public abstract class Mod {
 	/**
@@ -19,7 +18,7 @@ public abstract class Mod {
 	 * Should only be used if data files are not flexible enough.
 	 * @param registry
 	 */
-	public void registerBlocks(Registry<Block> registry) {
+	public void registerItems(Registry<Item> registry) {
 		
 	}
 	
@@ -27,7 +26,7 @@ public abstract class Mod {
 	 * Should only be used if data files are not flexible enough.
 	 * @param registry
 	 */
-	public void registerItems(Registry<Item> registry) {
+	public void registerBlocks(Registry<Block> registry) {
 		
 	}
 	
@@ -54,12 +53,5 @@ public abstract class Mod {
 		
 	}
 	
-	/**
-	 * Called when a new world is generated.
-	 * Used for world-specific content.
-	 * @param world
-	 */
-	public void onWorldGeneration(World world) {
-		
-	}
+	public abstract String getName();
 }
