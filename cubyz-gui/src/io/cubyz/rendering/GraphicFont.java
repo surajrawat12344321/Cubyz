@@ -1,50 +1,32 @@
 package io.cubyz.rendering;
 
-import static java.awt.Font.*;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.awt.Rectangle;
-
-import javax.imageio.ImageIO;
 
 public class GraphicFont {
 	
 	public class Glyph{
-		
-		public GraphicFont font;
 		public int 	texture_left = 0,
 					texture_top = 0,
 					texture_width = 0,
-					texture_height = 0,
-					xOffset = 0,
-					effectiveWidth = 0;
-		public BufferedImage getImage() {
-			return font.fontTexture.getSubimage(texture_left, texture_top, texture_width, texture_height);
-		}
-
-		public String toString() {
-			return "left: "+texture_left+", top: "+texture_top+", width: "+texture_width+", height: "+texture_height+", offset: "+xOffset+", render width: "+effectiveWidth;
-		}
+					texture_height = 0;
 	}
 	
 	//Graphical variables
-	private Font font;
+	public Font font;
 	private BufferedImage fontTexture = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-	private Texture texture;
-	private Graphics2D fontGraphics = fontTexture.createGraphics();
+	private Texture texture = new Texture(fontTexture);
+	public Graphics2D fontGraphics = fontTexture.createGraphics();
 
 	//List of all already used
-	private HashMap<Character, Glyph> glyphs = new HashMap<Character, Glyph>();
+	private HashMap<Integer, Glyph> glyphs = new HashMap<Integer, Glyph>();
 	
 	/**
 	 * Load the font from the standard Library
@@ -70,16 +52,19 @@ public class GraphicFont {
 	 * @param letter
 	 * @return the Glyph
 	 */
-	public Glyph getGlyph(char letter) {
+	public Glyph getGlyph(GlyphVector source, int indexInGlyphVector) {
 		//does the glyph already exist?
-		if(glyphs.containsKey(letter))
-			return glyphs.get(letter);
+		int letterCode = source.getGlyphCode(indexInGlyphVector);
+		if(glyphs.containsKey(letterCode))
+			return glyphs.get(letterCode);
 		//create texture if it doesnt exist
+		
+		System.out.println(letterCode);
 		
 		//letter metrics
 		FontMetrics metrics = fontGraphics.getFontMetrics();
 
-		Rectangle bounds = font.createGlyphVector(metrics.getFontRenderContext(), new char[]{letter}).getGlyphPixelBounds(0, metrics.getFontRenderContext(), 0, 0);
+		Rectangle bounds = source.getGlyphPixelBounds(indexInGlyphVector, metrics.getFontRenderContext(), 0, 0);
 		
 		//create 1 Letter
 		int charWidth = bounds.width;
@@ -96,7 +81,8 @@ public class GraphicFont {
 		//drawing the new letter
 		newGraphic.setFont(font);
 		newGraphic.setColor(Color.red);
-		newGraphic.drawString(""+letter, newFontTexture.getWidth()-charWidth-bounds.x,metrics.getAscent());
+		newGraphic.setClip(fontTexture.getWidth(), 0, charWidth, charHeight);
+		newGraphic.drawGlyphVector(source, newFontTexture.getWidth()-charWidth-bounds.x,-bounds.y);
 		
 		//replace the old by the new 
 		fontTexture = newFontTexture;
@@ -109,20 +95,15 @@ public class GraphicFont {
 		
 		//create the Glyph
 		Glyph glyph = new Glyph();
-		glyph.font = this;
 		glyph.texture_left = newFontTexture.getWidth()-charWidth;
 		glyph.texture_top = 0;
 		glyph.texture_width = charWidth;
-		glyph.texture_height = metrics.getHeight();
-		glyph.effectiveWidth = metrics.charWidth(letter);
-		glyph.xOffset = bounds.x;
+		glyph.texture_height = charHeight;
 		
-		glyphs.put(letter,glyph);
+		glyphs.put(letterCode,glyph);
 	    return glyph;
 	}
 	public Texture getTexture() {
-		if(texture == null)
-			getGlyph(' ');
 		return texture;
 	}
 }
