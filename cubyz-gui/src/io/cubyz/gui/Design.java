@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import io.cubyz.rendering.CubyzGraphics2D;
 import io.cubyz.utils.datastructures.Registry;
 import io.cubyz.utils.log.Log;
 
@@ -111,6 +112,7 @@ public class Design {
 	public void draw() {
 		GL30.glDisable(GL_DEPTH_TEST);
 		
+		CubyzGraphics2D.instance.design = this;
 		for (Component component : children) {
 			component.draw(this);
 		}
