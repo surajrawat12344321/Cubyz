@@ -32,8 +32,8 @@ public class GraphicFont {
 	 * Load the font from the standard Library
 	 */
 	public void loadFromAwt() {
-		font = new Font("Calibri", Font.PLAIN, 144);
-		fontGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		font = new Font("Calibri", Font.PLAIN, 16);
+		//fontGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		fontGraphics.setFont(font);
 		
 		

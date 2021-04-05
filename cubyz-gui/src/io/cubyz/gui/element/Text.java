@@ -129,10 +129,10 @@ public class Text extends Component {
 	public void update(Design design) {
 		Vector2d mousepos = Input.getMousePosition(design);
 		
-		hovered = (left<=mousepos.x&&
-			top<=mousepos.y&&
-			left+width>=mousepos.x&&
-			top+height>=mousepos.y);
+		hovered = (left.getAsValue()<=mousepos.x&&
+			top.getAsValue()<=mousepos.y&&
+			left.getAsValue()+width.getAsValue()>=mousepos.x&&
+			top.getAsValue()+height.getAsValue()>=mousepos.y);
 
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
@@ -144,13 +144,13 @@ public class Text extends Component {
 		
 	}
 	@Override
-	public void draw(Design design) {
+	public void draw(Design design,float parentalOffsetX,float parentalOffsetY) {
 		update(design);
-		CubyzGraphics2D.instance.textHeight = height;
+		CubyzGraphics2D.instance.textHeight = height.getAsValue();
 		// Undo the ratio multiplication that is done later on the gpu:
-		float ratio = (float)height/font.getTexture().height;
-		layout.draw(CubyzGraphics2D.instance, left/ratio, top/ratio);
+		float ratio = (float)height.getAsValue()/font.getTexture().height;
+		layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue())/ratio);
 
-		super.draw(design);
+		super.draw(design,parentalOffsetX,parentalOffsetY);
 	}
 }

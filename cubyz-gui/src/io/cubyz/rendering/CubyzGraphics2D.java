@@ -103,7 +103,7 @@ public class CubyzGraphics2D extends Graphics2D {
 		//fragment
 		int loc_fontSize = textShader.getUniformLocation("font_size");
 
-		glUniform2f(loc_scene, design.width, design.height);
+		glUniform2f(loc_scene, design.width.getAsValue(), design.height.getAsValue());
 		glUniform2f(loc_fontSize,font.getTexture().width, font.getTexture().height);
 		glUniform1f(loc_ratio, (float)textHeight/font.getTexture().height);
 		
