@@ -29,19 +29,19 @@ import io.cubyz.utils.log.Log;
 /**
 	{@code Scene} design for a specific screen ratio.
 */
-public class Design {
+public class Design extends Component{
 	
-	//data
-	public String name; 
-	public int width=1920,height=1080;
-	
-	ArrayList<Component> children = new ArrayList<Component>();
+	@Override
+	public String getID() {
+		return "Cubyz:Design";
+	}
 	
 	//methods
 	public Design(String name,int height,int width) {
 		this.name = new String(name);
-		this.height = height;
-		this.height = width;
+		this.width.setAsValue(width);
+		this.height.setAsValue(height);
+		this.parent = this;
 	}
 	
 	public Design(String path) {
@@ -54,7 +54,7 @@ public class Design {
 			FileReader reader = new FileReader(path);
 			//Read JSON file
 		    JsonObject obj = (JsonObject) jsonParser.parse(reader);
-			loadFromJson(obj);
+			create(obj,this);
 		} catch (Exception e) {
 			Log.severe(e);
 		}
@@ -63,23 +63,24 @@ public class Design {
 	public void saveAsFile(String path) {
 		try {
 			FileWriter fw = new FileWriter(path);
-			fw.write(saveAsJson().toString());
+			fw.write(toJson().toString());
 			fw.flush();
 			fw.close();
 		} catch (Exception e) {
 			Log.warning(e);
 		}
 	}
-
-	public void loadFromJson(JsonObject design) {
-		height = design.getAsJsonPrimitive("height").getAsInt();
-		width = design.getAsJsonPrimitive("width").getAsInt();
+	@Override
+	public void create(JsonObject design,Component parent) {
+		height.setAsValue(design.getAsJsonPrimitive("height").getAsInt());
+		width.setAsValue(design.getAsJsonPrimitive("width").getAsInt());
 		name = design.getAsJsonPrimitive("name").getAsString();
 
+		children.clear();
 		JsonArray jchildren = design.getAsJsonArray("children");
 		for (JsonElement jsonElement : jchildren) {
 			JsonObject jsonObject = (JsonObject)jsonElement;
-			children.add(ComponentRegistry.createByJson(jsonObject, null));
+			children.add(ComponentRegistry.createByJson(jsonObject,this));
 		}
 		
 		// Get the fitting scene and give it all of its children:
@@ -88,12 +89,12 @@ public class Design {
 			child.setScene(scene);
 		}
 	}
-
-	public JsonObject saveAsJson() {
+	@Override
+	public JsonObject toJson() {
 		JsonObject scene =  new JsonObject();
 		scene.addProperty("name", name);
-		scene.addProperty("height", height);
-		scene.addProperty("width", width);
+		scene.add("height", height.toJson());
+		scene.add("width", width.toJson());
 		
 		JsonArray jchildren = new JsonArray();
 		for (Component guiElement : children) {
@@ -103,24 +104,22 @@ public class Design {
 		
 		return scene;
 	}
-
-	public void add(Component component) {
-		children.add(component);
-	}
-
 	public void draw() {
 		GL30.glDisable(GL_DEPTH_TEST);
 		
 		for (Component component : children) {
-			component.draw(this);
+			component.draw(this,0,0);
 		}
 		GL30.glEnable(GL_DEPTH_TEST);
 	}
 	
+	public void setScene(Scene scene) {
+		Log.warning("A scene is a scene.You can't set the scene of a scene.");
+	}
 	/**
 	  @return ratio of width/height
 	*/
 	public float ratio() {
-		return (float)width/height;
+		return (float)width.getAsValue()/height.getAsValue();
 	}
 }

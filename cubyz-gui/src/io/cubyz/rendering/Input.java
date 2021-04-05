@@ -31,8 +31,8 @@ public final class Input {
 	private static Vector2d mousePosition = new Vector2d();
 	public static Vector2d getMousePosition(Design design) {
 		Vector2d output = new Vector2d();
-		output.x = mousePosition.x/Input.window.width*design.width;
-		output.y = mousePosition.y/Input.window.height*design.height;
+		output.x = mousePosition.x/Window.width*design.width.getAsValue();
+		output.y = mousePosition.y/Window.height*design.height.getAsValue();
 		
 		return output;
 	}

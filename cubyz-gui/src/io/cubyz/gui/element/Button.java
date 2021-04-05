@@ -78,8 +78,8 @@ public class Button extends Component {
 	}
 
 	@Override
-	public void create(JsonObject object, Component parent) {
-		super.create(object, parent);
+	public void create(JsonObject object,Component parent) {
+		super.create(object,parent);
 		initOpenGLStuff();
 		
 		if(object.has("color")) {
@@ -150,10 +150,10 @@ public class Button extends Component {
 	public void update(Design design) {
 		Vector2d mousepos = Input.getMousePosition(design);
 		
-		hovered = (left<=mousepos.x&&
-			top<=mousepos.y&&
-			left+width>=mousepos.x&&
-			top+height>=mousepos.y);
+		hovered = (left.getAsValue()<=mousepos.x&&
+			top.getAsValue()<=mousepos.y&&
+			left.getAsValue()+width.getAsValue()>=mousepos.x&&
+			top.getAsValue()+height.getAsValue()>=mousepos.y);
 
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
@@ -161,7 +161,7 @@ public class Button extends Component {
 			scene.triggerEvent(this, "button_release");
 	}
 	@Override
-	public void draw(Design design) {
+	public void draw(Design design,float parentalOffsetX,float parentalOffsetY) {
 		update(design);
 		
 		//fragment
@@ -181,16 +181,15 @@ public class Button extends Component {
 		shader.bind();
 		{
 			//fragment
-			glUniform2f(loc_shadow, shadowWidth/width, shadowHeight/height);
+			glUniform2f(loc_shadow, shadowWidth/width.getAsValue(), shadowHeight/height.getAsValue());
 			glUniform1f(loc_shadowIntensität, shadowIntensity);
 			glUniform1i(loc_mode, (pressed?1:0));
 			glUniform3fv(loc_color,hovered?(pressed?color_pressed:color_hovered):color_std);
 			
 			//vertex
-			
-			glUniform2f(loc_scene_size, design.width, design.height);
-			glUniform2f(loc_position,left,top);
-			glUniform2f(loc_size,width,height);
+			glUniform2f(loc_scene_size, design.width.getAsValue(), design.height.getAsValue());
+			glUniform2f(loc_position,parentalOffsetX+left.getAsValue(),parentalOffsetY+top.getAsValue());
+			glUniform2f(loc_size,width.getAsValue(),height.getAsValue());
 			
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -199,6 +198,6 @@ public class Button extends Component {
 		}
 		shader.unbind();
 		
-		super.draw(design);
+		super.draw(design,parentalOffsetX,parentalOffsetY);
 	}
 }

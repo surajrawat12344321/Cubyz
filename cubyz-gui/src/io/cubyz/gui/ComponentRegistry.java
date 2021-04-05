@@ -11,11 +11,15 @@ public class ComponentRegistry {
 	//List of all Components
 	public static final Registry ComponentList = new Registry(new Button(),new Text());	
 	
-	public static Component createByJson(JsonObject jsonObject, Component parent) {
+	public static Component createByJson(JsonObject jsonObject,Component parent) {
 		Component component = (Component)ComponentList.getById(jsonObject.getAsJsonPrimitive("type").getAsString());
+		if(component == null) {
+			Log.severe("Cubyz:unkown Gui-Type:"+jsonObject.toString()+" created Button instead");
+			component = new Button();
+		}
 		try {
 			Component c = component.getClass().getConstructor().newInstance();
-			c.create(jsonObject, parent);
+			c.create(jsonObject,parent);
 			return c;
 		} catch (Exception e) {
 			Log.severe(e);

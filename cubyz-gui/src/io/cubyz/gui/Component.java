@@ -12,10 +12,12 @@ import io.cubyz.utils.datastructures.RegistryElement;
 public abstract class Component implements RegistryElement{
 	ArrayList<Component> children = new ArrayList<Component>();
 	
-	public float left,top,width,height;
-	public String name = new String();
-
+	public Length 	left 		= new Length(),	top 		= new Length(),	
+					width		= new Length(),	height		= new Length(),
+					originLeft 	= new Length(), originTop	= new Length();
+	public String name 			= new String();
 	protected Scene scene;
+	protected Component parent 	= null;
 	
 	@Override
 	public abstract String getID();
@@ -23,44 +25,40 @@ public abstract class Component implements RegistryElement{
 	 * 	IMPORTANT: DO NOT USE MULTIPLE PARAMETER IN THE CONSTRUCTOR OF YOUR SUBCLASS
 	 */
 	public Component() {}
-	public void create(JsonObject object, Component parent) {
+	public void create(JsonObject object,Component parent) {
+		this.parent = parent;
 		// Default to center of parent if nothing more is specified:
 		if(parent != null) {
-			left = parent.width/2;
-			top = parent.height/2;
+			left.setAsPercentage(0.5f, parent.width);
+			top.setAsPercentage(0.5f, parent.height);
 		}
 
 		if(object.has("left"))
-			this.left = object.getAsJsonPrimitive("left").getAsFloat();
+			this.left.fromJsonAttribute(object,"left",parent.width);
 		if(object.has("top"))
-			this.top = object.getAsJsonPrimitive("top").getAsFloat();
+			this.top.fromJsonAttribute(object,"top",parent.height);
 		if(object.has("width"))
-			this.width = object.getAsJsonPrimitive("width").getAsFloat();
+			this.width.fromJsonAttribute(object,"width",parent.width);
 		if(object.has("height"))
-			this.height = object.getAsJsonPrimitive("height").getAsFloat();
+			this.height.fromJsonAttribute(object,"height",parent.height);
 		if(object.has("name"))
 			this.name = object.getAsJsonPrimitive("name").getAsString();
-		// Translate the component by its parent position:
-		if(parent != null) {
-			top += parent.top;
-			left += parent.left;
-		}
 
 		JsonArray jchildren = object.getAsJsonArray("children");
 		if(jchildren != null) {
 			for (JsonElement jsonElement : jchildren) {
 				JsonObject jsonObject = (JsonObject)jsonElement;
-				children.add(ComponentRegistry.createByJson(jsonObject, this));
+				children.add(ComponentRegistry.createByJson(jsonObject,this));
 			}
 		}
 	}
 	public  JsonObject toJson() {
 		JsonObject obj = new JsonObject();
 		obj.addProperty("type", getID());
-		obj.addProperty("left", left);
-		obj.addProperty("top", top);
-		obj.addProperty("width", width);
-		obj.addProperty("height", height);
+		obj.add("left", left.toJson());
+		obj.add("top", top.toJson());
+		obj.add("width", width.toJson());
+		obj.add("height", height.toJson());
 		obj.addProperty("name", name);
 		return obj;
 	}
@@ -69,9 +67,11 @@ public abstract class Component implements RegistryElement{
 		When overriding: Make sure to call super.draw(design); at the <b>end</b> of the function.
 		@param design
 	*/
-	public void draw(Design design) {
+	public void draw(Design design,float parentialOffsetX,float parentialOffsetY) {
 		for (Component component : children) {
-			component.draw(design);
+			component.draw(design,
+					parentialOffsetX+left.getAsValue(),
+					parentialOffsetY+top.getAsValue());
 		}
 	}
 
@@ -81,5 +81,13 @@ public abstract class Component implements RegistryElement{
 			child.setScene(scene);
 		}
 	}
-	
+
+	public void add(Component child) {
+		children.add(child);
+		child.setParent(this);
+		
+	}
+	public void setParent(Component parent) {
+		this.parent = parent;
+	}
 }
