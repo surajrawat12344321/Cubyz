@@ -30,7 +30,7 @@ public class Text extends Component {
 	static int vbo = -1;
 	static Shader shader = new Shader();
 	
-	//state of the button
+	//state of the Text
 	public boolean pressed;
 	public boolean hovered;
 		
@@ -45,7 +45,9 @@ public class Text extends Component {
 	//Text
 	private String text = new String("a");
 	private TextLayout layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
-
+	public int cursorPosition = -1;
+	public boolean editable = true;
+	
 	@Override
 	public String getID() {
 		return "cubyz:text";
@@ -122,12 +124,35 @@ public class Text extends Component {
 		this.text = string;
 		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
 	}
+	public void addTextAtCursor(String string) {
+		if(cursorPosition<0||cursorPosition>text.length())
+			return;
+		this.text = text.substring(0, cursorPosition)+string+text.substring(cursorPosition);
+		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());	
+		cursorPosition+=string.length();
+	}
+	public void deleteTextAtCursor() {
+		if(cursorPosition<=0||cursorPosition>text.length())
+			return;
+		this.text = text.substring(0, cursorPosition-1)+text.substring(cursorPosition);
+		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());	
+		cursorPosition--;
+	}
+	public void moveCursor(int position) {
+		cursorPosition += position;
+		if(cursorPosition>=text.length())
+			cursorPosition = text.length()-1;
+		if(cursorPosition<0)
+			cursorPosition = 0;
+	}
 	String getText() {
 		return text;
 	}
 	
-	public void update(Design design) {
+	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
 		Vector2d mousepos = Input.getMousePosition(design);
+		mousepos.x-= parentalOffsetX-originLeft.getAsValue();
+		mousepos.y-= parentalOffsetY-originTop.getAsValue();
 		
 		hovered = (left.getAsValue()<=mousepos.x&&
 			top.getAsValue()<=mousepos.y&&
@@ -136,21 +161,37 @@ public class Text extends Component {
 
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
+		if(pressed)
+			Input.selectedText = this;
+		//if(name.equals("unicode"))
+		//	System.out.println(width.getAsValue());
+		
 		if(!pressed&&old_pressed&&onAction!=null)
-			onAction.run();
-		
-		//System.out.println(hovered);
-		//System.out.println("Mousex"+mousepos.x);
-		
+			onAction.run();	
 	}
+	
+	
 	@Override
 	public void draw(Design design,float parentalOffsetX,float parentalOffsetY) {
-		update(design);
+		update(design,parentalOffsetX,parentalOffsetY);
 		CubyzGraphics2D.instance.textHeight = height.getAsValue();
+		
+		
+		//cursor clicked
+		if(pressed)
+			CubyzGraphics2D.instance.cursor_clickedPosition = (float)Input.getMousePosition(design).x;
+		else
+			CubyzGraphics2D.instance.cursor_clickedPosition = -1;
+		
+		
+		
+		CubyzGraphics2D.instance.cursor_position = this.cursorPosition;
 		// Undo the ratio multiplication that is done later on the gpu:
 		float ratio = (float)height.getAsValue()/font.getTexture().height;
-		layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue())/ratio);
-
+		layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue()-originLeft.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue()-originTop.getAsValue())/ratio);
+		this.cursorPosition = CubyzGraphics2D.instance.cursor_position;
+		
 		super.draw(design,parentalOffsetX,parentalOffsetY);
+		width.setAsValue(CubyzGraphics2D.instance.textWidth);
 	}
 }

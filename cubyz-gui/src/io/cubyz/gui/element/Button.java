@@ -147,8 +147,11 @@ public class Button extends Component {
 		return object;
 	}
 
-	public void update(Design design) {
+	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
 		Vector2d mousepos = Input.getMousePosition(design);
+		mousepos.x-=parentalOffsetX-originLeft.getAsValue();
+		mousepos.y-=parentalOffsetY-originTop.getAsValue();
+		
 		
 		hovered = (left.getAsValue()<=mousepos.x&&
 			top.getAsValue()<=mousepos.y&&
@@ -162,7 +165,7 @@ public class Button extends Component {
 	}
 	@Override
 	public void draw(Design design,float parentalOffsetX,float parentalOffsetY) {
-		update(design);
+		update(design,parentalOffsetX,parentalOffsetY);
 		
 		//fragment
 		int loc_shadow = shader.getUniformLocation("shadow");
@@ -188,7 +191,7 @@ public class Button extends Component {
 			
 			//vertex
 			glUniform2f(loc_scene_size, design.width.getAsValue(), design.height.getAsValue());
-			glUniform2f(loc_position,parentalOffsetX+left.getAsValue(),parentalOffsetY+top.getAsValue());
+			glUniform2f(loc_position,parentalOffsetX+left.getAsValue()-originLeft.getAsValue(),parentalOffsetY+top.getAsValue()-originTop.getAsValue());
 			glUniform2f(loc_size,width.getAsValue(),height.getAsValue());
 			
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);

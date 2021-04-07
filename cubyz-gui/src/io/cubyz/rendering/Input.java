@@ -9,12 +9,14 @@ import java.util.HashMap;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
+import io.cubyz.gui.element.Text;
 import io.cubyz.utils.log.Log;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -22,8 +24,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public final class Input {
 	//public
 	public static Component selectedText;
-	
-	//
 	
 	//window
 	static Window window;
@@ -64,13 +64,26 @@ public final class Input {
 		
 		Input.window = window;
 		
+		
 		glfwSetKeyCallback(window.getHandle(),new GLFWKeyCallback() {
 			@Override
-			public void invoke(long window, int key, int scancode, int action, int mods) {
+			public void invoke(long window, int key, int scancode, int action, int mods) {					
 				if(action == GLFW_PRESS)
 					real_press[key+key_count_mouse] = true;
 				else if(action == GLFW_RELEASE)
 					real_press[key+key_count_mouse] = false;
+				
+				
+				//special keys for text
+				if((action==GLFW_PRESS||action==GLFW_REPEAT)&&(selectedText!=null?selectedText.getID()=="cubyz:text":false)) {
+					if(key == GLFW_KEY_BACKSPACE) {
+						if(((Text)selectedText).editable)
+							((Text)selectedText).deleteTextAtCursor();
+					}else if(key == GLFW_KEY_LEFT) 
+						((Text)selectedText).moveCursor(-1);
+					else if(key == GLFW_KEY_RIGHT) 
+						((Text)selectedText).moveCursor(1);
+				}
 				
 			}
 		});
@@ -78,7 +91,7 @@ public final class Input {
 			
 			@Override
 			public void invoke(long window, int button, int action, int mods) {
-				if(action == GLFW_PRESS)
+					if(action == GLFW_PRESS)
 					real_press[button] = true;
 				else if(action == GLFW_RELEASE)
 					real_press[button] = false;
@@ -92,6 +105,19 @@ public final class Input {
 				// TODO Auto-generated method stub
 				mousePosition.x = xpos;
 				mousePosition.y = ypos;
+			}
+		});
+		glfwSetCharCallback(window.getHandle(),new GLFWCharCallback() {
+			
+			@Override
+			public void invoke(long window, int codepoint) {
+				if(selectedText!=null) {
+					if(selectedText.getID()=="cubyz:text"){
+						if(((Text)selectedText).editable){	
+							((Text)selectedText).addTextAtCursor(""+(char)codepoint);
+						}
+					}
+				}
 			}
 		});
 	}

@@ -1,13 +1,11 @@
 {"name":"name","width":1920,"height":1080,"children":[
- {"type":"cubyz:button","name":"top","left":20.0,"top":290.0,"width":245.0,"height":145.0},
+ {"type":"cubyz:button","name":"Singleplayer?","left":20.0,"top":290.0,"width":245.0,"height":145.0},
 {"type":"cubyz:button","name":"bot","left":20.0,"top":50.0,"width":245.0,"height":145.0},
 {"type":"cubyz:button","name":"gray","left":20.0,"top":530.0,"width":245.0,"height":145.0,"shadowIntensity":0.2},
-
-{"type":"cubyz:button","name":"red_green","left":690,"top":450,"width":270,"height":180,"color":[100,100,100],"colorHovered":[100,255,100],"colorPressed":[255,100,100],
-	"text":"okay",
-	"children":[{"type":"cubyz:text","height":60, "text":"Press me! I'll get red!"}]
+{"type":"cubyz:button","name":"red_green","left":690,"top":450,"width":"50%","height":180,"color":[100,100,100],"colorHovered":[100,255,100],"colorPressed":[255,100,100],
+	"text":"akay",
+	"children":[{"type":"cubyz:text","height":"50%","top":50%,"origin":["50%","50%"],left:"50%","text":"Press me! I'll get red!"}]
 },
-	{"type":"cubyz:text","left":300,"top":180,"height":60,"color":[0,0,0],"colorHovered":[0,25,0],"colorPressed":[25,0,0],
+{"type":"cubyz:text","name":"unicode","left":300,"top":180,"height":90,"color":[0,0,0],"colorHovered":[0,25,0],"colorPressed":[25,0,0],
 	"text":"ண் U̵̞̬̲͇̝ͧ͗̏͆̅ͫͫṋ͉̭̻͋͋ͫ͗̏ͧ̓î͇͎͇̠̂̊͒̌̐͆c̨͈̮̝͇̰̓̐͑̚o̫̪̙̍ͣ̍ͤ̋ͧ̈́d̵̪͖̩ͯͧ̃̔ͮ̚͡ẹ̡̖͚̦̿̀͘͠ wo⃗⃗rks!ண்a اختبار تقديم النص a"}
-
 ]}

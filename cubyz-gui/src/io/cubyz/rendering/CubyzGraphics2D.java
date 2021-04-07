@@ -38,6 +38,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.nio.FloatBuffer;
 import java.text.AttributedCharacterIterator;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.lwjgl.system.MemoryUtil;
@@ -87,11 +88,18 @@ public class CubyzGraphics2D extends Graphics2D {
 	public Design design;
 	
 	public float textHeight;
-
+	public float textWidth;
+	
+	//cursor
+	public float cursor_clickedPosition;
+	public int cursor_position= -1;
+	
 	@Override
 	public void drawGlyphVector(GlyphVector glyphs, float left, float top) {
 		textShader.bind();
 		font.getTexture().bind();
+		
+		float ratio = (float)textHeight/font.getTexture().height;
 		
 		//vertex and shader
 		int loc_texCoords = textShader.getUniformLocation("texture_rect");
@@ -99,32 +107,63 @@ public class CubyzGraphics2D extends Graphics2D {
 		int loc_scene = textShader.getUniformLocation("scene");
 		int loc_offset = textShader.getUniformLocation("offset");
 		int loc_ratio = textShader.getUniformLocation("ratio");
+		int loc_texColor = textShader.getUniformLocation("texColor");
 
 		//fragment
 		int loc_fontSize = textShader.getUniformLocation("font_size");
 
 		glUniform2f(loc_scene, design.width.getAsValue(), design.height.getAsValue());
 		glUniform2f(loc_fontSize,font.getTexture().width, font.getTexture().height);
-		glUniform1f(loc_ratio, (float)textHeight/font.getTexture().height);
+		glUniform1f(loc_ratio, ratio);
 		
 		
 		glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+		
+		cursorClicked(glyphs,left);
+		
 		// Draw all the glyphs:
 		for (int i = 0; i < glyphs.getNumGlyphs(); i++) {
 			Glyph glyph = font.getGlyph(glyphs, i);
 			
-			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), left, top);
+			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), (int)left, (int)top);
 			
 			glUniform2f(loc_offset, bounds.x, bounds.y);
 			glUniform4f(loc_texCoords, glyph.texture_left,glyph.texture_top,glyph.texture_width,glyph.texture_height);
+			if(cursor_position==i)
+				glUniform4f(loc_texColor, 1,0,0,1);
+			else 
+				glUniform4f(loc_texColor, 0,0,0,1);
+			
 			
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			
+			//set new width
+			textWidth = (bounds.x-(int)left)*ratio;
 		}
 		
 		font.getTexture().unbind();
 		textShader.unbind();
 	}
+	//where ist the cursor at? does safe the result in cursor_position
+	public void cursorClicked(GlyphVector glyphs,float left) {
+		if(cursor_clickedPosition== -1)
+			return;
+		float ratio = (float)textHeight/font.getTexture().height;
+		for (int i = 0; i < glyphs.getNumGlyphs(); i++) {
+			Glyph glyph = font.getGlyph(glyphs, i);
+			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), left, 0);
+			if(cursor_clickedPosition>=0) {
+				if(cursor_clickedPosition<=ratio*bounds.x+ratio*bounds.width){	
+					cursor_clickedPosition = -1;
+					cursor_position = i;
+					return;
+				}	
+			}
+		}
+		cursor_clickedPosition = -1;
+	}
 
+	
 	@Override
 	public Font getFont() {
 		return font.font;

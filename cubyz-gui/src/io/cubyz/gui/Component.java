@@ -27,12 +27,19 @@ public abstract class Component implements RegistryElement{
 	public Component() {}
 	public void create(JsonObject object,Component parent) {
 		this.parent = parent;
+		
 		// Default to center of parent if nothing more is specified:
 		if(parent != null) {
 			left.setAsPercentage(0.5f, parent.width);
 			top.setAsPercentage(0.5f, parent.height);
+			
+			//only for text
+			if(getID()=="cubyz:text") {
+				originLeft.setAsPercentage(0.5f,width);
+				originTop.setAsPercentage(0.5f,height);		
+			}
 		}
-
+		
 		if(object.has("left"))
 			this.left.fromJsonAttribute(object,"left",parent.width);
 		if(object.has("top"))
@@ -43,6 +50,11 @@ public abstract class Component implements RegistryElement{
 			this.height.fromJsonAttribute(object,"height",parent.height);
 		if(object.has("name"))
 			this.name = object.getAsJsonPrimitive("name").getAsString();
+		if(object.has("origin")) {
+			JsonArray Jorigin = object.getAsJsonArray("origin");
+			this.originLeft.fromJson(Jorigin.get(0),width);
+			this.originTop.fromJson(Jorigin.get(1),height);
+		}
 
 		JsonArray jchildren = object.getAsJsonArray("children");
 		if(jchildren != null) {
@@ -60,6 +72,12 @@ public abstract class Component implements RegistryElement{
 		obj.add("width", width.toJson());
 		obj.add("height", height.toJson());
 		obj.addProperty("name", name);
+		
+		JsonArray origin = new JsonArray();
+		origin.add(originLeft.toJson());
+		origin.add(originTop.toJson());
+		obj.add("origin", origin);
+		
 		return obj;
 	}
 
@@ -70,8 +88,8 @@ public abstract class Component implements RegistryElement{
 	public void draw(Design design,float parentialOffsetX,float parentialOffsetY) {
 		for (Component component : children) {
 			component.draw(design,
-					parentialOffsetX+left.getAsValue(),
-					parentialOffsetY+top.getAsValue());
+					parentialOffsetX+left.getAsValue()-originLeft.getAsValue(),
+					parentialOffsetY+top.getAsValue()-originTop.getAsValue());
 		}
 	}
 

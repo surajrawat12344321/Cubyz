@@ -24,6 +24,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import io.cubyz.rendering.CubyzGraphics2D;
+import io.cubyz.rendering.Input;
+import io.cubyz.rendering.Keys;
 import io.cubyz.utils.datastructures.Registry;
 import io.cubyz.utils.log.Log;
 
@@ -106,12 +108,18 @@ public class Design extends Component{
 		return scene;
 	}
 	public void draw() {
-		GL30.glDisable(GL_DEPTH_TEST);
+		//deselect everythink if someone pressed somewhere else
+		if(Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY))
+			Input.selectedText = null;
+	
 		
+		GL30.glDisable(GL_DEPTH_TEST);
+	
 		CubyzGraphics2D.instance.design = this;
 		for (Component component : children) {
 			component.draw(this,0,0);
 		}
+	
 		GL30.glEnable(GL_DEPTH_TEST);
 	}
 	

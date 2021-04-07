@@ -9,7 +9,7 @@ uniform sampler2D texture_sampler;
 //in pxls
 uniform vec4 texture_rect;
 uniform vec2 font_size;
-
+uniform vec4 texColor;
 
 vec2 convert2Proportional(vec2 original,vec2 full){
 	return vec2(original.x/full.x,original.y/full.y);
@@ -19,7 +19,7 @@ vec2 convert2Proportional(vec2 original,vec2 full){
 void main(){
 	vec4 texture_rect_percentage =  vec4(convert2Proportional(texture_rect.xy,font_size),convert2Proportional(texture_rect.zw,font_size));
 	
-	frag_color = vec4(0.1,0,0,0.1)+texture(texture_sampler,
+	frag_color = vec4(0.1,0,0,0.0)+texColor*texture(texture_sampler,
 		vec2(
 				texture_rect_percentage.x+
 				frag_face_pos.x*texture_rect_percentage.z

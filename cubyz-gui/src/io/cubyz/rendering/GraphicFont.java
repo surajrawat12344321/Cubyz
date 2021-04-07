@@ -8,6 +8,9 @@ import java.awt.RenderingHints;
 import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+
+import com.sun.tools.javac.comp.Todo;
+
 import java.awt.Rectangle;
 
 public class GraphicFont {
@@ -39,7 +42,7 @@ public class GraphicFont {
 		
 	}
 	void loadFromFile() {
-		//todo
+		//Todo
 	}
 	/**
 	 * Dispose the Font
@@ -80,7 +83,7 @@ public class GraphicFont {
 		
 		//drawing the new letter
 		newGraphic.setFont(font);
-		newGraphic.setColor(Color.red);
+		newGraphic.setColor(Color.white);
 		newGraphic.setClip(fontTexture.getWidth(), 0, charWidth, charHeight);
 		newGraphic.drawGlyphVector(source, newFontTexture.getWidth()-charWidth-bounds.x,-bounds.y);
 		
