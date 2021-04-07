@@ -32,12 +32,6 @@ public abstract class Component implements RegistryElement{
 		if(parent != null) {
 			left.setAsPercentage(0.5f, parent.width);
 			top.setAsPercentage(0.5f, parent.height);
-			
-			//only for text
-			if(getID()=="cubyz:text") {
-				originLeft.setAsPercentage(0.5f,width);
-				originTop.setAsPercentage(0.5f,height);		
-			}
 		}
 		
 		if(object.has("left"))
@@ -88,8 +82,8 @@ public abstract class Component implements RegistryElement{
 	public void draw(Design design,float parentialOffsetX,float parentialOffsetY) {
 		for (Component component : children) {
 			component.draw(design,
-					parentialOffsetX+left.getAsValue()-originLeft.getAsValue(),
-					parentialOffsetY+top.getAsValue()-originTop.getAsValue());
+					parentialOffsetX+left.getAsValue()-component.originLeft.getAsValue(),
+					parentialOffsetY+top.getAsValue()-component.originTop.getAsValue());
 		}
 	}
 

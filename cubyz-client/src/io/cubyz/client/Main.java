@@ -7,13 +7,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import io.cubyz.gui.Component;
-import io.cubyz.rendering.GraphicFont;
-import io.cubyz.rendering.Input;
-import io.cubyz.rendering.Window;
 import io.cubyz.gui.Design;
 import io.cubyz.gui.Init;
 import io.cubyz.gui.Scene;
 import io.cubyz.gui.SceneManager;
+import io.cubyz.gui.rendering.CubyzGraphics2D;
+import io.cubyz.gui.rendering.GraphicFont;
+import io.cubyz.gui.rendering.Input;
+import io.cubyz.gui.rendering.Window;
 import io.cubyz.utils.log.Log;
 
 /**

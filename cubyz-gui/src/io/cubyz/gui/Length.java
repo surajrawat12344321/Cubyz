@@ -59,4 +59,8 @@ public class Length {
 	public void changeParent(Length length) {
 		this.parent = length;
 	}
+	
+	public String toString() {
+		return "Value: "+getAsValue();
+	}
 }

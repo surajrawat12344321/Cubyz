@@ -1,32 +1,8 @@
 package io.cubyz.gui;
 
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glEnable;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
-import org.lwjgl.opengl.GL30;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-
-import io.cubyz.rendering.Window;
-
-import io.cubyz.utils.datastructures.Registry;
-import io.cubyz.utils.log.Log;
+import io.cubyz.gui.rendering.Window;
 
 
 public class Scene {

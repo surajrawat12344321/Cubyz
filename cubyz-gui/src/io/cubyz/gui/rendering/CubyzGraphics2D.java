@@ -1,18 +1,9 @@
-package io.cubyz.rendering;
+package io.cubyz.gui.rendering;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLE_STRIP;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glUniform1f;
-import static org.lwjgl.opengl.GL20.glUniform2f;
-import static org.lwjgl.opengl.GL20.glUniform4f;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 
 import java.awt.Color;
 import java.awt.Composite;
@@ -38,13 +29,11 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.nio.FloatBuffer;
 import java.text.AttributedCharacterIterator;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.lwjgl.system.MemoryUtil;
 
 import io.cubyz.gui.Design;
-import io.cubyz.rendering.GraphicFont.Glyph;
 
 /**
  * Essentially just an interface for drawing with {@code Textlayout.draw}. Not much else of {@code Graphics2D} is supported.
@@ -54,10 +43,13 @@ public class CubyzGraphics2D extends Graphics2D {
 	// Static initialization:
 	public static final CubyzGraphics2D instance = new CubyzGraphics2D();
 
-	public static int textVBO = -1;
+	public static int textVAO;
+	public static int lineVAO;
 	public static Shader textShader = new Shader();
+	public static Shader lineShader = new Shader();
 	
 	static { // Init opengl stuff:
+		// Text stuff:
 		// vertex buffer
 		float rawdata[] = { 
 				0,0,		0,0,
@@ -68,7 +60,9 @@ public class CubyzGraphics2D extends Graphics2D {
 		FloatBuffer buffer = MemoryUtil.memAllocFloat(rawdata.length);
 		buffer.put(rawdata).flip();
 		
-		textVBO = glGenBuffers();
+		textVAO = glGenVertexArrays();
+		glBindVertexArray(textVAO);
+		int textVBO = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, textVBO);
 		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
 		glVertexAttribPointer(0,2,GL_FLOAT,false,4*4,0);
@@ -80,6 +74,27 @@ public class CubyzGraphics2D extends Graphics2D {
 		textShader.loadFromFile("assets/cubyz/shaders/Gui/GuiText.vs", "assets/cubyz/shaders/Gui/GuiText.fs");
 		
 		
+		
+		// Line stuff:
+		// vertex buffer
+		rawdata = new float[]{ 
+				0,0,1,1
+			};
+		buffer = MemoryUtil.memAllocFloat(rawdata.length);
+		buffer.put(rawdata).flip();
+
+		lineVAO = glGenVertexArrays();
+		glBindVertexArray(lineVAO);
+		int lineVBO = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+		glVertexAttribPointer(0,2,GL_FLOAT,false,2*4,0);
+		glEnableVertexAttribArray(0);
+		
+		//Shader
+		lineShader.loadFromFile("assets/cubyz/shaders/Gui/GuiLine.vs", "assets/cubyz/shaders/Gui/GuiLine.fs");
+		
+		
 	}
 	
 	public GraphicFont font;
@@ -88,18 +103,15 @@ public class CubyzGraphics2D extends Graphics2D {
 	public Design design;
 	
 	public float textHeight;
-	public float textWidth;
-	
-	//cursor
-	public float cursor_clickedPosition;
-	public int cursor_position= -1;
 	
 	@Override
 	public void drawGlyphVector(GlyphVector glyphs, float left, float top) {
+		// Correct by the height of the font:
+		top -= font.font.getSize() - font.fontGraphics.getFontMetrics().getAscent();		
 		textShader.bind();
 		font.getTexture().bind();
 		
-		float ratio = (float)textHeight/font.getTexture().height;
+		float ratio = (float)textHeight/font.font.getSize();
 		
 		//vertex and shader
 		int loc_texCoords = textShader.getUniformLocation("texture_rect");
@@ -116,51 +128,58 @@ public class CubyzGraphics2D extends Graphics2D {
 		glUniform2f(loc_fontSize,font.getTexture().width, font.getTexture().height);
 		glUniform1f(loc_ratio, ratio);
 		
+		glUniform4f(loc_texColor, 0,0,0,1);
 		
-		glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-		
-		cursorClicked(glyphs,left);
+
+		glBindVertexArray(textVAO);
 		
 		// Draw all the glyphs:
 		for (int i = 0; i < glyphs.getNumGlyphs(); i++) {
-			Glyph glyph = font.getGlyph(glyphs, i);
+			Rectangle textureBounds = font.getGlyph(glyphs, i);
 			
-			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), (int)left, (int)top);
-			
+			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), left, top);
 			glUniform2f(loc_offset, bounds.x, bounds.y);
-			glUniform4f(loc_texCoords, glyph.texture_left,glyph.texture_top,glyph.texture_width,glyph.texture_height);
-			if(cursor_position==i)
-				glUniform4f(loc_texColor, 1,0,0,1);
-			else 
-				glUniform4f(loc_texColor, 0,0,0,1);
+			glUniform4f(loc_texCoords, textureBounds.x+42e-5f, textureBounds.y, textureBounds.width, textureBounds.height);
 			
 			
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-			
-			//set new width
-			textWidth = (bounds.x-(int)left)*ratio;
 		}
 		
 		font.getTexture().unbind();
 		textShader.unbind();
 	}
-	//where ist the cursor at? does safe the result in cursor_position
-	public void cursorClicked(GlyphVector glyphs,float left) {
-		if(cursor_clickedPosition== -1)
-			return;
-		float ratio = (float)textHeight/font.getTexture().height;
-		for (int i = 0; i < glyphs.getNumGlyphs(); i++) {
-			Glyph glyph = font.getGlyph(glyphs, i);
-			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), left, 0);
-			if(cursor_clickedPosition>=0) {
-				if(cursor_clickedPosition<=ratio*bounds.x+ratio*bounds.width){	
-					cursor_clickedPosition = -1;
-					cursor_position = i;
-					return;
-				}	
-			}
-		}
-		cursor_clickedPosition = -1;
+	
+	/**
+	 * 
+	 * @param x coordinate of the starting point
+	 * @param y coordinate of the starting point
+	 * @param width x-distance between the points
+	 * @param height y-distance between the points
+	 */
+	public void drawLine(float x, float y, float width, float height) {
+		lineShader.bind();
+		
+		//vertex and shader
+		int loc_scene = lineShader.getUniformLocation("scene");
+		int loc_start = lineShader.getUniformLocation("lineStart");
+		int loc_direction = lineShader.getUniformLocation("lineDirection");
+		int loc_lineColor = lineShader.getUniformLocation("lineColor");
+
+		glUniform2f(loc_scene, design.width.getAsValue(), design.height.getAsValue());
+		glUniform2f(loc_start, x, y);
+		glUniform2f(loc_direction, width, height);
+		glUniform4f(loc_lineColor, 0,0,0,1);
+		
+		//System.out.println(textVBO+" "+lineVBO);
+		glBindVertexArray(lineVAO);
+		glDrawArrays(GL_LINE_STRIP, 0, 2);
+		
+		lineShader.unbind();
+	}
+
+	@Override
+	public void drawLine(int x0, int y0, int x1, int y1) {
+		this.drawLine((float)x0, (float)y0, (float)(x1 - x0), (float)(y1 - y0));
 	}
 
 	
@@ -457,12 +476,6 @@ public class CubyzGraphics2D extends Graphics2D {
 	@Deprecated
 	@Override
 	public boolean drawImage(Image arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, Color arg9, ImageObserver arg10) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public void drawLine(int arg0, int arg1, int arg2, int arg3) {
 		throw new UnsupportedOperationException();
 	}
 

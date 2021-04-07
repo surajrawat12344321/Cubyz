@@ -1,7 +1,8 @@
 package io.cubyz.gui.element;
 
-
+import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
+import java.awt.geom.Point2D;
 import java.util.Arrays;
 
 import org.joml.Vector2d;
@@ -11,11 +12,11 @@ import com.google.gson.JsonObject;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
-import io.cubyz.rendering.CubyzGraphics2D;
-import io.cubyz.rendering.GraphicFont;
-import io.cubyz.rendering.Input;
-import io.cubyz.rendering.Keys;
-import io.cubyz.rendering.Shader;
+import io.cubyz.gui.rendering.CubyzGraphics2D;
+import io.cubyz.gui.rendering.GraphicFont;
+import io.cubyz.gui.rendering.Input;
+import io.cubyz.gui.rendering.Keys;
+import io.cubyz.gui.rendering.Shader;
 
 public class Text extends Component {
 	//statics
@@ -33,9 +34,6 @@ public class Text extends Component {
 	//state of the Text
 	public boolean pressed;
 	public boolean hovered;
-		
-	//action
-	public Runnable onAction;
 	
 	//colors
 	public float[] color_std 	 = 	{ 156, 166, 191}; // standart colour
@@ -45,16 +43,14 @@ public class Text extends Component {
 	//Text
 	private String text = new String("a");
 	private TextLayout layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
-	public int cursorPosition = -1;
+	public TextHitInfo cursorPosition = null;
+	public float cursorX = 0;
 	public boolean editable = true;
+	
 	
 	@Override
 	public String getID() {
 		return "cubyz:text";
-	}
-	
-	public void setOnAction(Runnable onAction) {
-		this.onAction = onAction;
 	}
 
 	@Override
@@ -118,32 +114,99 @@ public class Text extends Component {
 
 	void addText(String string) {
 		this.text += string;
-		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
+		updateText();
 	}
 	void setText(String string) {
 		this.text = string;
-		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
+		updateText();
 	}
+	
 	public void addTextAtCursor(String string) {
-		if(cursorPosition<0||cursorPosition>text.length())
-			return;
-		this.text = text.substring(0, cursorPosition)+string+text.substring(cursorPosition);
-		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());	
-		cursorPosition+=string.length();
+		if(cursorPosition != null) {
+			int oldCursorIndex = cursorPosition.getCharIndex() + string.length();
+			if(cursorPosition.isLeadingEdge())
+				this.text = text.substring(0, oldCursorIndex-1)+string+text.substring(oldCursorIndex-1);
+			else
+				this.text = text.substring(0, oldCursorIndex)+string+text.substring(oldCursorIndex);
+			updateText();
+			if(cursorPosition.isLeadingEdge())
+				cursorPosition = TextHitInfo.leading(oldCursorIndex);
+			else
+				cursorPosition = TextHitInfo.trailing(oldCursorIndex);
+			
+			moveCursor(0);
+		}
 	}
-	public void deleteTextAtCursor() {
-		if(cursorPosition<=0||cursorPosition>text.length())
-			return;
-		this.text = text.substring(0, cursorPosition-1)+text.substring(cursorPosition);
-		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());	
-		cursorPosition--;
+	
+	/**
+	 * Removes the selected text or if no text is selected, removes the right or left character depending on what key is pressed.
+	 * @param isRightDelete on which side the character should be removed.
+	 */
+	public void deleteTextAtCursor(boolean isRightDelete) {
+		if(cursorPosition != null) {
+			boolean isLeading = cursorPosition.isLeadingEdge();
+			int[] selection;
+			// Make a selection to determine which character should be removed:
+			if(true) { // If nothing is selected.
+				TextHitInfo oldPosition = cursorPosition;
+				if(isRightDelete) {
+					cursorPosition = layout.getNextRightHit(cursorPosition);
+				} else {
+					cursorPosition = layout.getNextLeftHit(cursorPosition);
+				}
+				selection = layout.getLogicalRangesForVisualSelection(oldPosition, cursorPosition);
+			} else {
+				// TODO
+			}
+			int oldPositionIndex = cursorPosition.getCharIndex();
+			// Remove all selected characters:
+			for(int i = 0; i < selection.length; i += 2) {
+				int start = selection[i];
+				int end = selection[i+1];
+				deleteTextRange(start, end);
+				// Go through other indices and shift them:
+				for(int j = i + 2; j < selection.length; j += 2) {
+					if(selection[j] >= end) {
+						selection[j] -= end - start;
+						selection[j+1] -= end - start;
+					}
+				}
+				// Also move the current cursor location:
+				if(oldPositionIndex >= end) {
+					oldPositionIndex -= end - start;
+				}
+			}
+			updateText();
+			// Update cursor:
+			if(isLeading)
+				cursorPosition = TextHitInfo.leading(oldPositionIndex);
+			else
+				cursorPosition = TextHitInfo.trailing(oldPositionIndex);
+			
+			moveCursor(0);
+		}
 	}
-	public void moveCursor(int position) {
-		cursorPosition += position;
-		if(cursorPosition>=text.length())
-			cursorPosition = text.length()-1;
-		if(cursorPosition<0)
-			cursorPosition = 0;
+	private void deleteTextRange(int start, int end) {
+		text = text.substring(0, start) + text.substring(end);
+	}
+	private void updateText() {
+		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
+		width.setAsValue((float)layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
+	}
+	public void moveCursor(int offset) {
+		if(offset < 0) {
+			while(offset++ < 0) {
+				cursorPosition = layout.getNextLeftHit(cursorPosition);
+			}
+		} else if(offset > 0) {
+			while(offset-- > 0) {
+				cursorPosition = layout.getNextRightHit(cursorPosition);
+			}
+		}
+		//cursorPosition = cursorPosition.getOffsetHit(position);
+		Point2D.Float cursorPos = new Point2D.Float();
+		layout.hitToPoint(cursorPosition, cursorPos);
+		cursorX = cursorPos.x*(float)height.getAsValue()/font.font.getSize();
 	}
 	String getText() {
 		return text;
@@ -151,23 +214,25 @@ public class Text extends Component {
 	
 	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
 		Vector2d mousepos = Input.getMousePosition(design);
-		mousepos.x-= parentalOffsetX-originLeft.getAsValue();
-		mousepos.y-= parentalOffsetY-originTop.getAsValue();
+		mousepos.x-= parentalOffsetX + left.getAsValue();
+		mousepos.y-= parentalOffsetY + top.getAsValue();
 		
-		hovered = (left.getAsValue()<=mousepos.x&&
-			top.getAsValue()<=mousepos.y&&
-			left.getAsValue()+width.getAsValue()>=mousepos.x&&
-			top.getAsValue()+height.getAsValue()>=mousepos.y);
-
+		hovered = (0<=mousepos.x&&
+			0<=mousepos.y&&
+			width.getAsValue()>=mousepos.x&&
+			height.getAsValue()>=mousepos.y);
+		
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
 		if(pressed)
 			Input.selectedText = this;
-		//if(name.equals("unicode"))
-		//	System.out.println(width.getAsValue());
-		
-		if(!pressed&&old_pressed&&onAction!=null)
-			onAction.run();	
+
+		if(!pressed && old_pressed) {
+			float ratio = (float)height.getAsValue()/font.font.getSize();
+			TextHitInfo info = layout.hitTestChar((float)mousepos.x/ratio, (float)mousepos.y/ratio);
+			cursorPosition = info;
+			moveCursor(0);
+		}
 	}
 	
 	
@@ -177,21 +242,16 @@ public class Text extends Component {
 		CubyzGraphics2D.instance.textHeight = height.getAsValue();
 		
 		
-		//cursor clicked
-		if(pressed)
-			CubyzGraphics2D.instance.cursor_clickedPosition = (float)Input.getMousePosition(design).x;
-		else
-			CubyzGraphics2D.instance.cursor_clickedPosition = -1;
 		
-		
-		
-		CubyzGraphics2D.instance.cursor_position = this.cursorPosition;
 		// Undo the ratio multiplication that is done later on the gpu:
-		float ratio = (float)height.getAsValue()/font.getTexture().height;
-		layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue()-originLeft.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue()-originTop.getAsValue())/ratio);
-		this.cursorPosition = CubyzGraphics2D.instance.cursor_position;
+		float ratio = (float)height.getAsValue()/font.font.getSize();
+		layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue())/ratio);
 		
+		if(cursorPosition != null) {
+			CubyzGraphics2D.instance.drawLine(left.getAsValue() + parentalOffsetX + cursorX, top.getAsValue() + parentalOffsetY, 0, height.getAsValue());
+
+		}
+
 		super.draw(design,parentalOffsetX,parentalOffsetY);
-		width.setAsValue(CubyzGraphics2D.instance.textWidth);
 	}
 }

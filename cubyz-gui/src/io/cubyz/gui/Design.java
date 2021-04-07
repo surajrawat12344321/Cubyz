@@ -1,32 +1,20 @@
 package io.cubyz.gui;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.glEnable;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import org.lwjgl.opengl.GL30;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
-import io.cubyz.rendering.CubyzGraphics2D;
-import io.cubyz.rendering.Input;
-import io.cubyz.rendering.Keys;
-import io.cubyz.utils.datastructures.Registry;
+import io.cubyz.gui.rendering.CubyzGraphics2D;
+import io.cubyz.gui.rendering.Input;
+import io.cubyz.gui.rendering.Keys;
 import io.cubyz.utils.log.Log;
 
 /**
@@ -117,7 +105,9 @@ public class Design extends Component{
 	
 		CubyzGraphics2D.instance.design = this;
 		for (Component component : children) {
-			component.draw(this,0,0);
+			component.draw(this,
+					0+left.getAsValue()-component.originLeft.getAsValue(),
+					0+top.getAsValue()-component.originTop.getAsValue());
 		}
 	
 		GL30.glEnable(GL_DEPTH_TEST);

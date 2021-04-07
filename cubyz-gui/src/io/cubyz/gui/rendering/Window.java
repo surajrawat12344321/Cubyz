@@ -1,4 +1,4 @@
-package io.cubyz.rendering;
+package io.cubyz.gui.rendering;
 
 import static org.lwjgl.glfw.GLFW.*;
 

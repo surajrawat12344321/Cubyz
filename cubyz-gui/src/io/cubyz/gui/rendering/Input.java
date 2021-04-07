@@ -1,4 +1,4 @@
-package io.cubyz.rendering;
+package io.cubyz.gui.rendering;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -78,8 +78,11 @@ public final class Input {
 				if((action==GLFW_PRESS||action==GLFW_REPEAT)&&(selectedText!=null?selectedText.getID()=="cubyz:text":false)) {
 					if(key == GLFW_KEY_BACKSPACE) {
 						if(((Text)selectedText).editable)
-							((Text)selectedText).deleteTextAtCursor();
-					}else if(key == GLFW_KEY_LEFT) 
+							((Text)selectedText).deleteTextAtCursor(false);
+					} else if(key == GLFW_KEY_DELETE) {
+						if(((Text)selectedText).editable)
+							((Text)selectedText).deleteTextAtCursor(true);
+					} else if(key == GLFW_KEY_LEFT) 
 						((Text)selectedText).moveCursor(-1);
 					else if(key == GLFW_KEY_RIGHT) 
 						((Text)selectedText).moveCursor(1);

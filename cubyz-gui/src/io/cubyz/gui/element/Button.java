@@ -2,11 +2,10 @@ package io.cubyz.gui.element;
 
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL30.*;
 
-import java.lang.reflect.Array;
 import java.nio.FloatBuffer;
-import java.sql.Time;
 import java.util.Arrays;
 
 import org.joml.Vector2d;
@@ -17,15 +16,13 @@ import com.google.gson.JsonObject;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
-import io.cubyz.rendering.Input;
-import io.cubyz.rendering.Keys;
-import io.cubyz.rendering.Shader;
-
-import static org.lwjgl.glfw.GLFW.*;
+import io.cubyz.gui.rendering.Input;
+import io.cubyz.gui.rendering.Keys;
+import io.cubyz.gui.rendering.Shader;
 
 public class Button extends Component {
 	//statics
-	static int vbo = -1;
+	static int vao = -1;
 	static Shader shader = new Shader();
 	
 	//state of the button
@@ -46,7 +43,7 @@ public class Button extends Component {
 	
 	
 	static void initOpenGLStuff() {
-		if (vbo != -1)
+		if (vao != -1)
 			return;
 		// vertex buffer
 		float rawdata[] = { 
@@ -57,7 +54,9 @@ public class Button extends Component {
 			};
 		FloatBuffer buffer = MemoryUtil.memAllocFloat(rawdata.length);
 		buffer.put(rawdata).flip();
-		
+
+		vao = glGenVertexArrays();
+		glBindVertexArray(vao);
 		int vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
@@ -149,8 +148,8 @@ public class Button extends Component {
 
 	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
 		Vector2d mousepos = Input.getMousePosition(design);
-		mousepos.x-=parentalOffsetX-originLeft.getAsValue();
-		mousepos.y-=parentalOffsetY-originTop.getAsValue();
+		mousepos.x-=parentalOffsetX;
+		mousepos.y-=parentalOffsetY;
 		
 		
 		hovered = (left.getAsValue()<=mousepos.x&&
@@ -191,10 +190,10 @@ public class Button extends Component {
 			
 			//vertex
 			glUniform2f(loc_scene_size, design.width.getAsValue(), design.height.getAsValue());
-			glUniform2f(loc_position,parentalOffsetX+left.getAsValue()-originLeft.getAsValue(),parentalOffsetY+top.getAsValue()-originTop.getAsValue());
+			glUniform2f(loc_position,parentalOffsetX+left.getAsValue(),parentalOffsetY+top.getAsValue());
 			glUniform2f(loc_size,width.getAsValue(),height.getAsValue());
 			
-			glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			glBindVertexArray(vao);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
