@@ -97,8 +97,11 @@ public abstract class Component implements RegistryElement{
 	public void add(Component child) {
 		children.add(child);
 		child.setParent(this);
-		
 	}
+	public void remove(Component child) {
+		children.remove(child);
+	}
+	
 	public void setParent(Component parent) {
 		this.parent = parent;
 	}

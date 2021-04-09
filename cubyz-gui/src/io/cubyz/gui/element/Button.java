@@ -13,12 +13,16 @@ import org.lwjgl.system.MemoryUtil;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.cubyz.gui.Component;
+import io.cubyz.gui.ComponentRegistry;
 import io.cubyz.gui.Design;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.rendering.Shader;
+import io.cubyz.gui.rendering.Texture;
+import io.cubyz.gui.rendering.TextureManager;
 
 public class Button extends Component {
 	//statics
@@ -30,9 +34,9 @@ public class Button extends Component {
 	public boolean hovered;
 	
 	//colors
-	public float[] color_std 	 = 	{ 156, 166, 191}; // standart colour
-	public float[] color_pressed = 	{ 146, 154, 179}; // pressed colour
-	public float[] color_hovered = 	{ 156, 166, 221}; // hovered colour
+	public float[] color_std 	 = 	{ 156, 166, 191,255}; // standart colour
+	public float[] color_pressed = 	{ 146, 154, 179,255}; // pressed colour
+	public float[] color_hovered = 	{ 156, 166, 221,255}; // hovered colour
 	
 	//shadow
 	public float shadowWidth = 20;
@@ -40,7 +44,8 @@ public class Button extends Component {
 	public float shadowIntensity = 0.5f;
 	
 	//texture
-	
+	private Texture texture = null;
+	private String texture_path = "";
 	
 	static void initOpenGLStuff() {
 		if (vao != -1)
@@ -76,6 +81,11 @@ public class Button extends Component {
 		return "cubyz:button";
 	}
 
+	public void setTexture(String path) {
+		texture_path = path;
+		texture = TextureManager.require(texture_path);
+	}
+	
 	@Override
 	public void create(JsonObject object,Component parent) {
 		super.create(object,parent);
@@ -85,16 +95,19 @@ public class Button extends Component {
 			color_std[0] = object.get("color").getAsJsonArray().get(0).getAsFloat();
 			color_std[1] = object.get("color").getAsJsonArray().get(1).getAsFloat();
 			color_std[2] = object.get("color").getAsJsonArray().get(2).getAsFloat();	
+			color_std[3] = object.get("color").getAsJsonArray().get(3).getAsFloat();	
 		}
 		if(object.has("colorHovered")) {
 			color_hovered[0] = object.get("colorHovered").getAsJsonArray().get(0).getAsFloat();
 			color_hovered[1] = object.get("colorHovered").getAsJsonArray().get(1).getAsFloat();
 			color_hovered[2] = object.get("colorHovered").getAsJsonArray().get(2).getAsFloat();	
+			color_hovered[3] = object.get("colorHovered").getAsJsonArray().get(3).getAsFloat();	
 		}
 		if(object.has("colorPressed")) {
 			color_pressed[0] = object.get("colorPressed").getAsJsonArray().get(0).getAsFloat();
 			color_pressed[1] = object.get("colorPressed").getAsJsonArray().get(1).getAsFloat();
 			color_pressed[2] = object.get("colorPressed").getAsJsonArray().get(2).getAsFloat();	
+			color_hovered[3] = object.get("colorHovered").getAsJsonArray().get(3).getAsFloat();	
 		}
 		if(object.has("shadow")) {
 			shadowWidth = object.get("shadow").getAsJsonArray().get(0).getAsFloat();
@@ -103,7 +116,27 @@ public class Button extends Component {
 		if(object.has("shadowIntensity")) {
 			shadowIntensity = object.get("shadowIntensity").getAsFloat();
 		}
+		if(object.has("texture")) {
+			texture_path = object.get("texture").getAsString();
+			texture = TextureManager.require(texture_path);
+		}
+		if(object.has("text")) {
+			String value = object.get("text").getAsString();
+			Text text = new Text();
+			text.create(new JsonObject(), this);
+			text.width.setAsPercentage(0.7f, width);
+			text.height.setAsPercentage(0.7f, height);
+			text.left.setAsPercentage(0.5f, width);
+			text.top.setAsPercentage(0.5f, height);
+			text.originTop.setAsPercentage(0.5f, text.height);
+			text.originLeft.setAsPercentage(0.5f, text.width);
+			text.setText(value);
+			
+			add(text);
+		}
+
 	}
+	
 	@Override
 	public JsonObject toJson() {
 		JsonObject object = super.toJson();
@@ -114,6 +147,7 @@ public class Button extends Component {
 			color.add(color_std[0]);
 			color.add(color_std[1]);
 			color.add(color_std[2]);
+			color.add(color_std[3]);
 			
 			object.add("color", color);
 		}
@@ -122,6 +156,7 @@ public class Button extends Component {
 			color.add(color_hovered[0]);
 			color.add(color_hovered[1]);
 			color.add(color_hovered[2]);
+			color.add(color_hovered[3]);
 			
 			object.add("colorHovered", color);
 		}
@@ -130,6 +165,7 @@ public class Button extends Component {
 			color.add(color_pressed[0]);
 			color.add(color_pressed[1]);
 			color.add(color_pressed[2]);
+			color.add(color_pressed[3]);
 			
 			object.add("colorPressed", color);
 		}
@@ -142,6 +178,9 @@ public class Button extends Component {
 		}
 		if(shadowIntensity!=0.5f) {
 			object.addProperty("shadowIntensity", shadowIntensity);
+		}
+		if(texture!=null) {
+			object.addProperty("texture", texture_path);			
 		}
 		return object;
 	}
@@ -186,12 +225,17 @@ public class Button extends Component {
 			glUniform2f(loc_shadow, shadowWidth/width.getAsValue(), shadowHeight/height.getAsValue());
 			glUniform1f(loc_shadowIntensität, shadowIntensity);
 			glUniform1i(loc_mode, (pressed?1:0));
-			glUniform3fv(loc_color,hovered?(pressed?color_pressed:color_hovered):color_std);
+			glUniform4fv(loc_color,hovered?(pressed?color_pressed:color_hovered):color_std);
 			
 			//vertex
 			glUniform2f(loc_scene_size, design.width.getAsValue(), design.height.getAsValue());
 			glUniform2f(loc_position,parentalOffsetX+left.getAsValue(),parentalOffsetY+top.getAsValue());
 			glUniform2f(loc_size,width.getAsValue(),height.getAsValue());
+			
+			if(texture!=null)
+				texture.bind();
+			else 
+				TextureManager.white().bind();
 			
 			glBindVertexArray(vao);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

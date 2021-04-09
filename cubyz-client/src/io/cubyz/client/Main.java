@@ -28,7 +28,7 @@ public class Main {
 		try {
 			Init.init();
 			
-			Window window = new Window(960, 540);
+			Window window = new Window(1280, 720);
 			window.setBackgroundColor(0.8f, 0.8f, 1, 1);
 	
 			

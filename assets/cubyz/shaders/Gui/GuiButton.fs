@@ -3,20 +3,27 @@
 layout (location=0) out vec4 frag_color;
 in vec2 frag_face_position;
 
+uniform sampler2D texture_sampler;
+
+
 uniform vec2 shadow;
 uniform int mode;
 uniform float shadowIntensity;
-uniform vec3 color;
+uniform vec4 color;
 
 
 //	takes percentage position
 //	returns a color of the shadow
 
 vec4 brighten(vec4 inColor,float intensity){
-	return vec4(1,1,1,1)*intensity+(1-intensity)*inColor;
+	return vec4(
+		vec3(1,1,1)*intensity+(1-intensity)*inColor.xyz, 	
+		inColor.w);
 }
 vec4 darken(vec4 inColor,float intensity){
-	return 	(1-intensity)*inColor;
+	return 	vec4(
+		(1-intensity)*inColor.xyz,
+		inColor.w);
 }
 
 vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){	
@@ -72,7 +79,7 @@ vec4 getShadowOverlay(vec2 face_pos,vec4 inColor){
 				break;
 		}
 	}
-	return vec4(color.xyz,1);	
+	return color;	
 }
 
 
@@ -87,10 +94,11 @@ vec4 overlayShadow(vec2 face_pos,vec4 color){
 		face_pos.y>=1-shadow.y){
 			color = getShadowOverlay(frag_face_position,color);
 		}
-	return vec4(color.xyz,1);	
+	return color;	
 }
 
 
 void main(){
-	frag_color = overlayShadow(frag_face_position,vec4(color/255,1));
+	vec4 textureColor = texture(texture_sampler,frag_face_position);
+	frag_color = overlayShadow(frag_face_position,vec4(textureColor*color/255));
 }

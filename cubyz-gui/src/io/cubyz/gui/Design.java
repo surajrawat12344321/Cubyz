@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Iterator;
 
 import org.lwjgl.opengl.GL30;
 
@@ -104,7 +105,8 @@ public class Design extends Component{
 		GL30.glDisable(GL_DEPTH_TEST);
 	
 		CubyzGraphics2D.instance.design = this;
-		for (Component component : children) {
+		for (int i = 0; i < children.size(); i++) {
+			Component component = children.get(i);
 			component.draw(this,
 					0+left.getAsValue()-component.originLeft.getAsValue(),
 					0+top.getAsValue()-component.originTop.getAsValue());

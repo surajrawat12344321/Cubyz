@@ -247,6 +247,8 @@ public class Text extends Component {
 		float ratio = (float)height.getAsValue()/font.font.getSize();
 		layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue())/ratio);
 		
+		
+		
 		if(cursorPosition != null) {
 			CubyzGraphics2D.instance.drawLine(left.getAsValue() + parentalOffsetX + cursorX, top.getAsValue() + parentalOffsetY, 0, height.getAsValue());
 
