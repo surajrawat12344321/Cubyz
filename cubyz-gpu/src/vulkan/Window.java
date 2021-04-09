@@ -114,7 +114,6 @@ public final class Window {
 		 */
 		createInfo.ppEnabledExtensionNames(glfwGetRequiredInstanceExtensions());
 		//c++ 	createInfo.enabledLayerCount = 0;
-		// c++ ????? vkCreateInstance(createInfo, null,instance);
+		// c++ ????? vkCreateInstance(createInfo, null,instance);	
 	}
-
 }
