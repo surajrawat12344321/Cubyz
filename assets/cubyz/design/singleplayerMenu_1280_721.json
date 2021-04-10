@@ -1,0 +1,21 @@
+{
+	"name": "singleplayerMenu",
+	"width": 1920,
+	"height": 1080,
+	"children": [
+		{
+			"type": "cubyz:button",
+			"name": "logo",
+			"left": "50%",
+			"origin": [
+				"50%",
+				"0%"
+			],
+			"top": "10%",
+			"width": 400,
+			"height": 400,
+			"shadowIntensity": 0,
+			"texture": "assets/cubyz/textures/splash.png"
+		}
+	]
+}

@@ -1,13 +1,10 @@
-package io.cubyz.world;
+package io.cubyz.client;
 
 import java.util.UUID;
 
-/**
- * Handles all Worlds of this Universe.
- * TODO
- */
+import io.cubyz.world.UniverseInterface;
 
-public class Universe extends UniverseInterface {
+public class UniverseServerConnection extends UniverseInterface{
 
 	@Override
 	public void breakBlock(UUID playerUuid, int positionX, int positionY, int positionZ) {

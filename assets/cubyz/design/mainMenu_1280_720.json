@@ -1,34 +1,8 @@
 {
-	"name": "name",
+	"name": "mainMenu",
 	"width": 1920,
 	"height": 1080,
 	"children": [
-		{
-			"type": "cubyz:button",
-			"name": "Singleplayer?",
-			"left": 220.0,
-			"top": 290.0,
-			"width": 245.0,
-			"height": 145.0,
-			"text": "hi"
-		},
-		{
-			"type": "cubyz:button",
-			"name": "bot",
-			"left": 20.0,
-			"top": 50.0,
-			"width": 245.0,
-			"height": 145.0
-		},
-		{
-			"type": "cubyz:button",
-			"name": "gray",
-			"left": 20.0,
-			"top": 530.0,
-			"width": 245.0,
-			"height": 145.0,
-			"shadowIntensity": 0.2
-		},
 		{
 			"type": "cubyz:button",
 			"name": "logo",
@@ -45,7 +19,7 @@
 		},
 		{
 			"type": "cubyz:button",
-			"name": "red_green",
+			"name": "singleplayer",
 			"top": 450,
 			"origin": [
 				"50%",

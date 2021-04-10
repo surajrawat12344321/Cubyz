@@ -43,7 +43,8 @@ public class GuiWindow extends Component {
 		background.color_std[1] = 160;
 		background.color_std[2] = 160;
 		background.color_std[3] = 225;
-		
+		background.shadowWidth = 5f;
+		background.shadowHeight = 5f;
 		add(background);
 		
 		

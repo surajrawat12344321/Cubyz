@@ -29,20 +29,18 @@ public class Main {
 			Init.init();
 			
 			Window window = new Window(1280, 720);
-			window.setBackgroundColor(0.8f, 0.8f, 1, 1);
-	
+			window.setBackgroundColor(0.5f, 1f, 0.5f, 1);
 			
-			Design testDesign = new Design("cubyz-client/testScene.json");
-			Scene scene = SceneManager.getScene("test");
-			scene.designs.add(testDesign);
-			
+			SceneManager.init();
+			Game.init();
 			
 			while(!window.shouldClose()) {
 				try{
 					Thread.sleep(10);
 				} catch(Exception e) {}
-				scene.draw();
 				Input.update();
+				SceneManager.draw();
+				RenderUniverse.draw();
 				window.render();
 			}
 			Log.info("Execution stopped.");
