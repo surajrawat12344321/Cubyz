@@ -1,0 +1,10 @@
+/build
+
+# Game files
+/logs
+/saves
+settings.json
+
+#projects files
+Cubyz.sublime-project
+Cubyz.sublime-workspace
