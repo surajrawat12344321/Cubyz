@@ -1,12 +1,12 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include "cubyz-gpu/Window.h"
+#include "cubyz-gpu/Renderer.h"
 #include "Logger.h"
 
 int main(int argc, const char** argv) {
 
-	window::create();
+	renderer::init();
 
 	logger::debug("Info");
 	logger::info("Info");
@@ -14,9 +14,12 @@ int main(int argc, const char** argv) {
 	logger::error("Info");
 	logger::fatal("Info");
 
-	while(!window::shouldClose()) {
+	while(!renderer::shouldClose()) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(200)); // That's even longer than in Java.
-		window::render();
+		renderer::render();
 	}
+
+	renderer::cleanup();
+
 	return 0;
 }
