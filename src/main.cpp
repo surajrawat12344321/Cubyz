@@ -5,21 +5,13 @@
 #include "Logger.h"
 
 int main(int argc, const char** argv) {
+	try {
+		renderer::run();
 
-	renderer::init();
-
-	logger::debug("Info");
-	logger::info("Info");
-	logger::warning("Info");
-	logger::error("Info");
-	logger::fatal("Info");
-
-	while(!renderer::shouldClose()) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(200)); // That's even longer than in Java.
-		renderer::render();
+		logger::info("Exited Normally");
+	} catch(std::exception e) {
+		logger::fatal(e.what());
 	}
-
-	renderer::cleanup();
 
 	return 0;
 }
