@@ -8,8 +8,10 @@
 
 
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -34,6 +36,7 @@
 
 #include "../Renderer.h"
 #include "../../Logger.h"
+#include "../../EventHandler.h"
 
 uint32_t width = 800;
 uint32_t height = 600;
@@ -146,7 +149,7 @@ const std::vector<uint16_t> indices = {
 
 class VulkanRenderer {
 public:
-	GLFWwindow* window;
+	SDL_Window* window;
 
 	VkInstance instance;
 	VkDebugUtilsMessengerEXT debugMessenger;
@@ -203,18 +206,12 @@ public:
 	bool framebufferResized = false;
 
 	void initWindow() {
-		glfwInit();
+		if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0) {
+			logger::fatal(std::string("Unable to initialize SDL: ") + SDL_GetError());
+			return;
+		}
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-		window = glfwCreateWindow(width, height, "Vulkan", nullptr, nullptr);
-		glfwSetWindowUserPointer(window, this);
-		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-	}
-
-	static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-		auto app = reinterpret_cast<VulkanRenderer*>(glfwGetWindowUserPointer(window));
-		app->framebufferResized = true;
+		window = SDL_CreateWindow("Vulkan", 0, 0, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
 	}
 
 	void initVulkan() {
@@ -306,18 +303,14 @@ public:
 		vkDestroySurfaceKHR(instance, surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
 
-		glfwDestroyWindow(window);
+		SDL_DestroyWindow(window);
 
-		glfwTerminate();
+		SDL_Quit();
 	}
 
 	void recreateSwapChain() {
 		int w = 0, h = 0;
-		glfwGetFramebufferSize(window, &w, &h);
-		while (w == 0 || h == 0) {
-			glfwGetFramebufferSize(window, &w, &h);
-			glfwWaitEvents();
-		}
+		SDL_Vulkan_GetDrawableSize(window, &w, &h);
 		width = w;
 		height = h;
 
@@ -401,9 +394,8 @@ public:
 	}
 
 	void createSurface() {
-		VkResult result = glfwCreateWindowSurface(instance, window, nullptr, &surface);
-		if (result != VK_SUCCESS) {
-			throw std::runtime_error("Failed to create window surface! Error code: "+std::to_string(result));
+		if (SDL_Vulkan_CreateSurface(window, instance, &surface) != SDL_TRUE) {
+			throw std::runtime_error("Failed to create window surface!");
 		}
 	}
 
@@ -427,7 +419,7 @@ public:
 		}
 
 		if (candidates.rbegin()->first >= 0)
-        	physicalDevice = candidates.rbegin()->second;
+			physicalDevice = candidates.rbegin()->second;
 
 		if (physicalDevice == VK_NULL_HANDLE) {
 			throw std::runtime_error("failed to find a suitable GPU!");
@@ -1422,7 +1414,8 @@ public:
 			return capabilities.currentExtent;
 		} else {
 			int width, height;
-			glfwGetFramebufferSize(window, &width, &height);
+
+			SDL_Vulkan_GetDrawableSize(window, &width, &height);
 
 			VkExtent2D actualExtent = {
 				static_cast<uint32_t>(width),
@@ -1540,11 +1533,10 @@ public:
 	}
 
 	std::vector<const char*> getRequiredExtensions() {
-		uint32_t glfwExtensionCount = 0;
-		const char** glfwExtensions;
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+		uint32_t extensionCount = 0;
+		SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, nullptr);
+		std::vector<const char *> extensions(extensionCount);
+		SDL_Vulkan_GetInstanceExtensions(window, &extensionCount, extensions.data());
 
 		if (enableValidationLayers) {
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -1621,13 +1613,31 @@ public:
 
 namespace renderer {
 	VulkanRenderer renderer;
+
+	void windowResizeCallback(SDL_WindowEvent& event) {
+		if(event.type == SDL_WINDOWEVENT_SIZE_CHANGED)
+			renderer.framebufferResized = true;
+	}
+
 	void run() {
 		renderer.initWindow();
 		renderer.initVulkan();
-		while(!glfwWindowShouldClose(renderer.window)) {
-			glfwPollEvents();
+
+		cubyz::addWindowEventCallback(windowResizeCallback);
+
+		SDL_Event event;
+		while(true) {
+			while(SDL_PollEvent(&event)) {
+				if(event.type == SDL_QUIT) {
+					goto cleanup; // Leave the loop and start cleaning.
+				}
+				cubyz::handleEvent(event);
+			}
 			renderer.drawFrame();
 		}
+
+		cleanup:
+
 		vkDeviceWaitIdle(renderer.device);
 		renderer.cleanup();
 	}
