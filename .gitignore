@@ -1,4 +1,6 @@
 /build
+/libs
+.vscode
 
 # Game files
 /logs
@@ -8,3 +10,4 @@ settings.json
 #projects files
 Cubyz.sublime-project
 Cubyz.sublime-workspace
+debug.bat
