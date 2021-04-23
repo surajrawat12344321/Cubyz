@@ -13,5 +13,6 @@ int main(int argc, const char** argv) {
 		logger::fatal(e.what());
 	}
 
+
 	return 0;
 }
