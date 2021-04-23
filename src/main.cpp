@@ -1,12 +1,12 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include "cubyz-gpu/Renderer.h"
+#include "cubyz-gpu/Window.h"
 #include "Logger.h"
 
 int main(int argc, const char** argv) {
 	try {
-		renderer::run();
+		Window window(1920, 1080);
 
 		logger::info("Exited Normally");
 	} catch(std::exception e) {
