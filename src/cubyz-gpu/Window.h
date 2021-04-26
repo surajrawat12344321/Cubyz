@@ -15,6 +15,9 @@ private:
 	void cleanup();
 	void render();
 
+	//set position
+	void inline setPosition(int x,int y);
+
 public:
 	Window(int width, int height);
 	~Window();

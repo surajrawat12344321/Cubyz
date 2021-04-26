@@ -34,7 +34,7 @@
 #include <map>
 #include <set>
 
-#include "../Renderer.h"
+#include "../Window.h"
 #include "../../Logger.h"
 #include "../../EventHandler.h"
 
