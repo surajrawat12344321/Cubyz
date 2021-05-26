@@ -1,14 +1,19 @@
 package io.cubyz.gui.element;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
+import java.awt.Toolkit;
 import java.util.Arrays;
-
-import org.joml.Vector2d;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import org.joml.Vector2d;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
@@ -44,7 +49,7 @@ public class Text extends Component {
 	private String text = new String("a");
 	private TextLayout layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
 	public TextHitInfo cursorPosition = null;
-	public float cursorX = 0;
+	public TextHitInfo selectionStart = null;
 	public boolean editable = true;
 	
 	
@@ -112,6 +117,28 @@ public class Text extends Component {
 		return object;
 	}
 
+	// Gets the position of the cursor on the text.
+	private float getCursorX(TextHitInfo cursorPosition) {
+		if(cursorPosition == null || layout == null) return 0;
+		Point2D.Float cursorPos = new Point2D.Float();
+		layout.hitToPoint(cursorPosition, cursorPos);
+		return cursorPos.x*(float)height.getAsValue()/font.font.getSize();
+	}
+
+	// Makes sure that the cursor is on the correct edge for further usage.
+	private TextHitInfo fixEdge(TextHitInfo position) {
+		if(position == null || layout == null) return position;
+		if(text.length() == 0) return TextHitInfo.trailing(-1);
+		if(layout.getNextLeftHit(position) != null) {
+			position = layout.getNextLeftHit(position);
+			position = layout.getNextRightHit(position);
+		} else {
+			position = layout.getNextRightHit(position);
+			position = layout.getNextLeftHit(position);
+		}
+		return position;
+	}
+
 	void addText(String string) {
 		this.text += string;
 		updateText();
@@ -121,21 +148,72 @@ public class Text extends Component {
 		updateText();
 	}
 	
+	/**
+	 * Inserts a String at the current cursor position.
+	 * @param string
+	 */
 	public void addTextAtCursor(String string) {
 		if(cursorPosition != null) {
-			int oldCursorIndex = cursorPosition.getCharIndex() + string.length();
+			if(selectionStart != null) deleteTextAtCursor(true);
+			int oldCursorIndex = cursorPosition.getCharIndex();
 			if(cursorPosition.isLeadingEdge())
-				this.text = text.substring(0, oldCursorIndex-1)+string+text.substring(oldCursorIndex-1);
-			else
 				this.text = text.substring(0, oldCursorIndex)+string+text.substring(oldCursorIndex);
+			else
+				this.text = text.substring(0, oldCursorIndex+1)+string+text.substring(oldCursorIndex+1);
 			updateText();
 			if(cursorPosition.isLeadingEdge())
-				cursorPosition = TextHitInfo.leading(oldCursorIndex);
+				cursorPosition = TextHitInfo.leading(oldCursorIndex + string.length());
 			else
-				cursorPosition = TextHitInfo.trailing(oldCursorIndex);
+				cursorPosition = TextHitInfo.trailing(oldCursorIndex + string.length());
 			
-			moveCursor(0);
+			cursorPosition = fixEdge(cursorPosition);
 		}
+	}
+
+	/**
+	 * Copies selected text to clipboard.
+	 */
+	public void copyText() {
+		int[] selections = layout.getLogicalRangesForVisualSelection(cursorPosition, selectionStart);
+		String result = "";
+		for(int i = 0; i < selections.length; i += 2) {
+			int start = selections[i];
+			int end = selections[i+1];
+			result += text.substring(start, end);
+		}
+		StringSelection selection = new StringSelection(result);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(selection, selection);
+	}
+
+	/**
+	 * Pastes text from clipboard at the current cursor position.
+	 */
+	public void pasteText() {
+		// Check if there even is a String non-zero length on the clipboard:
+		String pasted = "";
+		try {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable clipBoardContent = clipboard.getContents(this);
+			pasted = clipBoardContent.getTransferData(DataFlavor.stringFlavor).toString();
+		} catch(Exception e) {
+			return;
+		}
+		if(pasted.length() == 0) return;
+		// Delete the current selection and replace it with the inserted value:
+		if(selectionStart != null) {
+			deleteTextAtCursor(true);
+		}
+		addTextAtCursor(pasted);
+	}
+
+	/**
+	 * Copies selected text to clipboard and deletes it.
+	 */
+	public void cutText() {
+		copyText();
+		if(selectionStart != null)
+			deleteTextAtCursor(true);
 	}
 	
 	/**
@@ -143,22 +221,22 @@ public class Text extends Component {
 	 * @param isRightDelete on which side the character should be removed.
 	 */
 	public void deleteTextAtCursor(boolean isRightDelete) {
-		if(cursorPosition != null) {
+		if(cursorPosition != null && layout != null) {
 			boolean isLeading = cursorPosition.isLeadingEdge();
-			int[] selection;
-			// Make a selection to determine which character should be removed:
-			if(true) { // If nothing is selected.
-				TextHitInfo oldPosition = cursorPosition;
-				if(isRightDelete) {
-					cursorPosition = layout.getNextRightHit(cursorPosition);
-				} else {
-					cursorPosition = layout.getNextLeftHit(cursorPosition);
-				}
-				selection = layout.getLogicalRangesForVisualSelection(oldPosition, cursorPosition);
-			} else {
-				// TODO
-			}
 			int oldPositionIndex = cursorPosition.getCharIndex();
+			// Make a selection to determine which character should be removed:
+			if(selectionStart == null) { // If nothing is selected.
+				if(isRightDelete) {
+					selectionStart = layout.getNextRightHit(cursorPosition);
+				} else {
+					selectionStart = layout.getNextLeftHit(cursorPosition);
+				}
+				if(selectionStart == null) {
+					return;
+				}
+			}
+			int[] selection = layout.getLogicalRangesForVisualSelection(cursorPosition, selectionStart);
+			selectionStart = null;
 			// Remove all selected characters:
 			for(int i = 0; i < selection.length; i += 2) {
 				int start = selection[i];
@@ -172,7 +250,7 @@ public class Text extends Component {
 					}
 				}
 				// Also move the current cursor location:
-				if(oldPositionIndex >= end) {
+				if(oldPositionIndex >= end || (oldPositionIndex == end-1 && !isLeading)) {
 					oldPositionIndex -= end - start;
 				}
 			}
@@ -183,32 +261,52 @@ public class Text extends Component {
 			else
 				cursorPosition = TextHitInfo.trailing(oldPositionIndex);
 			
-			moveCursor(0);
+			cursorPosition = fixEdge(cursorPosition);
 		}
 	}
 	private void deleteTextRange(int start, int end) {
 		text = text.substring(0, start) + text.substring(end);
 	}
 	private void updateText() {
-		layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
-		width.setAsValue((float)layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
+		if(text.length() != 0) {
+			layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
+			width.setAsValue((float)layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
+		} else {
+			width.setAsValue(0);
+			layout = null;
+		}
 	}
+	/**
+	 * Moves the cursor. Positive direction is to the right.
+	 * @param offset
+	 */
 	public void moveCursor(int offset) {
+		if(offset != 0) selectionStart = null;
+		if(text.length() == 0) {
+			cursorPosition = TextHitInfo.trailing(-1);
+			return;
+		}
 		if(offset < 0) {
 			while(offset++ < 0) {
-				cursorPosition = layout.getNextLeftHit(cursorPosition);
+				TextHitInfo newPosition = layout.getNextLeftHit(cursorPosition);
+				if(newPosition != null) {
+					cursorPosition = newPosition;
+					break;
+				}
 			}
 		} else if(offset > 0) {
 			while(offset-- > 0) {
-				cursorPosition = layout.getNextRightHit(cursorPosition);
+				TextHitInfo newPosition = layout.getNextRightHit(cursorPosition);
+				if(newPosition != null) {
+					cursorPosition = newPosition;
+					break;
+				}
 			}
 		}
-		//cursorPosition = cursorPosition.getOffsetHit(position);
-		Point2D.Float cursorPos = new Point2D.Float();
-		layout.hitToPoint(cursorPosition, cursorPos);
-		cursorX = cursorPos.x*(float)height.getAsValue()/font.font.getSize();
+		cursorPosition = fixEdge(cursorPosition);
 	}
-	String getText() {
+
+	public String getText() {
 		return text;
 	}
 	
@@ -223,15 +321,25 @@ public class Text extends Component {
 			height.getAsValue()>=mousepos.y);
 		
 		boolean old_pressed = pressed;
-		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
+		// The text can only be selected, when the mouse hovers the text field.
+		pressed = hovered && Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY);
 		if(pressed)
 			Input.selectedText = this;
-
-		if(!pressed && old_pressed) {
+		if(pressed && !old_pressed) {
 			float ratio = (float)height.getAsValue()/font.font.getSize();
 			TextHitInfo info = layout.hitTestChar((float)mousepos.x/ratio, (float)mousepos.y/ratio);
-			cursorPosition = info;
-			moveCursor(0);
+			selectionStart = fixEdge(info);
+		}
+		if(pressed || old_pressed) {
+			float ratio = (float)height.getAsValue()/font.font.getSize();
+			TextHitInfo info = layout.hitTestChar((float)mousepos.x/ratio, (float)mousepos.y/ratio);
+			cursorPosition = fixEdge(info);
+			if(!pressed) {
+				// Delete the selection if the cursorpositions are the same:
+				if(cursorPosition.getCharIndex() == selectionStart.getCharIndex() && cursorPosition.isLeadingEdge() == selectionStart.isLeadingEdge()) {
+					selectionStart = null;
+				}
+			}
 		}
 	}
 	
@@ -242,16 +350,24 @@ public class Text extends Component {
 		CubyzGraphics2D.instance.textHeight = height.getAsValue();
 		
 		
-		
-		// Undo the ratio multiplication that is done later on the gpu:
-		float ratio = (float)height.getAsValue()/font.font.getSize();
-		layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue())/ratio);
-		
+		if(layout != null) {
+			// Undo the ratio multiplication that is done later on the gpu:
+			float ratio = (float)height.getAsValue()/font.font.getSize();
+			layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue())/ratio);
+		}
 		
 		
 		if(cursorPosition != null) {
+			float cursorX = getCursorX(cursorPosition);
 			CubyzGraphics2D.instance.drawLine(left.getAsValue() + parentalOffsetX + cursorX, top.getAsValue() + parentalOffsetY, 0, height.getAsValue());
+			
+			if(selectionStart != null) {
+				float startX = left.getAsValue() + parentalOffsetX + cursorX;
+				float selectionStartX = getCursorX(selectionStart);
+				float endX = left.getAsValue() + parentalOffsetX + selectionStartX;
+				CubyzGraphics2D.instance.fillRect(Math.min(startX, endX), top.getAsValue() + parentalOffsetY, Math.abs(endX - startX), height.getAsValue());
 
+			}
 		}
 
 		super.draw(design,parentalOffsetX,parentalOffsetY);

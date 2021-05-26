@@ -45,8 +45,10 @@ public class CubyzGraphics2D extends Graphics2D {
 
 	public static int textVAO;
 	public static int lineVAO;
+	public static int rectVAO;
 	public static Shader textShader = new Shader();
 	public static Shader lineShader = new Shader();
+	public static Shader rectShader = new Shader();
 	
 	static { // Init opengl stuff:
 		// Text stuff:
@@ -93,7 +95,27 @@ public class CubyzGraphics2D extends Graphics2D {
 		
 		//Shader
 		lineShader.loadFromFile("assets/cubyz/shaders/Gui/GuiLine.vs", "assets/cubyz/shaders/Gui/GuiLine.fs");
+
+		// Rect stuff:
+		rawdata = new float[] {
+			0,0,
+			0,1,
+			1,0,
+			1,1,
+		};
+		buffer = MemoryUtil.memAllocFloat(rawdata.length);
+		buffer.put(rawdata).flip();
 		
+		rectVAO = glGenVertexArrays();
+		glBindVertexArray(rectVAO);
+		int rectVBO = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+		glVertexAttribPointer(0,2,GL_FLOAT,false,2*4,0);
+		glEnableVertexAttribArray(0);
+		
+		//Shader
+		rectShader.loadFromFile("assets/cubyz/shaders/Gui/GuiRect.vs", "assets/cubyz/shaders/Gui/GuiRect.fs");
 		
 	}
 	
@@ -170,7 +192,6 @@ public class CubyzGraphics2D extends Graphics2D {
 		glUniform2f(loc_direction, width, height);
 		glUniform4f(loc_lineColor, 0,0,0,1);
 		
-		//System.out.println(textVBO+" "+lineVBO);
 		glBindVertexArray(lineVAO);
 		glDrawArrays(GL_LINE_STRIP, 0, 2);
 		
@@ -180,6 +201,33 @@ public class CubyzGraphics2D extends Graphics2D {
 	@Override
 	public void drawLine(int x0, int y0, int x1, int y1) {
 		this.drawLine((float)x0, (float)y0, (float)(x1 - x0), (float)(y1 - y0));
+	}
+	
+	/**
+	 * 
+	 * @param x coordinate of the starting point
+	 * @param y coordinate of the starting point
+	 * @param width width
+	 * @param height height
+	 */
+	public void fillRect(float x, float y, float width, float height) {
+		rectShader.bind();
+		
+		//vertex and shader
+		int loc_scene = rectShader.getUniformLocation("scene");
+		int loc_start = rectShader.getUniformLocation("rectStart");
+		int loc_size = rectShader.getUniformLocation("rectSize");
+		int loc_rectColor = rectShader.getUniformLocation("rectColor");
+
+		glUniform2f(loc_scene, design.width.getAsValue(), design.height.getAsValue());
+		glUniform2f(loc_start, x, y);
+		glUniform2f(loc_size, width, height);
+		glUniform4f(loc_rectColor, 0,0,0,0.5f);
+		
+		glBindVertexArray(rectVAO);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		
+		rectShader.unbind();
 	}
 
 	

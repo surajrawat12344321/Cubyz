@@ -54,7 +54,7 @@ public class GuiWindow extends Component {
 		title.top.setAsValue(10);
 		title.left.setAsPercentage(0.5f, width);
 		title.originLeft.setAsPercentage(0.5f, title.width);
-		title.setText("Worlds");
+		title.setText("ண் U̵̞̬̲͇̝ͧ͗̏͆̅ͫͫṋ͉̭̻͋͋ͫ͗̏ͧ̓î͇͎͇̠̂̊͒̌̐͆c̨͈̮̝͇̰̓̐͑̚o̫̪̙̍ͣ̍ͤ̋ͧ̈́d̵̪͖̩ͯͧ̃̔ͮ̚͡ẹ̡̖͚̦̿̀͘͠ wo⃗⃗rks!ண்a اختبار تقديم النص aa ab ac");
 		add(title);
 		
 		

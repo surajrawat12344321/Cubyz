@@ -1,13 +1,9 @@
 package io.cubyz.gui.rendering;
 
-import static org.lwjgl.opengl.GL30.*;
-
 import java.nio.DoubleBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.joml.Vector2d;
-import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -68,11 +64,11 @@ public final class Input {
 		glfwSetKeyCallback(window.getHandle(),new GLFWKeyCallback() {
 			@Override
 			public void invoke(long window, int key, int scancode, int action, int mods) {					
-				if(action == GLFW_PRESS)
+				if(action == GLFW_PRESS) {
 					real_press[key+key_count_mouse] = true;
-				else if(action == GLFW_RELEASE)
+				} else if(action == GLFW_RELEASE) {
 					real_press[key+key_count_mouse] = false;
-				
+				}
 				
 				//special keys for text
 				if((action==GLFW_PRESS||action==GLFW_REPEAT)&&(selectedText!=null?selectedText.getID()=="cubyz:text":false)) {
@@ -82,10 +78,16 @@ public final class Input {
 					} else if(key == GLFW_KEY_DELETE) {
 						if(((Text)selectedText).editable)
 							((Text)selectedText).deleteTextAtCursor(true);
-					} else if(key == GLFW_KEY_LEFT) 
+					} else if(key == GLFW_KEY_LEFT) // ←
 						((Text)selectedText).moveCursor(-1);
-					else if(key == GLFW_KEY_RIGHT) 
+					else if(key == GLFW_KEY_RIGHT) // →
 						((Text)selectedText).moveCursor(1);
+					else if(key == GLFW_KEY_C && (real_press[GLFW_KEY_LEFT_CONTROL+key_count_mouse] || real_press[GLFW_KEY_LEFT_CONTROL+key_count_mouse])) // Ctrl+C
+						((Text)selectedText).copyText();
+					else if(key == GLFW_KEY_V && (real_press[GLFW_KEY_LEFT_CONTROL+key_count_mouse] || real_press[GLFW_KEY_LEFT_CONTROL+key_count_mouse])) // Ctrl+V
+						((Text)selectedText).pasteText();
+					else if(key == GLFW_KEY_X && (real_press[GLFW_KEY_LEFT_CONTROL+key_count_mouse] || real_press[GLFW_KEY_LEFT_CONTROL+key_count_mouse])) // Ctrl+X
+						((Text)selectedText).cutText();
 				}
 				
 			}
