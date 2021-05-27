@@ -1,14 +1,15 @@
-package io.cubyz.gui.rendering;
+package io.cubyz.gui.text;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
-import java.awt.Rectangle;
+import io.cubyz.gui.rendering.Texture;
 
 public class GraphicFont {
 	
@@ -26,13 +27,10 @@ public class GraphicFont {
 	 */
 	public void loadFromAwt() {
 		font = new Font("Calibri", Font.PLAIN, 16);
-		//fontGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		fontGraphics.setFont(font);
-		
-		
 	}
 	void loadFromFile() {
-		//Todo
+		// TODO
 	}
 	/**
 	 * Dispose the Font
@@ -53,7 +51,6 @@ public class GraphicFont {
 
 		//letter metrics
 		FontMetrics metrics = fontGraphics.getFontMetrics();
-
 		Rectangle bounds = source.getGlyphPixelBounds(indexInGlyphVector, metrics.getFontRenderContext(), 0, 0);
 
 		//create the Glyph
@@ -67,10 +64,10 @@ public class GraphicFont {
 		//make the fontTexture bigger.
 		BufferedImage newFontTexture = new BufferedImage(fontTexture.getWidth()+glyph.width,metrics.getHeight(),BufferedImage.TYPE_INT_ARGB);
 		Graphics2D newGraphic = newFontTexture.createGraphics();
+		metrics = fontGraphics.getFontMetrics();
 		
 		//drawing the old stuff
 		newGraphic.drawImage(fontTexture,0,0,null);
-		
 		//drawing the new letter
 		newGraphic.setFont(font);
 		newGraphic.setColor(Color.white);
@@ -87,7 +84,7 @@ public class GraphicFont {
 		
 		
 		
-		glyphs.put(letterCode,glyph);
+		glyphs.put(letterCode, glyph);
 	    return glyph;
 	}
 	public Texture getTexture() {

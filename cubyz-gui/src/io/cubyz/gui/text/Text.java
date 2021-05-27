@@ -1,4 +1,4 @@
-package io.cubyz.gui.element;
+package io.cubyz.gui.text;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -17,20 +17,20 @@ import org.joml.Vector2d;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
-import io.cubyz.gui.rendering.CubyzGraphics2D;
-import io.cubyz.gui.rendering.GraphicFont;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.rendering.Shader;
 
 public class Text extends Component {
 	//statics
-	static GraphicFont font = new GraphicFont();
+	public static GraphicFont font = new GraphicFont();
 	
 	static{
 		font.loadFromAwt();
 		CubyzGraphics2D.instance.font = font;
 	}
+
+	PrettyText prettyVersion;
 	
 	
 	static int vbo = -1;
@@ -139,11 +139,11 @@ public class Text extends Component {
 		return position;
 	}
 
-	void addText(String string) {
+	public void addText(String string) {
 		this.text += string;
 		updateText();
 	}
-	void setText(String string) {
+	public void setText(String string) {
 		this.text = string;
 		updateText();
 	}
@@ -174,6 +174,7 @@ public class Text extends Component {
 	 * Copies selected text to clipboard.
 	 */
 	public void copyText() {
+		if(selectionStart == null) return; // Don't copy if nothing is selected.
 		int[] selections = layout.getLogicalRangesForVisualSelection(cursorPosition, selectionStart);
 		String result = "";
 		for(int i = 0; i < selections.length; i += 2) {
@@ -268,9 +269,15 @@ public class Text extends Component {
 		text = text.substring(0, start) + text.substring(end);
 	}
 	private void updateText() {
+		if(Input.selectedText == this) {
+			prettyVersion = null;
+			width.setAsValue((float)layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
+		} else {
+			prettyVersion = new PrettyText(text);
+			width.setAsValue((float)prettyVersion.layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
+		}
 		if(text.length() != 0) {
 			layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
-			width.setAsValue((float)layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
 		} else {
 			width.setAsValue(0);
 			layout = null;
@@ -323,8 +330,11 @@ public class Text extends Component {
 		boolean old_pressed = pressed;
 		// The text can only be selected, when the mouse hovers the text field.
 		pressed = hovered && Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY);
-		if(pressed)
+		if(pressed) {
 			Input.selectedText = this;
+			prettyVersion = null;
+			width.setAsValue((float)layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
+		}
 		if(pressed && !old_pressed) {
 			float ratio = (float)height.getAsValue()/font.font.getSize();
 			TextHitInfo info = layout.hitTestChar((float)mousepos.x/ratio, (float)mousepos.y/ratio);
@@ -341,6 +351,12 @@ public class Text extends Component {
 				}
 			}
 		}
+		if(prettyVersion == null && Input.selectedText != this) {
+			prettyVersion = new PrettyText(text);
+			selectionStart = null;
+			cursorPosition = null;
+			width.setAsValue((float)prettyVersion.layout.getBounds().getWidth()*height.getAsValue()/font.font.getSize());
+		}
 	}
 	
 	
@@ -353,18 +369,24 @@ public class Text extends Component {
 		if(layout != null) {
 			// Undo the ratio multiplication that is done later on the gpu:
 			float ratio = (float)height.getAsValue()/font.font.getSize();
-			layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue())/ratio);
+			if(prettyVersion == null) {
+				layout.draw(CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue())/ratio);
+			} else {
+				prettyVersion.draw(ratio, CubyzGraphics2D.instance, (parentalOffsetX+left.getAsValue())/ratio, (parentalOffsetY+top.getAsValue()+height.getAsValue())/ratio);
+			}
 		}
 		
 		
 		if(cursorPosition != null) {
 			float cursorX = getCursorX(cursorPosition);
+			CubyzGraphics2D.instance.setColor(0xff000000);
 			CubyzGraphics2D.instance.drawLine(left.getAsValue() + parentalOffsetX + cursorX, top.getAsValue() + parentalOffsetY, 0, height.getAsValue());
 			
 			if(selectionStart != null) {
 				float startX = left.getAsValue() + parentalOffsetX + cursorX;
 				float selectionStartX = getCursorX(selectionStart);
 				float endX = left.getAsValue() + parentalOffsetX + selectionStartX;
+				CubyzGraphics2D.instance.setColor(0x7f000000);
 				CubyzGraphics2D.instance.fillRect(Math.min(startX, endX), top.getAsValue() + parentalOffsetY, Math.abs(endX - startX), height.getAsValue());
 
 			}

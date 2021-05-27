@@ -12,7 +12,7 @@ import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
-import io.cubyz.gui.element.Text;
+import io.cubyz.gui.text.Text;
 import io.cubyz.utils.log.Log;
 
 import static org.lwjgl.glfw.GLFW.*;

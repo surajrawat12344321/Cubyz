@@ -13,16 +13,15 @@ import org.lwjgl.system.MemoryUtil;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import io.cubyz.gui.Component;
-import io.cubyz.gui.ComponentRegistry;
 import io.cubyz.gui.Design;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.rendering.Shader;
 import io.cubyz.gui.rendering.Texture;
 import io.cubyz.gui.rendering.TextureManager;
+import io.cubyz.gui.text.Text;
 
 public class Button extends Component {
 	//statics

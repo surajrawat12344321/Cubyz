@@ -115,6 +115,17 @@
 			"width": "40%",
 			"height": "90%",
 			"text": "hi"
+		},
+		{
+			"type": "cubyz:text",
+			"text": "*Cubyz***Cubyz*Cubyz***__##100000#ff0000#00ff00C_U**B__Y**Z___##500#aa00ff#ff0000#ffff00#00ff00#00ffff#0000ffU##500#0000ff#aa00ff#ff0000#ffff00#00ff00#00ffffB##500#00ffff#0000ff#aa00ff#ff0000#ffff00#00ff00Y##500#00ff00#00ffff#0000ff#aa00ff#ff0000#ffff00Z__",
+			"left": "50%",
+			"top": "10%",
+			"origin": [
+				"50%",
+				"50%"
+			],
+			"height": "10%"
 		}
 	]
 }

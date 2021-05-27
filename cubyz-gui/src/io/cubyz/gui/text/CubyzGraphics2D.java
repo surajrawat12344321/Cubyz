@@ -1,4 +1,4 @@
-package io.cubyz.gui.rendering;
+package io.cubyz.gui.text;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -34,6 +34,7 @@ import java.util.Map;
 import org.lwjgl.system.MemoryUtil;
 
 import io.cubyz.gui.Design;
+import io.cubyz.gui.rendering.Shader;
 
 /**
  * Essentially just an interface for drawing with {@code Textlayout.draw}. Not much else of {@code Graphics2D} is supported.
@@ -125,7 +126,20 @@ public class CubyzGraphics2D extends Graphics2D {
 	public Design design;
 	
 	public float textHeight;
+
+	public TextMarker[] textMarkingInfo;
+
+	private float leftForGlyphVector;
+
+	private int color;
 	
+	/**
+	 * Should be called prior to drawing the text layout!
+	 * @param left
+	 */
+	public void preDrawGlyphVector(float left) {
+		leftForGlyphVector = left;
+	}
 	@Override
 	public void drawGlyphVector(GlyphVector glyphs, float left, float top) {
 		// Correct by the height of the font:
@@ -141,7 +155,7 @@ public class CubyzGraphics2D extends Graphics2D {
 		int loc_scene = textShader.getUniformLocation("scene");
 		int loc_offset = textShader.getUniformLocation("offset");
 		int loc_ratio = textShader.getUniformLocation("ratio");
-		int loc_texColor = textShader.getUniformLocation("texColor");
+		int loc_fontEffects = textShader.getUniformLocation("fontEffects");
 
 		//fragment
 		int loc_fontSize = textShader.getUniformLocation("font_size");
@@ -150,21 +164,51 @@ public class CubyzGraphics2D extends Graphics2D {
 		glUniform2f(loc_fontSize,font.getTexture().width, font.getTexture().height);
 		glUniform1f(loc_ratio, ratio);
 		
-		glUniform4f(loc_texColor, 0,0,0,1);
-		
 
 		glBindVertexArray(textVAO);
-		
+		int markerIndex = 0;
+		byte activeFontEffects = 0;
+		int color = 0;
+
 		// Draw all the glyphs:
 		for (int i = 0; i < glyphs.getNumGlyphs(); i++) {
+			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), (int)left, (int)top);
+			// Check if new markers are active:
+			if(textMarkingInfo != null) {
+				while(markerIndex < textMarkingInfo.length && bounds.x - leftForGlyphVector + 1 > textMarkingInfo[markerIndex].charPosition) {
+					switch(textMarkingInfo[markerIndex].type) {
+						case TextMarker.TYPE_BOLD:
+						case TextMarker.TYPE_ITALIC:
+							activeFontEffects ^= textMarkingInfo[markerIndex].type;
+							break;
+						case TextMarker.TYPE_COLOR:
+							color = textMarkingInfo[markerIndex].color;
+							break;
+						case TextMarker.TYPE_COLOR_ANIMATION:
+							color = textMarkingInfo[markerIndex].animation.getColor();
+							break;
+					}
+					markerIndex++;
+				}
+			}
 			Rectangle textureBounds = font.getGlyph(glyphs, i);
+			if((activeFontEffects & TextMarker.TYPE_BOLD) != 0) {
+				// Increase the texture size for the bold shadering to work.
+				textureBounds = new Rectangle(textureBounds.x, textureBounds.y-1, textureBounds.width, textureBounds.height+1);
+				bounds.y -= 1; // Make sure that the glyph stays leveled.
+			}
+			glUniform1i(loc_fontEffects, color | (activeFontEffects << 24));
 			
-			Rectangle bounds = glyphs.getGlyphPixelBounds(i, font.fontGraphics.getFontRenderContext(), left, top);
-			glUniform2f(loc_offset, bounds.x, bounds.y);
+			glUniform2f(loc_offset, bounds.x + left%1, bounds.y + top%1);
 			glUniform4f(loc_texCoords, textureBounds.x+42e-5f, textureBounds.y, textureBounds.width, textureBounds.height);
 			
 			
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			if((activeFontEffects & TextMarker.TYPE_BOLD) != 0) {
+				// Just draw another thing on top in x direction. y-direction is handled in the shader.
+				glUniform2f(loc_offset, bounds.x+0.5f, bounds.y);
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			}
 		}
 		
 		font.getTexture().unbind();
@@ -190,7 +234,7 @@ public class CubyzGraphics2D extends Graphics2D {
 		glUniform2f(loc_scene, design.width.getAsValue(), design.height.getAsValue());
 		glUniform2f(loc_start, x, y);
 		glUniform2f(loc_direction, width, height);
-		glUniform4f(loc_lineColor, 0,0,0,1);
+		glUniform1i(loc_lineColor, color);
 		
 		glBindVertexArray(lineVAO);
 		glDrawArrays(GL_LINE_STRIP, 0, 2);
@@ -222,7 +266,7 @@ public class CubyzGraphics2D extends Graphics2D {
 		glUniform2f(loc_scene, design.width.getAsValue(), design.height.getAsValue());
 		glUniform2f(loc_start, x, y);
 		glUniform2f(loc_size, width, height);
-		glUniform4f(loc_rectColor, 0,0,0,0.5f);
+		glUniform1i(loc_rectColor, color);
 		
 		glBindVertexArray(rectVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -234,6 +278,10 @@ public class CubyzGraphics2D extends Graphics2D {
 	@Override
 	public Font getFont() {
 		return font.font;
+	}
+
+	public void setColor(int color) {
+		this.color = color;
 	}
 	
 	

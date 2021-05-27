@@ -4,7 +4,6 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.Iterator;
 
 import org.lwjgl.opengl.GL30;
 
@@ -13,9 +12,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import io.cubyz.gui.rendering.CubyzGraphics2D;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
+import io.cubyz.gui.text.CubyzGraphics2D;
 import io.cubyz.utils.log.Log;
 
 /**

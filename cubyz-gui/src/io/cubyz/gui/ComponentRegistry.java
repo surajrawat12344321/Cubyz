@@ -4,6 +4,7 @@ package io.cubyz.gui;
 import com.google.gson.JsonObject;
 
 import io.cubyz.gui.element.*;
+import io.cubyz.gui.text.Text;
 import io.cubyz.utils.datastructures.Registry;
 import io.cubyz.utils.log.Log;
 
