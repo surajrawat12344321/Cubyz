@@ -16,6 +16,25 @@
 			"height": 400,
 			"shadowIntensity": 0,
 			"texture": "assets/cubyz/textures/splash.png"
+		},{
+			"type": "cubyz:list",
+			"left": "50%",
+			"origin": [
+				"50%",
+				"0%"
+			],
+			"top": "40%",
+			"width": 600,
+			"height": 400,
+			
+			"direction":"vertical",
+			"spacing":25,
+			
+			"children":[
+				{"type": "cubyz:button" , "width": 600,"height": 150,"text":"world 1","shadowIntensity":10,"top":0,"left":0},
+				{"type": "cubyz:button" , "width": 600,"height": 150,"text":"world 2","shadowIntensity":10,"top":0,"left":0},
+				{"type": "cubyz:button" , "width": 600,"height": 150,"text":"world 3","shadowIntensity":10,"top":0,"left":0}
+			]
 		}
 	]
 }

@@ -10,7 +10,7 @@ import io.cubyz.utils.datastructures.RegistryElement;
  * 	IMPORTANT: DO NOT USE MULTIPLE PARAMETER IN THE CONSTRUCTOR OF YOUR SUBCLASS
  */
 public abstract class Component implements RegistryElement{
-	ArrayList<Component> children = new ArrayList<Component>();
+	public ArrayList<Component> children = new ArrayList<Component>();
 	
 	public Length 	left 		= new Length(),	top 		= new Length(),	
 					width		= new Length(),	height		= new Length(),
@@ -116,4 +116,5 @@ public abstract class Component implements RegistryElement{
 	public void setParent(Component parent) {
 		this.parent = parent;
 	}
+	
 }

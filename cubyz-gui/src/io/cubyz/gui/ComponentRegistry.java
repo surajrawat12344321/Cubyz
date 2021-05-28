@@ -10,7 +10,7 @@ import io.cubyz.utils.log.Log;
 
 public class ComponentRegistry {
 	//List of all Components
-	public static final Registry<Component> ComponentList = new Registry<Component>(new Button(),new Text(),new GuiWindow());	
+	public static final Registry<Component> ComponentList = new Registry<Component>(new Button(),new Text(),new GuiWindow(),new List());	
 	
 	public static Component createByJson(JsonObject jsonObject,Component parent) {
 		Component component = (Component)ComponentList.getById(jsonObject.getAsJsonPrimitive("type").getAsString());

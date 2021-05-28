@@ -35,6 +35,7 @@ public class Design extends Component{
 		this.width.setAsValue(width);
 		this.height.setAsValue(height);
 		this.parent = this;
+		
 	}
 	
 	public Design(String path) {
@@ -68,6 +69,7 @@ public class Design extends Component{
 		height.setAsValue(design.getAsJsonPrimitive("height").getAsInt());
 		width.setAsValue(design.getAsJsonPrimitive("width").getAsInt());
 		name = design.getAsJsonPrimitive("name").getAsString();
+		
 
 		children.clear();
 		JsonArray jchildren = design.getAsJsonArray("children");
@@ -114,13 +116,7 @@ public class Design extends Component{
 	public void draw() {
 		GL30.glDisable(GL_DEPTH_TEST);
 		CubyzGraphics2D.instance.design = this;
-		for (int i = 0; i < children.size(); i++) {
-			Component component = children.get(i);
-			component.draw(this,
-					0+left.getAsValue()-component.originLeft.getAsValue(),
-					0+top.getAsValue()-component.originTop.getAsValue());
-		}
-	
+		super.draw(this, 0, 0);
 		GL30.glEnable(GL_DEPTH_TEST);
 	}
 	public void pushToTop(Component component) {
