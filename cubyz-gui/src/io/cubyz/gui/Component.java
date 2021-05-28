@@ -76,7 +76,7 @@ public abstract class Component implements RegistryElement{
 	}
 
 	/**
-		When overriding: Make sure to call super.draw(design); at the <b>end</b> of the function.
+		When overriding: Make sure to call super.draw(design); at the <b>END</b> of the function.
 		@param design
 	*/
 	public void draw(Design design,float parentialOffsetX,float parentialOffsetY) {
@@ -86,7 +86,17 @@ public abstract class Component implements RegistryElement{
 					parentialOffsetY+top.getAsValue()-component.originTop.getAsValue());
 		}
 	}
-
+	/**
+		When overriding: Make sure to call super.update(design); at the <b>START</b> of the function.		
+		@param design
+	 */
+	public void update(Design design,float parentialOffsetX,float parentialOffsetY) {
+		for (Component component : children) {
+			component.update(design,
+					parentialOffsetX+left.getAsValue()-component.originLeft.getAsValue(),
+					parentialOffsetY+top.getAsValue()-component.originTop.getAsValue());
+		}
+	}
 	public void setScene(Scene scene) {
 		this.scene = scene;
 		for(Component child : children) {

@@ -183,8 +183,10 @@ public class Button extends Component {
 		}
 		return object;
 	}
-
+	@Override
 	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
+		super.update(design,parentalOffsetX,parentalOffsetY);
+		
 		Vector2d mousepos = Input.getMousePosition(design);
 		mousepos.x-=parentalOffsetX;
 		mousepos.y-=parentalOffsetY;
@@ -193,16 +195,19 @@ public class Button extends Component {
 		hovered = (left.getAsValue()<=mousepos.x&&
 			top.getAsValue()<=mousepos.y&&
 			left.getAsValue()+width.getAsValue()>=mousepos.x&&
-			top.getAsValue()+height.getAsValue()>=mousepos.y);
-
+			top.getAsValue()+height.getAsValue()>=mousepos.y)&&
+				design.hovered==null;
+		if(hovered)
+			design.hovered = this;
+		
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
+		
 		if(!pressed && old_pressed && scene != null && hovered)
 			scene.triggerEvent(this, "button_release");
 	}
 	@Override
 	public void draw(Design design,float parentalOffsetX,float parentalOffsetY) {
-		update(design,parentalOffsetX,parentalOffsetY);
 		
 		//fragment
 		int loc_shadow = shader.getUniformLocation("shadow");

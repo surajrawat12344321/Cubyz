@@ -41,4 +41,8 @@ public class SceneManager {
 		if(currentScene!=null)
 			currentScene.draw();
 	}
+	public static void update() {
+		if(currentScene!=null)
+			currentScene.update();
+	}
 }

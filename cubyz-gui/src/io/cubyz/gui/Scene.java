@@ -40,6 +40,13 @@ public class Scene {
 		if(currentDesign == null) return;
 		currentDesign.draw();
 	}
+	public void update() {
+		if(currentDesign == null) {
+			getOptimalDesign(Window.width, Window.height);
+		}
+		if(currentDesign == null) return;
+			currentDesign.update();
+	}
 
 	public void triggerEvent(Component source, String event) {
 		for(EventListener listener : eventListener) {

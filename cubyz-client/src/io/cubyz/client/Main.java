@@ -28,6 +28,7 @@ public class Main {
 					Thread.sleep(10);
 				} catch(Exception e) {}
 				Input.update();
+				SceneManager.update();
 				SceneManager.draw();
 				RenderUniverse.draw();
 				window.render();

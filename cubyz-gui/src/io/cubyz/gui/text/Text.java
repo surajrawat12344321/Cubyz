@@ -317,7 +317,9 @@ public class Text extends Component {
 		return text;
 	}
 	
+	@Override
 	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
+		super.update(design,parentalOffsetX,parentalOffsetY);
 		Vector2d mousepos = Input.getMousePosition(design);
 		mousepos.x-= parentalOffsetX + left.getAsValue();
 		mousepos.y-= parentalOffsetY + top.getAsValue();
@@ -325,7 +327,10 @@ public class Text extends Component {
 		hovered = (0<=mousepos.x&&
 			0<=mousepos.y&&
 			width.getAsValue()>=mousepos.x&&
-			height.getAsValue()>=mousepos.y);
+			height.getAsValue()>=mousepos.y)
+				&&design.hovered==null;
+		if(hovered)
+			design.hovered=this;
 		
 		boolean old_pressed = pressed;
 		// The text can only be selected, when the mouse hovers the text field.
@@ -362,7 +367,6 @@ public class Text extends Component {
 	
 	@Override
 	public void draw(Design design,float parentalOffsetX,float parentalOffsetY) {
-		update(design,parentalOffsetX,parentalOffsetY);
 		CubyzGraphics2D.instance.textHeight = height.getAsValue();
 		
 		

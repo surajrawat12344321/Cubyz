@@ -28,13 +28,14 @@ public class GuiWindow extends Component {
 	
 	//children
 	Button close;
+	Button background;
 	
 	@Override
 	public void create(JsonObject object, Component parent) {
 		super.create(object, parent);
 		
 		//background
-		Button background = new Button();
+		background = new Button();
 		background.width.setAsPercentage(1f,width);
 		background.height.setAsPercentage(1f,height);
 		
@@ -76,16 +77,18 @@ public class GuiWindow extends Component {
 		
 		return object;
 	}
-
+	@Override
 	public void update(Design design, float parentalOffsetX, float parentalOffsetY) {
+		super.update(design, parentalOffsetX, parentalOffsetY);
+		
 		Vector2d mousepos = Input.getMousePosition(design);
 		mousepos.x -= parentalOffsetX;
 		mousepos.y -= parentalOffsetY;
 
-		hovered = (left.getAsValue() <= mousepos.x && top.getAsValue() <= mousepos.y
-				&& left.getAsValue() + width.getAsValue() >= mousepos.x
-				&& top.getAsValue() + height.getAsValue() >= mousepos.y);
-
+		hovered = background.hovered;
+		if(hovered)
+			design.hovered = this;
+		
 		boolean old_pressed = pressed;
 		pressed = hovered ? Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY) : false;
 		
@@ -96,6 +99,7 @@ public class GuiWindow extends Component {
 			holdPositionWindow.x = left.getAsValue();
 			holdPositionWindow.y = top.getAsValue();
 			moving = true;
+			design.pushToTop(this);
 		}
 		if(moving)
 			moving = Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY);
@@ -116,9 +120,6 @@ public class GuiWindow extends Component {
 
 	@Override
 	public void draw(Design design, float parentalOffsetX, float parentalOffsetY) {
-		update(design, parentalOffsetX, parentalOffsetY);
-
-
 		super.draw(design, parentalOffsetX, parentalOffsetY);
 	}
 }

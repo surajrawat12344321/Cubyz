@@ -22,6 +22,8 @@ import io.cubyz.utils.log.Log;
 */
 public class Design extends Component{
 	
+	public Component hovered = null;
+	
 	@Override
 	public String getID() {
 		return "Cubyz:Design";
@@ -95,14 +97,22 @@ public class Design extends Component{
 		
 		return scene;
 	}
-	public void draw() {
+	public void update() {
 		//deselect everythink if someone pressed somewhere else
 		if(Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY))
 			Input.selectedText = null;
-	
+		hovered = null;
+		CubyzGraphics2D.instance.design = this;
 		
+		for (int i = children.size()-1; i>=0;i--) {
+			Component component = children.get(i);
+			component.update(this,
+					0+left.getAsValue()-component.originLeft.getAsValue(),
+					0+top.getAsValue()-component.originTop.getAsValue());
+		}
+	}
+	public void draw() {
 		GL30.glDisable(GL_DEPTH_TEST);
-	
 		CubyzGraphics2D.instance.design = this;
 		for (int i = 0; i < children.size(); i++) {
 			Component component = children.get(i);
@@ -112,6 +122,12 @@ public class Design extends Component{
 		}
 	
 		GL30.glEnable(GL_DEPTH_TEST);
+	}
+	public void pushToTop(Component component) {
+		if(component==this)
+			return;
+		children.remove(component);
+		children.add(component);
 	}
 	
 	public void setScene(Scene scene) {
@@ -123,4 +139,6 @@ public class Design extends Component{
 	public float ratio() {
 		return (float)width.getAsValue()/height.getAsValue();
 	}
+	
+	
 }
