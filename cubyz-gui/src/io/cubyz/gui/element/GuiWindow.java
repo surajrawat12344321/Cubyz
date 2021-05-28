@@ -120,7 +120,7 @@ public class GuiWindow extends Component {
 			top.setAsValue((float)holdPositionWindow.y+(float)y);
 		}
 		
-		if(close.pressed)
+		if(close.release)
 			scene.currentDesign.remove(this);
 		
 		if (!pressed && old_pressed && scene != null && hovered)

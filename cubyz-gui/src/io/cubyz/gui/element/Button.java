@@ -31,6 +31,7 @@ public class Button extends Component {
 	//state of the button
 	public boolean pressed;
 	public boolean hovered;
+	public boolean release = false;
 	
 	//colors
 	public float[] color_std 	 = 	{ 156, 166, 191,255}; // standart colour
@@ -203,8 +204,10 @@ public class Button extends Component {
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
 		
-		if(!pressed && old_pressed && scene != null && hovered)
+		if(!pressed && old_pressed && scene != null && hovered) {
 			scene.triggerEvent(this, "button_release");
+			release = true;		
+		}else release = false;
 	}
 	@Override
 	public void draw(Design design,float parentalOffsetX,float parentalOffsetY) {
