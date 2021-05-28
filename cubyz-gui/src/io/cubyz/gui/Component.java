@@ -91,7 +91,8 @@ public abstract class Component implements RegistryElement{
 		@param design
 	 */
 	public void update(Design design,float parentialOffsetX,float parentialOffsetY) {
-		for (Component component : children) {
+		for (int i = children.size()-1; i >= 0; i--) {
+			Component component = children.get(i);
 			component.update(design,
 					parentialOffsetX+left.getAsValue()-component.originLeft.getAsValue(),
 					parentialOffsetY+top.getAsValue()-component.originTop.getAsValue());

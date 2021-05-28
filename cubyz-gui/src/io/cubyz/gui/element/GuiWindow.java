@@ -57,6 +57,7 @@ public class GuiWindow extends Component {
 		title.left.setAsPercentage(0.5f, width);
 		title.originLeft.setAsPercentage(0.5f, title.width);
 		//title.setText("ண் U̵̞̬̲͇̝ͧ͗̏͆̅ͫͫṋ͉̭̻͋͋ͫ͗̏ͧ̓î͇͎͇̠̂̊͒̌̐͆c̨͈̮̝͇̰̓̐͑̚o̫̪̙̍ͣ̍ͤ̋ͧ̈́d̵̪͖̩ͯͧ̃̔ͮ̚͡ẹ̡̖͚̦̿̀͘͠ wo⃗⃗rks!ண்a اختبار تقديم النص aa ab ac");
+		title.setText("unnamed window");
 		add(title);
 		
 		
@@ -64,10 +65,17 @@ public class GuiWindow extends Component {
 		close = new Button();
 		close.width.setAsValue(60);
 		close.height.setAsValue(60);
+		close.color_hovered = new float[]{255,0,0,255};
+		close.color_std = new float[]{0,255,0,255};
+		close.color_pressed = new float[]{0,0,255,255};
+		
+		
 		close.originLeft.setAsPercentage(1.f, close.width);
 		close.left.setAsPercentage(1.f, width);
-		close.setTexture("assets/cubyz/textures/crosshair.png");
-		close.shadowIntensity = 0;
+		//close.setTexture("assets/cubyz/textures/crosshair.png");
+		//close.shadowIntensity = 0;
+		close.shadowWidth = 5f;
+		close.shadowHeight = 5f;
 		add(close);
 	}
 
@@ -80,6 +88,7 @@ public class GuiWindow extends Component {
 	@Override
 	public void update(Design design, float parentalOffsetX, float parentalOffsetY) {
 		super.update(design, parentalOffsetX, parentalOffsetY);
+		
 		
 		Vector2d mousepos = Input.getMousePosition(design);
 		mousepos.x -= parentalOffsetX;
