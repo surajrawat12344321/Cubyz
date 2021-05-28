@@ -2,19 +2,14 @@ package io.cubyz.gui;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 
-import java.io.FileReader;
 import java.io.FileWriter;
 
 import org.lwjgl.opengl.GL30;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.text.CubyzGraphics2D;
+import io.cubyz.utils.json.*;
 import io.cubyz.utils.log.Log;
 
 /**
@@ -44,10 +39,9 @@ public class Design extends Component{
 	
 	public void loadFromFile(String path) {
 		try {
-			JsonParser jsonParser = new JsonParser();
-			FileReader reader = new FileReader(path);
-			//Read JSON file
-		    JsonObject obj = (JsonObject) jsonParser.parse(reader);
+			// Read JSON file
+		    JsonObject obj = (JsonObject) JsonParser.parseObjectFromFile(path);
+			System.out.println(obj);
 			create(obj,this);
 		} catch (Exception e) {
 			Log.severe(e);
@@ -66,16 +60,18 @@ public class Design extends Component{
 	}
 	@Override
 	public void create(JsonObject design,Component parent) {
-		height.setAsValue(design.getAsJsonPrimitive("height").getAsInt());
-		width.setAsValue(design.getAsJsonPrimitive("width").getAsInt());
-		name = design.getAsJsonPrimitive("name").getAsString();
+		height.setAsValue(design.getInt("height", 1920));
+		width.setAsValue(design.getInt("width", 1080));
+		name = design.getString("name", "");
 		
 
 		children.clear();
-		JsonArray jchildren = design.getAsJsonArray("children");
-		for (JsonElement jsonElement : jchildren) {
-			JsonObject jsonObject = (JsonObject)jsonElement;
-			children.add(ComponentRegistry.createByJson(jsonObject,this));
+		JsonArray jchildren = design.getArrayNoNull("children");
+		for (JsonElement jsonElement : jchildren.array) {
+			if(jsonElement instanceof JsonObject) {
+				JsonObject jsonObject = (JsonObject)jsonElement;
+				children.add(ComponentRegistry.createByJson(jsonObject,this));
+			}
 		}
 		
 		// Get the fitting scene and give it all of its children:
@@ -87,15 +83,15 @@ public class Design extends Component{
 	@Override
 	public JsonObject toJson() {
 		JsonObject scene =  new JsonObject();
-		scene.addProperty("name", name);
-		scene.add("height", height.toJson());
-		scene.add("width", width.toJson());
+		scene.put("name", name);
+		scene.put("height", height.toJson());
+		scene.put("width", width.toJson());
 		
 		JsonArray jchildren = new JsonArray();
 		for (Component guiElement : children) {
 			jchildren.add(guiElement.toJson());
 		}
-		scene.add("children", jchildren);
+		scene.put("children", jchildren);
 		
 		return scene;
 	}

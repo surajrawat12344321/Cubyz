@@ -7,12 +7,10 @@ import static org.lwjgl.opengl.GL30.*;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.joml.Vector2d;
 import org.lwjgl.system.MemoryUtil;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
@@ -22,6 +20,7 @@ import io.cubyz.gui.rendering.Shader;
 import io.cubyz.gui.rendering.Texture;
 import io.cubyz.gui.rendering.TextureManager;
 import io.cubyz.gui.text.Text;
+import io.cubyz.utils.json.*;
 
 public class Button extends Component {
 	//statics
@@ -34,14 +33,14 @@ public class Button extends Component {
 	public boolean release = false;
 	
 	//colors
-	public float[] color_std 	 = 	{ 156, 166, 191,255}; // standart colour
-	public float[] color_pressed = 	{ 146, 154, 179,255}; // pressed colour
-	public float[] color_hovered = 	{ 156, 166, 221,255}; // hovered colour
+	public float[] color_std 	 = 	{156, 166, 191, 255}; // standard colour
+	public float[] color_pressed = 	{146, 154, 179, 255}; // pressed colour
+	public float[] color_hovered = 	{156, 166, 221, 255}; // hovered colour
 	
 	//shadow
 	public float shadowWidth = 20;
 	public float shadowHeight = 20;
-	public float shadowIntensity = 0.5f;
+	public float shadowIntensity;
 	
 	//texture
 	private Texture texture = null;
@@ -90,38 +89,21 @@ public class Button extends Component {
 	public void create(JsonObject object,Component parent) {
 		super.create(object,parent);
 		initOpenGLStuff();
-		
-		if(object.has("color")) {
-			color_std[0] = object.get("color").getAsJsonArray().get(0).getAsFloat();
-			color_std[1] = object.get("color").getAsJsonArray().get(1).getAsFloat();
-			color_std[2] = object.get("color").getAsJsonArray().get(2).getAsFloat();	
-			color_std[3] = object.get("color").getAsJsonArray().get(3).getAsFloat();	
+		object.getArrayNoNull("color").getFloats(color_std);
+		object.getArrayNoNull("colorHovered").getFloats(color_hovered);
+		object.getArrayNoNull("colorPressed").getFloats(color_pressed);
+		ArrayList<JsonElement> jsonArray = object.getArrayNoNull("shadow").array;
+		if(jsonArray.size() >= 2) {
+			shadowWidth = jsonArray.get(0).getFloat(20);
+			shadowHeight = jsonArray.get(1).getFloat(20);
 		}
-		if(object.has("colorHovered")) {
-			color_hovered[0] = object.get("colorHovered").getAsJsonArray().get(0).getAsFloat();
-			color_hovered[1] = object.get("colorHovered").getAsJsonArray().get(1).getAsFloat();
-			color_hovered[2] = object.get("colorHovered").getAsJsonArray().get(2).getAsFloat();	
-			color_hovered[3] = object.get("colorHovered").getAsJsonArray().get(3).getAsFloat();	
-		}
-		if(object.has("colorPressed")) {
-			color_pressed[0] = object.get("colorPressed").getAsJsonArray().get(0).getAsFloat();
-			color_pressed[1] = object.get("colorPressed").getAsJsonArray().get(1).getAsFloat();
-			color_pressed[2] = object.get("colorPressed").getAsJsonArray().get(2).getAsFloat();	
-			color_hovered[3] = object.get("colorHovered").getAsJsonArray().get(3).getAsFloat();	
-		}
-		if(object.has("shadow")) {
-			shadowWidth = object.get("shadow").getAsJsonArray().get(0).getAsFloat();
-			shadowHeight = object.get("shadow").getAsJsonArray().get(1).getAsFloat();
-		}
-		if(object.has("shadowIntensity")) {
-			shadowIntensity = object.get("shadowIntensity").getAsFloat();
-		}
-		if(object.has("texture")) {
-			texture_path = object.get("texture").getAsString();
+		shadowIntensity = object.getFloat("shadowIntensity", 0.5f);
+		texture_path = object.getString("texture", "");
+		if(texture_path.length() != 0)
 			texture = TextureManager.require(texture_path);
-		}
-		if(object.has("text")) {
-			String value = object.get("text").getAsString();
+
+		String value = object.getString("text", "");
+		if(value.length() != 0) {
 			Text text = new Text();
 			text.create(new JsonObject(), this);
 			text.width.setAsPercentage(0.7f, width);
@@ -142,45 +124,30 @@ public class Button extends Component {
 		JsonObject object = super.toJson();
 		
 		if(!Arrays.equals(color_std,new float[]{156, 166, 191})) {
-			
 			JsonArray color = new JsonArray();
-			color.add(color_std[0]);
-			color.add(color_std[1]);
-			color.add(color_std[2]);
-			color.add(color_std[3]);
-			
-			object.add("color", color);
+			color.addFloats(color_std);
+			object.map.put("color", color);
 		}
 		if(!Arrays.equals(color_hovered,new float[]{156, 166, 221})) {
 			JsonArray color = new JsonArray();
-			color.add(color_hovered[0]);
-			color.add(color_hovered[1]);
-			color.add(color_hovered[2]);
-			color.add(color_hovered[3]);
-			
-			object.add("colorHovered", color);
+			color.addFloats(color_hovered);
+			object.map.put("colorHovered", color);
 		}
 		if(!Arrays.equals(color_pressed,new float[]{146, 154, 179})) {
 			JsonArray color = new JsonArray();
-			color.add(color_pressed[0]);
-			color.add(color_pressed[1]);
-			color.add(color_pressed[2]);
-			color.add(color_pressed[3]);
-			
-			object.add("colorPressed", color);
+			color.addFloats(color_pressed);
+			object.map.put("colorPressed", color);
 		}
 		if(shadowWidth!=20||shadowHeight!=20) {
 			JsonArray shadow = new JsonArray();
-			shadow.add(shadowWidth);
-			shadow.add(shadowHeight);
-			
-			object.add("shadow", shadow);
+			shadow.addFloats(shadowWidth, shadowHeight);
+			object.map.put("shadow", shadow);
 		}
 		if(shadowIntensity!=0.5f) {
-			object.addProperty("shadowIntensity", shadowIntensity);
+			object.put("shadowIntensity", shadowIntensity);
 		}
 		if(texture!=null) {
-			object.addProperty("texture", texture_path);			
+			object.put("texture", texture_path);			
 		}
 		return object;
 	}

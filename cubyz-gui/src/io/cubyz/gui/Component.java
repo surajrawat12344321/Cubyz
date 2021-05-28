@@ -2,9 +2,8 @@ package io.cubyz.gui;
 
 import java.util.ArrayList;
 
-import com.google.gson.*;
-
 import io.cubyz.utils.datastructures.RegistryElement;
+import io.cubyz.utils.json.*;
 
 /**
  * 	IMPORTANT: DO NOT USE MULTIPLE PARAMETER IN THE CONSTRUCTOR OF YOUR SUBCLASS
@@ -25,7 +24,7 @@ public abstract class Component implements RegistryElement{
 	 * 	IMPORTANT: DO NOT USE MULTIPLE PARAMETER IN THE CONSTRUCTOR OF YOUR SUBCLASS
 	 */
 	public Component() {}
-	public void create(JsonObject object,Component parent) {
+	public void create(JsonObject object, Component parent) {
 		this.parent = parent;
 		
 		// Default to center of parent if nothing more is specified:
@@ -35,42 +34,39 @@ public abstract class Component implements RegistryElement{
 		}
 		
 		if(object.has("left"))
-			this.left.fromJsonAttribute(object,"left",parent.width);
+			this.left.fromJson(object.get("left"), parent.width);
 		if(object.has("top"))
-			this.top.fromJsonAttribute(object,"top",parent.height);
+			this.top.fromJson(object.get("top"), parent.height);
 		if(object.has("width"))
-			this.width.fromJsonAttribute(object,"width",parent.width);
+			this.width.fromJson(object.get("width"), parent.width);
 		if(object.has("height"))
-			this.height.fromJsonAttribute(object,"height",parent.height);
-		if(object.has("name"))
-			this.name = object.getAsJsonPrimitive("name").getAsString();
-		if(object.has("origin")) {
-			JsonArray Jorigin = object.getAsJsonArray("origin");
-			this.originLeft.fromJson(Jorigin.get(0),width);
-			this.originTop.fromJson(Jorigin.get(1),height);
+			this.height.fromJson(object.get("height"), parent.height);
+		this.name = object.getString("name", "");
+		ArrayList<JsonElement> jsonOrigin = object.getArrayNoNull("origin").array;
+		if(jsonOrigin.size() >= 2) {
+			this.originLeft.fromJson(jsonOrigin.get(0), width);
+			this.originTop.fromJson(jsonOrigin.get(1), height);
 		}
 
-		JsonArray jchildren = object.getAsJsonArray("children");
-		if(jchildren != null) {
-			for (JsonElement jsonElement : jchildren) {
-				JsonObject jsonObject = (JsonObject)jsonElement;
-				children.add(ComponentRegistry.createByJson(jsonObject,this));
-			}
+		JsonArray jchildren = object.getArrayNoNull("children");
+		for (JsonElement jsonElement : jchildren.array) {
+			JsonObject jsonObject = (JsonObject)jsonElement;
+			children.add(ComponentRegistry.createByJson(jsonObject, this));
 		}
 	}
 	public  JsonObject toJson() {
 		JsonObject obj = new JsonObject();
-		obj.addProperty("type", getID());
-		obj.add("left", left.toJson());
-		obj.add("top", top.toJson());
-		obj.add("width", width.toJson());
-		obj.add("height", height.toJson());
-		obj.addProperty("name", name);
+		obj.put("type", getID());
+		obj.put("left", left.toJson());
+		obj.put("top", top.toJson());
+		obj.put("width", width.toJson());
+		obj.put("height", height.toJson());
+		obj.put("name", name);
 		
 		JsonArray origin = new JsonArray();
 		origin.add(originLeft.toJson());
 		origin.add(originTop.toJson());
-		obj.add("origin", origin);
+		obj.put("origin", origin);
 		
 		return obj;
 	}

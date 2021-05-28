@@ -2,13 +2,12 @@ package io.cubyz.gui.element;
 
 import org.joml.Vector2d;
 
-import com.google.gson.JsonObject;
-
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.text.Text;
+import io.cubyz.utils.json.*;
 
 public class GuiWindow extends Component {
 

@@ -10,9 +10,6 @@ import java.awt.geom.Point2D;
 import java.awt.Toolkit;
 import java.util.Arrays;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import org.joml.Vector2d;
 
 import io.cubyz.gui.Component;
@@ -20,6 +17,7 @@ import io.cubyz.gui.Design;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.rendering.Shader;
+import io.cubyz.utils.json.*;
 
 public class Text extends Component {
 	//statics
@@ -61,58 +59,32 @@ public class Text extends Component {
 	@Override
 	public void create(JsonObject object, Component parent) {
 		super.create(object, parent);
-		
-		if(object.has("color")) {
-			color_std[0] = object.get("color").getAsJsonArray().get(0).getAsFloat();
-			color_std[1] = object.get("color").getAsJsonArray().get(1).getAsFloat();
-			color_std[2] = object.get("color").getAsJsonArray().get(2).getAsFloat();	
-		}
-		if(object.has("colorHovered")) {
-			color_hovered[0] = object.get("colorHovered").getAsJsonArray().get(0).getAsFloat();
-			color_hovered[1] = object.get("colorHovered").getAsJsonArray().get(1).getAsFloat();
-			color_hovered[2] = object.get("colorHovered").getAsJsonArray().get(2).getAsFloat();	
-		}
-		if(object.has("colorPressed")) {
-			color_pressed[0] = object.get("colorPressed").getAsJsonArray().get(0).getAsFloat();
-			color_pressed[1] = object.get("colorPressed").getAsJsonArray().get(1).getAsFloat();
-			color_pressed[2] = object.get("colorPressed").getAsJsonArray().get(2).getAsFloat();	
-		}
-		if(object.has("text")) {
-			setText(object.get("text").getAsString());
-		}
-		
+		object.getArrayNoNull("color").getFloats(color_std);
+		object.getArrayNoNull("colorHovered").getFloats(color_hovered);
+		object.getArrayNoNull("colorPressed").getFloats(color_hovered);
+		setText(object.getString("text", ""));
 	}
 	@Override
 	public JsonObject toJson() {
 		JsonObject object = super.toJson();
 		
 		if(!Arrays.equals(color_std,new float[]{156, 166, 191})) {
-			
 			JsonArray color = new JsonArray();
-			color.add(color_std[0]);
-			color.add(color_std[1]);
-			color.add(color_std[2]);
-			
-			object.add("color", color);
+			color.addFloats(color_std);
+			object.map.put("color", color);
 		}
 		if(!Arrays.equals(color_hovered,new float[]{156, 166, 221})) {
 			JsonArray color = new JsonArray();
-			color.add(color_hovered[0]);
-			color.add(color_hovered[1]);
-			color.add(color_hovered[2]);
-			
-			object.add("colorHovered", color);
+			color.addFloats(color_hovered);
+			object.map.put("colorHovered", color);
 		}
 		if(!Arrays.equals(color_pressed,new float[]{146, 154, 179})) {
 			JsonArray color = new JsonArray();
-			color.add(color_pressed[0]);
-			color.add(color_pressed[1]);
-			color.add(color_pressed[2]);
-			
-			object.add("colorPressed", color);
+			color.addFloats(color_pressed);
+			object.map.put("colorPressed", color);
 		}
 		if(!text.equals("")) {
-			object.addProperty("shadow", text);
+			object.put("text", text);
 		}
 		return object;
 	}

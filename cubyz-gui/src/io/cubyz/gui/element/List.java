@@ -1,10 +1,9 @@
 package io.cubyz.gui.element;
 
-import com.google.gson.JsonObject;
-
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
 import io.cubyz.gui.Length;
+import io.cubyz.utils.json.*;
 import io.cubyz.utils.log.Log;
 
 /*
@@ -30,19 +29,15 @@ public class List extends Component {
 	@Override
 	public void create(JsonObject object, Component parent) {
 		super.create(object, parent);
-		if(object.has("spacing")) 
-			this.spacing.setAsValue(object.get("spacing").getAsFloat());
-		if(object.has("direction")) {
-			String dir = object.get("direction").getAsString();
-			if(dir.equals("vertical")) {
-				direction = Direction.vertical;
-			}else if(dir.equals("horizontal")) {
-				direction = Direction.horizontal;
-			}else {
-				Log.warning("Unkown direction for list:"+dir);
-			}
-		}		
-		
+		this.spacing.setAsValue(object.getFloat("spacing", 0));
+		String dir = object.getString("direction", "vertical");
+		if(dir.equals("vertical")) {
+			direction = Direction.vertical;
+		} else if(dir.equals("horizontal")) {
+			direction = Direction.horizontal;
+		} else {
+			Log.warning("Unkown direction for list:"+dir);
+		}
 	}
 	public void draw(Design design,float parentialOffsetX,float parentialOffsetY) {
 		float initialParentialOffsetX = parentialOffsetX;

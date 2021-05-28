@@ -1,9 +1,6 @@
 package io.cubyz.gui;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-
+import io.cubyz.utils.json.*;
 import io.cubyz.utils.log.Log;
 
 public class Length {
@@ -29,33 +26,27 @@ public class Length {
 	
 	public JsonElement toJson() {
 		if(isPercent) {
-			return new JsonPrimitive(""+(data*100)+"%");
-		}else return new JsonPrimitive(data);
+			return new JsonString(""+(data*100)+"%");
+		}else return new JsonFloat(data);
 	}
 	public void fromJson(JsonElement object,Length parent) {
-		if(!object.isJsonPrimitive())
-			return;
-		JsonPrimitive jp = (JsonPrimitive)object;
-		if(jp.isNumber()) {
-			data = jp.getAsInt();
-			isPercent = false;
-			return;
-		}
-		if(jp.isString()) {
-			String content = jp.getAsString();
+		if(object instanceof JsonString) {
+			String content = object.getString("50%");
 			if(!content.isEmpty()&&content.contains("%")) {
 				data = Float.parseFloat(content.replaceAll("%", " "))/100;
 				isPercent = true;
 				this.parent = parent;
 				return;
 			}
+		} else {
+			data = object.getFloat(0);
+			isPercent = false;
+			return;
 		}
 		Log.severe("JSON unknown property");
 		Log.severe(object);
 	}
-	public void fromJsonAttribute(JsonObject object ,String attributeName,Length parent) {
-		fromJson(object.getAsJsonPrimitive(attributeName),parent);
-	}
+
 	public void changeParent(Length length) {
 		this.parent = length;
 	}
