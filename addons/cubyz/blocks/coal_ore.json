@@ -1,0 +1,10 @@
+{
+	"drop" : "cubyz:coal",
+	"hardness" : 40,
+	"veins" : 0.625,
+	"size" : 15,
+	"texture" : "cubyz:coal_ore",
+	"model" : "cubyz:block.obj",
+	"class" : "ore",
+	"height" : 28
+}

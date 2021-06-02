@@ -2,7 +2,6 @@ package io.cubyz.server.modding;
 
 import io.cubyz.utils.datastructures.Registry;
 import io.cubyz.world.biomes.Biome;
-import io.cubyz.world.blocks.Block;
 import io.cubyz.world.entity.EntityType;
 import io.cubyz.world.items.Item;
 
@@ -26,7 +25,7 @@ public abstract class Mod {
 	 * Should only be used if data files are not flexible enough.
 	 * @param registry
 	 */
-	public void registerBlocks(Registry<Block> registry) {
+	public void registerBlocks() {
 		
 	}
 	

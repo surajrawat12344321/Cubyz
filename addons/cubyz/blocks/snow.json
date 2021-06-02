@@ -1,0 +1,9 @@
+{
+	"drop" : "auto",
+	"hardness" : 6.5,
+	"texture" : "cubyz:snow",
+	"blockEntity" : "io.cubyz.base.MeltableBlockEntity",
+	"rotation" : "cubyz:stackable",
+	"model" : "cubyz:block.obj",
+	"class" : "sand"
+}

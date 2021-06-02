@@ -1,0 +1,10 @@
+{
+	"drop" : "auto, 0.1 cubyz:apple",
+	"hardness" : 0.4,
+	"texture" : "cubyz:oak_leaves_transparent",
+	"model" : "cubyz:block.obj",
+	"absorbedLight" : 0x0f100010,
+	"class" : "leaf",
+	"degradable" : true,
+	"transparent" : true
+}

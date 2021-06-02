@@ -1,0 +1,9 @@
+{
+	"solid" : false,
+	"texture" : "cubyz:water",
+	"selectable" : false,
+	"model" : "cubyz:block.obj",
+	"absorbedLight" : 0x17171100,
+	"class" : "fluid",
+	"transparent" : true
+}

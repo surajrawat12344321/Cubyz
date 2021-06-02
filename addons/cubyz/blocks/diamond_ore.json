@@ -1,0 +1,10 @@
+{
+	"drop" : "cubyz:diamond",
+	"hardness" : 80,
+	"veins" : 0.1,
+	"size" : 4,
+	"texture" : "cubyz:diamond_ore",
+	"model" : "cubyz:block.obj",
+	"class" : "ore",
+	"height" : -80
+}

@@ -1,8 +1,0 @@
-class sand
-hardness 6
-drop cubyz:soil
-
-model cubyz:persidetexture.obj
-texture cubyz:grass
-
-color 0xf360

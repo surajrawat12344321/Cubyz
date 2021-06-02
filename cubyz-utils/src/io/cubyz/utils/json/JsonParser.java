@@ -110,14 +110,35 @@ public abstract class JsonParser {
 				int end = index[0]+1;
 				boolean isFloat = false;
 				while(!Character.isWhitespace(chars[end]) && chars[end] != ',' && chars[end] != '}' && chars[end] != ']') {
-					isFloat |= !Character.isDigit(chars[end]);
+					switch(chars[end]) {
+					case '0':
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6':
+					case '7':
+					case '8':
+					case '9':
+					case 'a':
+					case 'b':
+					case 'c':
+					case 'd':
+					case 'e':
+					case 'f':
+					case 'x':
+						break;
+					default:
+						isFloat = true;
+					}
 					end++;
 				}
 				try {
 					if(isFloat) {
 						value = new JsonFloat(Float.parseFloat(new String(chars, index[0], end - index[0])));
 					} else {
-						value = new JsonInt(Integer.parseInt(new String(chars, index[0], end - index[0])));
+						value = new JsonInt(Integer.decode(new String(chars, index[0], end - index[0])));
 					}
 				} catch(Exception e) {
 					printError(index[0], chars, "Cannot parse number: "+new String(chars, index[0], end - index[0])+".");

@@ -1,0 +1,8 @@
+{
+	"drop" : "auto",
+	"hardness" : 8,
+	"texture" : "cubyz:oak_top",
+	"rotation" : "cubyz:log",
+	"model" : "cubyz:persidetexture.obj",
+	"class" : "wood"
+}

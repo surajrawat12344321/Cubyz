@@ -1,0 +1,7 @@
+{
+	"drop" : "auto",
+	"hardness" : 25,
+	"texture" : "cubyz:gravel",
+	"model" : "cubyz:block.obj",
+	"class" : "sand"
+}

@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import io.cubyz.server.AddonsLoader;
 import io.cubyz.utils.gui.StatusInfo;
 import io.cubyz.utils.log.Log;
 import io.cubyz.world.Registries;
@@ -24,8 +25,9 @@ public class ModLoader {
 	 * 
 	 * @param modNames path to the file that contains all the mod names.
 	 * @param modLoadingStatus info about the mod loading process that will be shown on the status bar.
+	 * @param internalMods mod classes that are part of the main game.
 	 */
-	public ModLoader(File modNames, StatusInfo modLoadingStatus) {
+	public ModLoader(File modNames, StatusInfo modLoadingStatus, Mod... internalMods) {
 		// Ensure that there are no leftovers from the last universe:
 		Registries.clear();
 
@@ -69,7 +71,10 @@ public class ModLoader {
 		
 		ArrayList<Mod> modList = new ArrayList<>();
 		
-		// TODO: Add the addons mod to the list.
+		// Add the default mods to the list.
+		for(Mod mod : internalMods) {
+			modList.add(mod);
+		}
 		
 		// Instantiate the mods:
 		for (Class<?> cl : modClasses) {
@@ -118,8 +123,9 @@ public class ModLoader {
 			modStatus.currentProcess = i;
 			modStatus.processName = mod.getName();
 			
-			mod.registerBlocks(Registries.BLOCKS);
+			mod.registerBlocks();
 		}
+		AddonsLoader.loadBlocks("addons");
 
 		modLoadingStatus.currentProcess = 5;
 		modLoadingStatus.processName = "Initializing Entities...";

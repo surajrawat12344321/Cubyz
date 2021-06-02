@@ -1,0 +1,7 @@
+{
+	"drop" : "cubyz:cobblestone",
+	"hardness" : 25,
+	"texture" : "cubyz:stone",
+	"model" : "cubyz:block.obj",
+	"class" : "stone"
+}
