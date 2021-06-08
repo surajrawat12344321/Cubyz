@@ -4,6 +4,7 @@ import io.cubyz.gui.Init;
 import io.cubyz.gui.SceneManager;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Window;
+import io.cubyz.renderUniverse.RenderUniverse;
 import io.cubyz.server.BaseMod;
 import io.cubyz.server.modding.ModLoader;
 import io.cubyz.utils.gui.StatusInfo;

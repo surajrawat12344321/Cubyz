@@ -3,6 +3,8 @@ package io.cubyz.client;
 import io.cubyz.gui.Component;
 import io.cubyz.gui.EventListener;
 import io.cubyz.gui.SceneManager;
+import io.cubyz.renderUniverse.RenderUniverse;
+import io.cubyz.world.Universe;
 import io.cubyz.world.UniverseInterface;
 
 /**
@@ -28,7 +30,8 @@ public class Game {
 		SceneManager.getScene("singleplayerMenu").eventListener.add(new EventListener() {	
 			@Override public void onEvent(Component source, String event) {
 				if(source.name.equals("logo")&&event.equals("button_release")) {
-					SceneManager.setCurrentScene("mainMenu");
+					//SceneManager.setCurrentScene("mainMenu");
+					RenderUniverse.universe = new Universe();
 				}
 			}
 		});
