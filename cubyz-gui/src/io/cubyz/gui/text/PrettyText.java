@@ -213,55 +213,31 @@ public class PrettyText {
 		for(int i2 = 0; i2 < 6 && i + i2 < chars.length; i2++) {
 			switch(chars[i+i2]) {
 				case '1':
-					result |= 1;
-					break;
 				case '2':
-					result |= 2;
-					break;
 				case '3':
-					result |= 3;
-					break;
 				case '4':
-					result |= 4;
-					break;
 				case '5':
-					result |= 5;
-					break;
 				case '6':
-					result |= 6;
-					break;
 				case '7':
-					result |= 7;
-					break;
 				case '8':
-					result |= 8;
-					break;
 				case '9':
-					result |= 9;
+					result |= chars[i+i2] - '0';
 					break;
 				case 'a':
-				case 'A':
-					result |= 10;
-					break;
 				case 'b':
-				case 'B':
-					result |= 11;
-					break;
 				case 'c':
-				case 'C':
-					result |= 12;
-					break;
 				case 'd':
-				case 'D':
-					result |= 13;
-					break;
 				case 'e':
-				case 'E':
-					result |= 14;
-					break;
 				case 'f':
+					result |= chars[i+i2] - 'a' + 10;
+					break;
+				case 'A':
+				case 'B':
+				case 'C':
+				case 'D':
+				case 'E':
 				case 'F':
-					result |= 15;
+					result |= chars[i+i2] - 'A' + 10;
 					break;
 			}
 			if(i2 < 5)

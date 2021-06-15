@@ -43,15 +43,15 @@ public class GraphicFont {
 	 * @param letter
 	 * @return the rectangle bounds of the glyph
 	 */
-	public Rectangle getGlyph(GlyphVector source, int indexInGlyphVector) {
+	public Rectangle getGlyph(int letterCode) {
 		//does the glyph already exist?
-		int letterCode = source.getGlyphCode(indexInGlyphVector);
 		if(glyphs.containsKey(letterCode))
 			return glyphs.get(letterCode);
 
 		//letter metrics
 		FontMetrics metrics = fontGraphics.getFontMetrics();
-		Rectangle bounds = source.getGlyphPixelBounds(indexInGlyphVector, metrics.getFontRenderContext(), 0, 0);
+		GlyphVector glyphVector = font.createGlyphVector(metrics.getFontRenderContext(), new int[] {letterCode});
+		Rectangle bounds = glyphVector.getGlyphPixelBounds(0, metrics.getFontRenderContext(), 0, 0);
 
 		//create the Glyph
 		Rectangle glyph = new Rectangle();
@@ -62,17 +62,15 @@ public class GraphicFont {
 		// Paint the new glyph in the texture:
 		
 		//make the fontTexture bigger.
-		BufferedImage newFontTexture = new BufferedImage(fontTexture.getWidth()+glyph.width,metrics.getHeight(),BufferedImage.TYPE_INT_ARGB);
+		BufferedImage newFontTexture = new BufferedImage(fontTexture.getWidth()+glyph.width, metrics.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D newGraphic = newFontTexture.createGraphics();
-		metrics = fontGraphics.getFontMetrics();
 		
 		//drawing the old stuff
 		newGraphic.drawImage(fontTexture,0,0,null);
 		//drawing the new letter
 		newGraphic.setFont(font);
 		newGraphic.setColor(Color.white);
-		newGraphic.setClip(fontTexture.getWidth(), 0, glyph.width, glyph.height);
-		newGraphic.drawGlyphVector(source, glyph.x-bounds.x,-bounds.y);
+		newGraphic.drawGlyphVector(glyphVector, glyph.x-bounds.x,-bounds.y);
 		
 		//replace the old by the new 
 		fontTexture = newFontTexture;

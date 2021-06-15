@@ -8,7 +8,6 @@ import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.Toolkit;
-import java.util.Arrays;
 
 import org.joml.Vector2d;
 
@@ -16,39 +15,29 @@ import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
-import io.cubyz.gui.rendering.Shader;
 import io.cubyz.utils.json.*;
 
 public class Text extends Component {
 	//statics
 	public static GraphicFont font = new GraphicFont();
 	
-	static{
+	static {
 		font.loadFromAwt();
 		CubyzGraphics2D.instance.font = font;
 	}
 
-	PrettyText prettyVersion;
+	private PrettyText prettyVersion;
 	
-	
-	static int vbo = -1;
-	static Shader shader = new Shader();
 	
 	//state of the Text
-	public boolean pressed;
-	public boolean hovered;
+	private boolean pressed;
 	
-	//colors
-	public float[] color_std 	 = 	{ 156, 166, 191}; // standart colour
-	public float[] color_pressed = 	{ 146, 154, 179}; // pressed colour
-	public float[] color_hovered = 	{ 156, 166, 221}; // hovered colour
-	
-	//Text
-	private String text = new String("a");
-	private TextLayout layout = new TextLayout(text, font.font, font.fontGraphics.getFontRenderContext());
-	public TextHitInfo cursorPosition = null;
-	public TextHitInfo selectionStart = null;
-	public boolean editable = true;
+	// Text and cursor/selection data.
+	private String text = "";
+	private TextLayout layout = null;
+	private TextHitInfo cursorPosition = null;
+	private TextHitInfo selectionStart = null;
+	private boolean editable = false;
 	
 	
 	@Override
@@ -59,37 +48,25 @@ public class Text extends Component {
 	@Override
 	public void create(JsonObject object, Component parent) {
 		super.create(object, parent);
-		object.getArrayNoNull("color").getFloats(color_std);
-		object.getArrayNoNull("colorHovered").getFloats(color_hovered);
-		object.getArrayNoNull("colorPressed").getFloats(color_hovered);
 		setText(object.getString("text", ""));
+		editable = object.getBool("editable", false);
 	}
 	@Override
 	public JsonObject toJson() {
 		JsonObject object = super.toJson();
 		
-		if(!Arrays.equals(color_std,new float[]{156, 166, 191})) {
-			JsonArray color = new JsonArray();
-			color.addFloats(color_std);
-			object.map.put("color", color);
-		}
-		if(!Arrays.equals(color_hovered,new float[]{156, 166, 221})) {
-			JsonArray color = new JsonArray();
-			color.addFloats(color_hovered);
-			object.map.put("colorHovered", color);
-		}
-		if(!Arrays.equals(color_pressed,new float[]{146, 154, 179})) {
-			JsonArray color = new JsonArray();
-			color.addFloats(color_pressed);
-			object.map.put("colorPressed", color);
-		}
 		if(!text.equals("")) {
 			object.put("text", text);
 		}
+		object.put("editable", editable);
 		return object;
 	}
 
-	// Gets the position of the cursor on the text.
+	/**
+	 * Gets the x-position of the cursor on the text.
+	 * @param cursorPosition
+	 * @return
+	 */
 	private float getCursorX(TextHitInfo cursorPosition) {
 		if(cursorPosition == null || layout == null) return 0;
 		Point2D.Float cursorPos = new Point2D.Float();
@@ -97,7 +74,11 @@ public class Text extends Component {
 		return cursorPos.x*(float)height.getAsValue()/font.font.getSize();
 	}
 
-	// Makes sure that the cursor is on the correct edge for further usage.
+	/**
+	 * Makes sure that the cursor is on the correct edge for further usage, by moving it one field and back.
+	 * @param position `cursorPosition` or `selectionStart`
+	 * @return
+	 */
 	private TextHitInfo fixEdge(TextHitInfo position) {
 		if(position == null || layout == null) return position;
 		if(text.length() == 0) return TextHitInfo.trailing(-1);
@@ -126,17 +107,12 @@ public class Text extends Component {
 	 */
 	public void addTextAtCursor(String string) {
 		if(cursorPosition != null) {
-			if(selectionStart != null) deleteTextAtCursor(true);
-			int oldCursorIndex = cursorPosition.getCharIndex();
-			if(cursorPosition.isLeadingEdge())
-				this.text = text.substring(0, oldCursorIndex)+string+text.substring(oldCursorIndex);
-			else
-				this.text = text.substring(0, oldCursorIndex+1)+string+text.substring(oldCursorIndex+1);
+			if(selectionStart != null) deleteTextAtCursor(true); // overwrite selected text.
+			int insertionIndex = cursorPosition.getCharIndex();
+			if(!cursorPosition.isLeadingEdge()) insertionIndex++;
+			this.text = text.substring(0, insertionIndex)+string+text.substring(insertionIndex);
 			updateText();
-			if(cursorPosition.isLeadingEdge())
-				cursorPosition = TextHitInfo.leading(oldCursorIndex + string.length());
-			else
-				cursorPosition = TextHitInfo.trailing(oldCursorIndex + string.length());
+			cursorPosition = TextHitInfo.leading(insertionIndex + string.length());
 			
 			cursorPosition = fixEdge(cursorPosition);
 		}
@@ -292,11 +268,12 @@ public class Text extends Component {
 	@Override
 	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
 		super.update(design,parentalOffsetX,parentalOffsetY);
+		if(!editable) return;
 		Vector2d mousepos = Input.getMousePosition(design);
 		mousepos.x-= parentalOffsetX + left.getAsValue();
 		mousepos.y-= parentalOffsetY + top.getAsValue();
 		
-		hovered = (0<=mousepos.x&&
+		boolean hovered = (0<=mousepos.x&&
 			0<=mousepos.y&&
 			width.getAsValue()>=mousepos.x&&
 			height.getAsValue()>=mousepos.y)

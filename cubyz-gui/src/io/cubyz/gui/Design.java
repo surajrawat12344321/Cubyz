@@ -96,7 +96,7 @@ public class Design extends Component{
 		return scene;
 	}
 	public void update() {
-		//deselect everythink if someone pressed somewhere else
+		//deselect everything if someone pressed somewhere else
 		if(Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY))
 			Input.selectedText = null;
 		hovered = null;

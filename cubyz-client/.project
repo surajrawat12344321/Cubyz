@@ -24,7 +24,7 @@
 		<link>
 			<name>assets</name>
 			<type>2</type>
-			<location>C:/Users/Thilo/git/Cubyz/assets</location>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/assets</locationURI>
 		</link>
 	</linkedResources>
 	<filteredResources>

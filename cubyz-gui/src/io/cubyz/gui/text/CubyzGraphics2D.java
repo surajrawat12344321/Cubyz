@@ -27,11 +27,8 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
-import java.nio.FloatBuffer;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
-
-import org.lwjgl.system.MemoryUtil;
 
 import io.cubyz.gui.Design;
 import io.cubyz.gui.rendering.Shader;
@@ -55,21 +52,19 @@ public class CubyzGraphics2D extends Graphics2D {
 		// Text stuff:
 		// vertex buffer
 		float rawdata[] = { 
-				0,0,		0,0,
-				0,-1,		0,1,
-				1,0,		1,0,
-				1,-1,		1,1
-			};
-		FloatBuffer buffer = MemoryUtil.memAllocFloat(rawdata.length);
-		buffer.put(rawdata).flip();
+			0, 0,		0, 0,
+			0, -1,		0, 1,
+			1, 0,		1, 0,
+			1, -1,		1, 1
+		};
 		
 		textVAO = glGenVertexArrays();
 		glBindVertexArray(textVAO);
 		int textVBO = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-		glVertexAttribPointer(0,2,GL_FLOAT,false,4*4,0);
-		glVertexAttribPointer(1,2,GL_FLOAT,false,4*4,8);
+		glBufferData(GL_ARRAY_BUFFER, rawdata, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, false, 4*4, 0);
+		glVertexAttribPointer(1, 2, GL_FLOAT, false, 4*4, 8);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		
@@ -81,17 +76,15 @@ public class CubyzGraphics2D extends Graphics2D {
 		// Line stuff:
 		// vertex buffer
 		rawdata = new float[]{ 
-				0,0,1,1
-			};
-		buffer = MemoryUtil.memAllocFloat(rawdata.length);
-		buffer.put(rawdata).flip();
+			0, 0, 1, 1
+		};
 
 		lineVAO = glGenVertexArrays();
 		glBindVertexArray(lineVAO);
 		int lineVBO = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-		glVertexAttribPointer(0,2,GL_FLOAT,false,2*4,0);
+		glBufferData(GL_ARRAY_BUFFER, rawdata, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, false, 2*4, 0);
 		glEnableVertexAttribArray(0);
 		
 		//Shader
@@ -99,20 +92,18 @@ public class CubyzGraphics2D extends Graphics2D {
 
 		// Rect stuff:
 		rawdata = new float[] {
-			0,0,
-			0,1,
-			1,0,
-			1,1,
+			0, 0,
+			0, 1,
+			1, 0,
+			1, 1,
 		};
-		buffer = MemoryUtil.memAllocFloat(rawdata.length);
-		buffer.put(rawdata).flip();
 		
 		rectVAO = glGenVertexArrays();
 		glBindVertexArray(rectVAO);
 		int rectVBO = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
-		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-		glVertexAttribPointer(0,2,GL_FLOAT,false,2*4,0);
+		glBufferData(GL_ARRAY_BUFFER, rawdata, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, false, 2*4, 0);
 		glEnableVertexAttribArray(0);
 		
 		//Shader
@@ -191,7 +182,7 @@ public class CubyzGraphics2D extends Graphics2D {
 					markerIndex++;
 				}
 			}
-			Rectangle textureBounds = font.getGlyph(glyphs, i);
+			Rectangle textureBounds = font.getGlyph(glyphs.getGlyphCode(i));
 			if((activeFontEffects & TextMarker.TYPE_BOLD) != 0) {
 				// Increase the texture size for the bold shadering to work.
 				textureBounds = new Rectangle(textureBounds.x, textureBounds.y-1, textureBounds.width, textureBounds.height+1);
