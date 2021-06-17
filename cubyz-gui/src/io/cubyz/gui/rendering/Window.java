@@ -14,22 +14,21 @@ import static org.lwjgl.opengl.GL33.*;
 import org.lwjgl.system.MemoryUtil;
 
 import io.cubyz.Settings;
-import io.cubyz.gui.Component;
 import io.cubyz.server.Constants;
 
 public class Window {
-	private final long handle;
+	private static long handle;
 	
-	private boolean fullscreen = false;
+	private static boolean fullscreen = false;
 	
-	Vector3f backgroundColor = new Vector3f(0, 0, 0);
-	Matrix4f projectionMatrix = new Matrix4f();
+	static Vector3f backgroundColor = new Vector3f(0, 0, 0);
+	static Matrix4f projectionMatrix = new Matrix4f();
 	
 	public static int width,height;
 	
-	public Window(int width, int height) {
-		this.width = width;
-		this.height = height;
+	public static void createWindow(int width, int height) {
+		Window.width = width;
+		Window.height = height;
 		
 		
 		glfwDefaultWindowHints();
@@ -47,20 +46,20 @@ public class Window {
 		GL.createCapabilities();
 		
 		// Generate the projection matrix:
-		regenerateMatrix(this.width, this.height);
+		regenerateMatrix(Window.width, Window.height);
 		
 		glfwShowWindow(handle);
 		
 		glfwSetFramebufferSizeCallback(handle, (window, newWidth, newHeight) -> {
-		    this.width = newWidth;
-		    this.height = newHeight;
-		    regenerateMatrix(this.width, this.height);
+			Window.width = newWidth;
+			Window.height = newHeight;
+		    regenerateMatrix(Window.width, Window.height);
 		});
 		
-		Input.set(this);
+		Input.init();
 	}
 	
-	public void setBackgroundColor(float red, float green, float blue, float alpha) {
+	public static void setBackgroundColor(float red, float green, float blue, float alpha) {
 		glClearColor(red, green, blue, alpha);
 	}
 	
@@ -69,7 +68,7 @@ public class Window {
 	 * @param width
 	 * @param height
 	 */
-	public void regenerateMatrix(int width, int height) {
+	public static void regenerateMatrix(int width, int height) {
 		if(height==0)
 			return;
 		glViewport(0, 0, width, height);
@@ -81,11 +80,11 @@ public class Window {
 	/**
 	 * @return Whether the window should close due to user action(such as clicking the close widget in the corner of the window).
 	 */
-	public boolean shouldClose() {
+	public static boolean shouldClose() {
 		return glfwWindowShouldClose(handle);
 	}
 	
-	public void render() {
+	public static void render() {
 		// Set some gl parameters. These can be changed by nanoVG.
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
@@ -100,7 +99,7 @@ public class Window {
 	/**
 	 * Toggles fullscreen.
 	 */
-	public void toggleFullscreen() {
+	public static void toggleFullscreen() {
 		fullscreen = !fullscreen;
 		if (fullscreen) {
 			GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -117,7 +116,7 @@ public class Window {
 	/*
 	 * get the handle of the window
 	 * */
-	public long getHandle() {
+	public static long getHandle() {
 		return handle;
 	}
 	

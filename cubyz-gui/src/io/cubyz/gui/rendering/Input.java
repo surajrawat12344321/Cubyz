@@ -21,9 +21,6 @@ public final class Input {
 	//public
 	public static Component selectedText;
 	
-	//window
-	static Window window;
-	
 	private static Vector2d mousePosition = new Vector2d();
 	public static Vector2d getMousePosition(Design design) {
 		Vector2d output = new Vector2d();
@@ -55,13 +52,11 @@ public final class Input {
 	}
 	
 	
-	static void set(Window window) {
+	static void init() {
 		Input.setVirtualKeyFromGLFWMouse(Keys.CUBYZ_GUI_PRESS_PRIMARY,GLFW_MOUSE_BUTTON_1);
 		
-		Input.window = window;
 		
-		
-		glfwSetKeyCallback(window.getHandle(),new GLFWKeyCallback() {
+		glfwSetKeyCallback(Window.getHandle(),new GLFWKeyCallback() {
 			@Override
 			public void invoke(long window, int key, int scancode, int action, int mods) {					
 				if(action == GLFW_PRESS) {
@@ -90,7 +85,7 @@ public final class Input {
 				
 			}
 		});
-		glfwSetMouseButtonCallback(window.getHandle(), new GLFWMouseButtonCallback() {
+		glfwSetMouseButtonCallback(Window.getHandle(), new GLFWMouseButtonCallback() {
 			
 			@Override
 			public void invoke(long window, int button, int action, int mods) {
@@ -101,7 +96,7 @@ public final class Input {
 			}
 		});
 		
-		glfwSetCursorPosCallback(window.getHandle(),new GLFWCursorPosCallback() {
+		glfwSetCursorPosCallback(Window.getHandle(),new GLFWCursorPosCallback() {
 			
 			@Override
 			public void invoke(long window, double xpos, double ypos) {
@@ -110,7 +105,7 @@ public final class Input {
 				mousePosition.y = ypos;
 			}
 		});
-		glfwSetCharCallback(window.getHandle(),new GLFWCharCallback() {
+		glfwSetCharCallback(Window.getHandle(),new GLFWCharCallback() {
 			
 			@Override
 			public void invoke(long window, int codepoint) {
@@ -125,7 +120,7 @@ public final class Input {
 	public static void update() {
 		DoubleBuffer xBuffer = BufferUtils.createDoubleBuffer(1);
 		DoubleBuffer yBuffer = BufferUtils.createDoubleBuffer(1);
-		glfwGetCursorPos(window.getHandle(), xBuffer, yBuffer);
+		glfwGetCursorPos(Window.getHandle(), xBuffer, yBuffer);
 		mousePosition.x  = xBuffer.get(0);
 		mousePosition.y = yBuffer.get(0);
 	}

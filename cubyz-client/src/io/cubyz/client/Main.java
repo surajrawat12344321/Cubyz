@@ -21,13 +21,13 @@ public class Main {
 		try {
 			Init.init();
 			
-			Window window = new Window(1280, 720);
-			window.setBackgroundColor(0.5f, 1f, 0.5f, 1);
+			Window.createWindow(1280, 720);
+			Window.setBackgroundColor(0.5f, 1f, 0.5f, 1);
 			
 			SceneManager.init();
 			Game.init();
 			
-			while(!window.shouldClose()) {
+			while(!Window.shouldClose()) {
 				try{
 					Thread.sleep(10);
 				} catch(Exception e) {}
@@ -35,7 +35,7 @@ public class Main {
 				SceneManager.update();
 				SceneManager.draw();
 				RenderUniverse.draw();
-				window.render();
+				Window.render();
 			}
 			Log.info("Execution stopped.");
 			
