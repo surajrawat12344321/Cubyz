@@ -15,7 +15,6 @@ public abstract class Component implements RegistryElement{
 					width		= new Length(),	height		= new Length(),
 					originLeft 	= new Length(), originTop	= new Length();
 	public String name 			= new String();
-	protected Scene scene;
 	protected Component parent 	= null;
 	
 	@Override
@@ -92,12 +91,6 @@ public abstract class Component implements RegistryElement{
 			component.update(design,
 					parentialOffsetX+left.getAsValue()-component.originLeft.getAsValue(),
 					parentialOffsetY+top.getAsValue()-component.originTop.getAsValue());
-		}
-	}
-	public void setScene(Scene scene) {
-		this.scene = scene;
-		for(Component child : children) {
-			child.setScene(scene);
 		}
 	}
 

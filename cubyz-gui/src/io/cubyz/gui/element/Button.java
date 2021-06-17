@@ -14,6 +14,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
+import io.cubyz.gui.SceneManager;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.rendering.Shader;
@@ -171,8 +172,8 @@ public class Button extends Component {
 		boolean old_pressed = pressed;
 		pressed = hovered?Input.pressed(Keys.CUBYZ_GUI_PRESS_PRIMARY):false;
 		
-		if(!pressed && old_pressed && scene != null && hovered) {
-			scene.triggerEvent(this, "button_release");
+		if(!pressed && old_pressed && hovered) {
+			SceneManager.triggerEvent(this, "button_release");
 			release = true;		
 		}else release = false;
 	}

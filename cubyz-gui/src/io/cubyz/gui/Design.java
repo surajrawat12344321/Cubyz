@@ -73,12 +73,6 @@ public class Design extends Component{
 				children.add(ComponentRegistry.createByJson(jsonObject,this));
 			}
 		}
-		
-		// Get the fitting scene and give it all of its children:
-		Scene scene = SceneManager.getScene(name);
-		for(Component child : children) {
-			child.setScene(scene);
-		}
 	}
 	@Override
 	public JsonObject toJson() {

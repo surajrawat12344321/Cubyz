@@ -4,6 +4,7 @@ import org.joml.Vector2d;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
+import io.cubyz.gui.SceneManager;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Keys;
 import io.cubyz.gui.text.Text;
@@ -119,10 +120,10 @@ public class GuiWindow extends Component {
 		}
 		
 		if(close.release)
-			scene.currentDesign.remove(this);
+			SceneManager.currentDesign.remove(this);
 		
-		if (!pressed && old_pressed && scene != null && hovered)
-			scene.triggerEvent(this, "button_release");
+		if (!pressed && old_pressed && hovered)
+			SceneManager.triggerEvent(this, "button_release");
 	}
 
 	@Override
