@@ -6,12 +6,12 @@ import java.util.HashMap;
 import org.joml.Vector2d;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWCharCallback;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 import io.cubyz.gui.Component;
 import io.cubyz.gui.Design;
+import io.cubyz.gui.SceneManager;
 import io.cubyz.gui.text.Text;
 import io.cubyz.utils.log.Log;
 
@@ -21,13 +21,9 @@ public final class Input {
 	//public
 	public static Component selectedText;
 	
-	private static Vector2d mousePosition = new Vector2d();
+	private static final Vector2d mousePosition = new Vector2d();
 	public static Vector2d getMousePosition(Design design) {
-		Vector2d output = new Vector2d();
-		output.x = mousePosition.x/Window.width*design.width.getAsValue();
-		output.y = mousePosition.y/Window.height*design.height.getAsValue();
-		
-		return output;
+		return new Vector2d(mousePosition);
 	}
 	
 	//which real keys are pressed
@@ -96,15 +92,6 @@ public final class Input {
 			}
 		});
 		
-		glfwSetCursorPosCallback(Window.getHandle(),new GLFWCursorPosCallback() {
-			
-			@Override
-			public void invoke(long window, double xpos, double ypos) {
-				// TODO Auto-generated method stub
-				mousePosition.x = xpos;
-				mousePosition.y = ypos;
-			}
-		});
 		glfwSetCharCallback(Window.getHandle(),new GLFWCharCallback() {
 			
 			@Override
@@ -121,7 +108,12 @@ public final class Input {
 		DoubleBuffer xBuffer = BufferUtils.createDoubleBuffer(1);
 		DoubleBuffer yBuffer = BufferUtils.createDoubleBuffer(1);
 		glfwGetCursorPos(Window.getHandle(), xBuffer, yBuffer);
-		mousePosition.x  = xBuffer.get(0);
-		mousePosition.y = yBuffer.get(0);
+		if(SceneManager.currentDesign != null) {
+			mousePosition.x = xBuffer.get(0)/Window.width*SceneManager.currentDesign.width.getAsValue();
+			mousePosition.y = yBuffer.get(0)/Window.height*SceneManager.currentDesign.height.getAsValue();
+		} else {
+			mousePosition.x = xBuffer.get(0);
+			mousePosition.y = yBuffer.get(0);
+		}
 	}
 }
