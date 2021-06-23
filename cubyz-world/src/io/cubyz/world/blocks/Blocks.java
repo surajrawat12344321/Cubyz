@@ -17,7 +17,7 @@ import io.cubyz.world.Registries;
  */
 public class Blocks implements DataOrientedRegistry {
 	private static final int INITIAL_SIZE = 128;
-	private static int size = 0;
+	private static int size = 1; // The initial size is 1, which is reserved for air.
 	private static final int capacity = INITIAL_SIZE;
 
 	private static String[] registryID = new String[INITIAL_SIZE];
@@ -72,6 +72,17 @@ public class Blocks implements DataOrientedRegistry {
 		return reverseIndex.get(registryID);
 	}
 	
+	/**
+	 * Checks if A's face is blocked by B.
+	 * @param blockA
+	 * @param blockB
+	 * @return
+	 */
+	public static boolean getsBlocked(int blockA, int blockB) {
+		return blockA == 0 || blockB != 0; // If A is air, then it shouldn't be rendered. If B is not air, then it also shouldn't be rendered.
+		// TODO: Transparent models
+	}
+	
 	private static void ensureCapacity(int newCapacity) {
 		if(newCapacity <= capacity) return;
 		registryID = Arrays.copyOf(registryID, newCapacity);
@@ -110,7 +121,7 @@ public class Blocks implements DataOrientedRegistry {
 		// Clear reverse indexing:
 		reverseIndex.clear();
 		
-		size = 0;
+		size = 1; // The initial size is 1, which is reserved for air.
 	}
 	
 	@Override
