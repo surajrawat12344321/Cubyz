@@ -19,12 +19,19 @@
 	</build>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<lwjgl.version>3.2.3</lwjgl.version>
 	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.joml</groupId>
 			<artifactId>joml</artifactId>
 			<version>1.9.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.lwjgl</groupId>
+			<artifactId>lwjgl-assimp</artifactId>
+			<version>${lwjgl.version}</version>
 		</dependency>
 	</dependencies>
 </project>
