@@ -59,6 +59,11 @@ public class Blocks implements DataOrientedRegistry {
 	public static RotationMode rotationMode(int blockData) {
 		return rotationMode[blockData & 0xffffff];
 	}
+	
+	/** Get the model that gets drawn or is used for the hitbox. */
+	public static Model model(int blockData) {
+		return rotationMode[blockData & 0xffffff].getModel(blockData);
+	}
 
 	/** Whether the block can interact with entities or fluids. */
 	public static boolean solid(int blockData) {
@@ -104,7 +109,7 @@ public class Blocks implements DataOrientedRegistry {
 		Blocks.registryID[size] = registryID;
 		blockClass[size] = json.getInt("blockClass", 0);
 		hardness[size] = json.getFloat("hardness", 1);
-		rotationMode[size] = Registries.ROTATION_MODES.getById(json.getString("rotationMode", "cubyz:no_rotation"));
+		rotationMode[size] = Registries.ROTATION_MODES.getById(json.getString("rotationMode", "cubyz:no_rotation")).createModel(json.getString("model", "cubyz:no_rotation"));
 		emission[size] = json.getInt("emission", 0);
 		absorption[size] = json.getInt("absorption", 0);
 		solid[size] = json.getBool("solid", true);

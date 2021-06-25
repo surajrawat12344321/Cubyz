@@ -3,6 +3,6 @@
 	"hardness" : 7,
 	"texture" : "cubyz:oak_planks",
 	"rotation" : "cubyz:fence",
-	"model" : "cubyz:fence.obj",
+	"model" : "cubyz:fence",
 	"class" : "wood"
 }

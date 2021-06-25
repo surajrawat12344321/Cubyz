@@ -2,6 +2,6 @@
 	"drop" : "auto",
 	"hardness" : 5,
 	"texture" : "cubyz:sand",
-	"model" : "cubyz:block.obj",
+	"model" : "cubyz:block",
 	"class" : "sand"
 }

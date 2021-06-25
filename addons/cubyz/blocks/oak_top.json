@@ -3,6 +3,6 @@
 	"hardness" : 8,
 	"texture" : "cubyz:oak_top",
 	"rotation" : "cubyz:log",
-	"model" : "cubyz:persidetexture.obj",
+	"model" : "cubyz:persidetexture",
 	"class" : "wood"
 }

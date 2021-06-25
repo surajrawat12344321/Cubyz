@@ -3,6 +3,6 @@
 	"hardness" : 10,
 	"texture" : "cubyz:ice",
 	"blockEntity" : "io.cubyz.base.MeltableBlockEntity",
-	"model" : "cubyz:block.obj",
+	"model" : "cubyz:block",
 	"class" : "stone"
 }

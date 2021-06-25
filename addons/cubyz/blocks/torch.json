@@ -5,7 +5,7 @@
 	"viewThrough" : true,
 	"texture" : "cubyz:torch",
 	"rotation" : "cubyz:torch",
-	"model" : "cubyz:torch.obj",
+	"model" : "cubyz:torch",
 	"emittedLight" : 0x00a09080,
 	"class" : "wood"
 }

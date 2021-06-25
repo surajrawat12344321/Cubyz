@@ -2,7 +2,7 @@
 	"solid" : false,
 	"texture" : "cubyz:water",
 	"selectable" : false,
-	"model" : "cubyz:block.obj",
+	"model" : "cubyz:block",
 	"absorbedLight" : 0x17171100,
 	"class" : "fluid",
 	"transparent" : true

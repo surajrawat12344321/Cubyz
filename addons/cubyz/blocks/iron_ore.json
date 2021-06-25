@@ -4,7 +4,7 @@
 	"veins" : 0.5,
 	"size" : 10,
 	"texture" : "cubyz:iron_ore",
-	"model" : "cubyz:block.obj",
+	"model" : "cubyz:block",
 	"class" : "ore",
 	"height" : -32
 }

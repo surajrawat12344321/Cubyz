@@ -8,6 +8,8 @@ import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.AIVector3D;
 
+import io.cubyz.utils.log.Log;
+
 import static org.lwjgl.assimp.Assimp.*;
 
 /**
@@ -18,6 +20,8 @@ import static org.lwjgl.assimp.Assimp.*;
 public class Model {
 	
 	private static final int flags = aiProcess_JoinIdenticalVertices | aiProcess_Triangulate;
+	
+	public static final Model DEFAULT = loadModelFromID("cubyz:block");
 	
 	
 	public final float[] vertices;
@@ -38,21 +42,43 @@ public class Model {
 		this.normals = normals;
 		this.indices = indices;
 	}
-	
+
 	/**
 	 * Read a model from an obj file.
 	 * @param filePath
 	 */
-	public Model(String filePath) {
+	public static Model loadModelFromFile(String filePath) {
 		AIScene aiScene = aiImportFile(filePath, flags);
+		if(aiScene == null) {
+			Log.warning("Couldn't find model in path: "+filePath+"! Using default model instead.");
+			if(DEFAULT == null) {
+				Log.severe("Couldn't find the default model! Using empty model instead.");
+				return new Model(new float[0], new float[0], new float[0], new int[0]);
+			}
+			return DEFAULT;
+		}
 		PointerBuffer aiMeshes = aiScene.mMeshes();
 		AIMesh aiMesh = AIMesh.create(aiMeshes.get());
-		vertices = process(aiMesh.mVertices());
-		textCoords = processTextCoords(aiMesh);
-		normals = process(aiMesh.mNormals());
-		indices = processIndices(aiMesh);
+		float[] vertices = process(aiMesh.mVertices());
+		float[] textCoords = processTextCoords(aiMesh);
+		float[] normals = process(aiMesh.mNormals());
+		int[] indices = processIndices(aiMesh);
+		return new Model(vertices, textCoords, normals, indices);
 	}
-	
+
+	/**
+	 * Read a model from the model ID.
+	 * The model ID contains the mod/addon it comes from and the name of the model seperated by :
+	 * @param filePath
+	 */
+	public static Model loadModelFromID(String ID) {
+		String[] parts = ID.split(":");
+		if(parts.length != 2) {
+			Log.warning("Invalid Model ID \""+ID+"\"! Using default model instead.");
+			return DEFAULT;
+		}
+		return loadModelFromFile("assets/"+parts[0]+"/models/"+parts[1]+".obj");
+	}
 	
 	// Some functions to help extract the data from lwjgl Assimp:
 

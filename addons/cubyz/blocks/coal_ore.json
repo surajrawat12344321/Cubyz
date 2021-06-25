@@ -4,7 +4,7 @@
 	"veins" : 0.625,
 	"size" : 15,
 	"texture" : "cubyz:coal_ore",
-	"model" : "cubyz:block.obj",
+	"model" : "cubyz:block",
 	"class" : "ore",
 	"height" : 28
 }

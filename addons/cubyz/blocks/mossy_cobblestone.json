@@ -2,6 +2,6 @@
 	"drop" : "auto",
 	"hardness" : 25,
 	"texture" : "cubyz:mossy_cobblestone",
-	"model" : "cubyz:block.obj",
+	"model" : "cubyz:block",
 	"class" : "stone"
 }
