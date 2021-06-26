@@ -12,9 +12,13 @@ import io.cubyz.utils.log.Log;
 
 public class Shader {
 
-	int id= 0;
+	int id = 0;
 	
-	private String getShaderType(int type) {
+	private Shader() {
+		
+	}
+	
+	private static String getShaderType(int type) {
 		if(type == GL_VERTEX_SHADER)
 			return"Couldn't create vertexshader.";
 		if(type == GL_FRAGMENT_SHADER)
@@ -23,7 +27,7 @@ public class Shader {
 	}
 	
 	//shader creation
-	int compileShaderFromString(int type,String code) throws Throwable {
+	private static int compileShaderFromString(int type, String code) throws Throwable {
 		
 		int id = glCreateShader(type);
 		if (id == 0) {
@@ -45,8 +49,8 @@ public class Shader {
 		return id;
 	}
 	//shader programm creation
-	int compileProgramFromString(String vertexShader,String fragmentShader) throws Throwable
-	{
+	public static Shader compileProgramFromString(String vertexShader, String fragmentShader) throws Throwable {
+		Shader shader = new Shader();
 		int program = glCreateProgram();
 		if (program == 0) {
 			throw new Exception("Couldn't create Shader");
@@ -71,19 +75,23 @@ public class Shader {
 
 		glValidateProgram(program);
 		
-		return program;
+		shader.id = program;
+		
+		return shader;
 	}
 	
-	public void loadFromFile(String vertexShaderPath,String fragmentShaderPath) {
+	public static Shader loadFromFile(String vertexShaderPath, String fragmentShaderPath) {
 		try {
 			String vertexShader = Files.readString(Path.of(vertexShaderPath));
 			String fragmentShader = Files.readString(Path.of(fragmentShaderPath));
 			
-			id = compileProgramFromString(vertexShader,fragmentShader);
+			return compileProgramFromString(vertexShader,fragmentShader);
 		} catch (Throwable e) {
 			Log.severe(e);
+			return new Shader();
 		}
 	}
+	
 	public void bind() {
 		glUseProgram(id);
 	}

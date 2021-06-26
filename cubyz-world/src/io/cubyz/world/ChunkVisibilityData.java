@@ -19,11 +19,11 @@ public class ChunkVisibilityData {
 	/** The number of visible blocks in this Chunk.*/
 	public int size = 0, capacity = INITIAL_CAPACITY;
 	/** The relative position data for each visible block */
-	byte[] x = new byte[INITIAL_CAPACITY], y = new byte[INITIAL_CAPACITY], z = new byte[INITIAL_CAPACITY];
+	public byte[] x = new byte[INITIAL_CAPACITY], y = new byte[INITIAL_CAPACITY], z = new byte[INITIAL_CAPACITY];
 	/** The block data for each visible block */
-	int[] blocks = new int[INITIAL_CAPACITY];
+	public int[] blocks = new int[INITIAL_CAPACITY];
 	/** Densely packed information about what neighbors are solid, to reduce amount of faces drawn. */
-	byte[] neighbors = new byte[INITIAL_CAPACITY];
+	public byte[] neighbors = new byte[INITIAL_CAPACITY];
 	
 	public ChunkVisibilityData(Chunk source, Chunk[] neighbors) {
 		wx = source.wx;

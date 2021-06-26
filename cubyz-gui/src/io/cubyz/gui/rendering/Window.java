@@ -22,7 +22,7 @@ public class Window {
 	private static boolean fullscreen = false;
 	
 	static Vector3f backgroundColor = new Vector3f(0, 0, 0);
-	static Matrix4f projectionMatrix = new Matrix4f();
+	public static final Matrix4f projectionMatrix = new Matrix4f();
 	
 	public static int width,height;
 	

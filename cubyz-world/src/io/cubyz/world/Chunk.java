@@ -36,5 +36,15 @@ public class Chunk {
 		this.wy = wy;
 		this.wz = wz;
 		this.resolution = resolution;
+		
+		// TODO: Remove test.
+		for(byte dx = 0; dx < CHUNK_WIDTH; dx++) {
+			for(byte dz = 0; dz < CHUNK_WIDTH; dz++) {
+				for(byte dy = 0; dy < Math.random()*CHUNK_WIDTH; dy++) {
+					int index = getIndex(dx, dy, dz);
+					blocks[index] = 1;
+				}
+			}
+		}
 	}
 }

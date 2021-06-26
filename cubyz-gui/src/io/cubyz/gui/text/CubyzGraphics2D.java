@@ -44,9 +44,9 @@ public class CubyzGraphics2D extends Graphics2D {
 	public static int textVAO;
 	public static int lineVAO;
 	public static int rectVAO;
-	public static Shader textShader = new Shader();
-	public static Shader lineShader = new Shader();
-	public static Shader rectShader = new Shader();
+	public static final Shader textShader = Shader.loadFromFile("assets/cubyz/shaders/Gui/GuiText.vs", "assets/cubyz/shaders/Gui/GuiText.fs");
+	public static final Shader lineShader = Shader.loadFromFile("assets/cubyz/shaders/Gui/GuiLine.vs", "assets/cubyz/shaders/Gui/GuiLine.fs");
+	public static final Shader rectShader = Shader.loadFromFile("assets/cubyz/shaders/Gui/GuiRect.vs", "assets/cubyz/shaders/Gui/GuiRect.fs");
 	
 	static { // Init opengl stuff:
 		// Text stuff:
@@ -68,9 +68,6 @@ public class CubyzGraphics2D extends Graphics2D {
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		
-		//Shader
-		textShader.loadFromFile("assets/cubyz/shaders/Gui/GuiText.vs", "assets/cubyz/shaders/Gui/GuiText.fs");
-		
 		
 		
 		// Line stuff:
@@ -86,9 +83,6 @@ public class CubyzGraphics2D extends Graphics2D {
 		glBufferData(GL_ARRAY_BUFFER, rawdata, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 2, GL_FLOAT, false, 2*4, 0);
 		glEnableVertexAttribArray(0);
-		
-		//Shader
-		lineShader.loadFromFile("assets/cubyz/shaders/Gui/GuiLine.vs", "assets/cubyz/shaders/Gui/GuiLine.fs");
 
 		// Rect stuff:
 		rawdata = new float[] {
@@ -105,9 +99,6 @@ public class CubyzGraphics2D extends Graphics2D {
 		glBufferData(GL_ARRAY_BUFFER, rawdata, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 2, GL_FLOAT, false, 2*4, 0);
 		glEnableVertexAttribArray(0);
-		
-		//Shader
-		rectShader.loadFromFile("assets/cubyz/shaders/Gui/GuiRect.vs", "assets/cubyz/shaders/Gui/GuiRect.fs");
 		
 	}
 	

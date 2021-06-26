@@ -26,7 +26,7 @@ import io.cubyz.utils.json.*;
 public class Button extends Component {
 	//statics
 	static int vao = -1;
-	static Shader shader = new Shader();
+	static final Shader shader = Shader.loadFromFile("assets/cubyz/shaders/Gui/GuiButton.vs", "assets/cubyz/shaders/Gui/GuiButton.fs");
 	
 	//state of the button
 	public boolean pressed;
@@ -70,9 +70,6 @@ public class Button extends Component {
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		//Shader
-		shader.loadFromFile("assets/cubyz/shaders/Gui/GuiButton.vs", "assets/cubyz/shaders/Gui/GuiButton.fs");
 		
 	}
 
