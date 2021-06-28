@@ -34,6 +34,7 @@ import io.cubyz.gui.rendering.Shader;
 import io.cubyz.utils.datastructures.simple_list.FloatSimpleList;
 import io.cubyz.utils.datastructures.simple_list.IntSimpleList;
 import io.cubyz.world.ChunkVisibilityData;
+import io.cubyz.world.Neighbor;
 import io.cubyz.world.blocks.Blocks;
 import io.cubyz.world.blocks.Model;
 
@@ -132,7 +133,7 @@ public class ChunkMesh {
 	}
 	
 	private void generateMesh() {
-		//needsUpdate = false;
+		needsUpdate = false;
 		if(vao != -1) {
 			cleanup();
 		}
@@ -150,18 +151,42 @@ public class ChunkMesh {
 			int y = visibilityData.y[i];
 			int z = visibilityData.z[i];
 			Model model = Blocks.model(visibilityData.blocks[i]);
-			for(int j = 0; j < model.vertices.length;) {
-				vertices.add(model.vertices[j++] + x);
-				vertices.add(model.vertices[j++] + y);
-				vertices.add(model.vertices[j++] + z);
+			if(model.isCube) {
+				int skipped = 0;
+				for(int n = 0; n < Neighbor.NEIGHBORS; n++) {
+					if((visibilityData.neighbors[i] & Neighbor.BIT_MASK[n]) != 0) {
+						// There are 4 vertices per side.
+						for(int j = n*4*3; j < (n + 1)*4*3;) {
+							vertices.add(model.vertices[j++] + x);
+							vertices.add(model.vertices[j++] + y);
+							vertices.add(model.vertices[j++] + z);
+						}
+						normals.add(model.normals, n*4*3, 4*3);
+						textures.add(model.textCoords, n*4*2, 4*2);
+						// There are 2 faces per side.
+						for(int j = n*2*3; j < (n + 1)*2*3; j++) {
+							faces.add(model.indices[j] + vertexCount - skipped*4);
+						}
+					} else {
+						skipped++;
+					}
+				}
+				
+				vertexCount += 24 - skipped*4;
+			} else {
+				for(int j = 0; j < model.vertices.length;) {
+					vertices.add(model.vertices[j++] + x);
+					vertices.add(model.vertices[j++] + y);
+					vertices.add(model.vertices[j++] + z);
+				}
+				normals.add(model.normals);
+				textures.add(model.textCoords);
+				for(int j = 0; j < model.indices.length; j++) {
+					faces.add(model.indices[j] + vertexCount);
+				}
+				
+				vertexCount += model.vertices.length/3;
 			}
-			normals.add(model.normals);
-			textures.add(model.textCoords);
-			for(int j = 0; j < model.indices.length; j++) {
-				faces.add(model.indices[j] + vertexCount);
-			}
-			
-			vertexCount += model.vertices.length/3;
 		}
 		faceCount = faces.size;
 		// Create the VAO und VBOs.

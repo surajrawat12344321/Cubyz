@@ -1,5 +1,7 @@
 package io.cubyz.world;
 
+import io.cubyz.world.blocks.Blocks;
+
 /**
  * A Chunk how it's stored on the server. Contains data about every single block as well as the visibility data that is shared with the client.
  */
@@ -40,9 +42,9 @@ public class Chunk {
 		// TODO: Remove test.
 		for(byte dx = 0; dx < CHUNK_WIDTH; dx++) {
 			for(byte dz = 0; dz < CHUNK_WIDTH; dz++) {
-				for(byte dy = 0; dy < Math.random()*CHUNK_WIDTH; dy++) {
+				for(byte dy = 0; dy < Math.random()*CHUNK_WIDTH*2; dy++) {
 					int index = getIndex(dx, dy, dz);
-					blocks[index] = 1;
+					blocks[index] = (int)(Math.random()*(Blocks.size()));
 				}
 			}
 		}

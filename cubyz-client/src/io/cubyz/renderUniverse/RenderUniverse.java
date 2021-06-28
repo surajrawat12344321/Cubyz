@@ -36,9 +36,9 @@ public abstract class RenderUniverse {
 	public static void draw() {
 		//if(universe==null)
 		//	return;
-		Matrix3f rotation = new Matrix3f().identity().rotateY(-((System.currentTimeMillis() & 65535)/1000.0f));
+		Matrix3f rotation = new Matrix3f().identity().rotateY(-((System.currentTimeMillis() & 65535)/10000.0f));
 		Vector3f camera = cameraPos.mul(rotation, new Vector3f());
-		rotation = new Matrix3f().identity().rotateX(1.0f).rotateY(((System.currentTimeMillis() & 65535)/1000.0f));
+		rotation = new Matrix3f().identity().rotateX(1.0f).rotateY(((System.currentTimeMillis() & 65535)/10000.0f));
 		mesh.render(Window.projectionMatrix, rotation, camera);
 	}
 }

@@ -41,7 +41,7 @@ public class ChunkVisibilityData {
 						int rx2 = rx + Neighbor.REL_X[neighbor];
 						int ry2 = ry + Neighbor.REL_Y[neighbor];
 						int rz2 = rz + Neighbor.REL_Z[neighbor];
-						if(rx2 < 0 | ry2 < 0 | rz2 < 0 | rx2 >= 16 | ry2 >= 16 | rz2 >= 16) {
+						if(rx2 < 0 | ry2 < 0 | rz2 < 0 | rx2 >= Chunk.CHUNK_WIDTH | ry2 >= Chunk.CHUNK_WIDTH | rz2 >= Chunk.CHUNK_WIDTH) {
 							chunk = neighbors[neighbor];
 						}
 						int index2 = Chunk.getIndex(rx2, ry2, rz2);

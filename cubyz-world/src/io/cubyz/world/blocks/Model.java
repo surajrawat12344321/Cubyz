@@ -1,6 +1,8 @@
 package io.cubyz.world.blocks;
 
 import java.nio.IntBuffer;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.AIFace;
@@ -21,13 +23,21 @@ public class Model {
 	
 	private static final int flags = aiProcess_JoinIdenticalVertices | aiProcess_Triangulate;
 	
-	public static final Model DEFAULT = loadModelFromID("cubyz:block");
+	private static final HashMap<String, Model> loadedModels = new HashMap<>();
+	
+	public static final Model DEFAULT;
 	
 	
 	public final float[] vertices;
 	public final float[] textCoords;
 	public final float[] normals;
 	public final int[] indices;
+	
+	/**
+	 * True if the model is a cube filling the entire block. This variable is used to cull unused faces when creating the chunk mesh and to determine whether a block is visible at all.
+	 * This value will be determined automatically in the constructor to prevent misuse.
+	 */
+	public final boolean isCube;
 	
 	/**
 	 * Create a model from a predefined set of data.
@@ -37,17 +47,41 @@ public class Model {
 	 * @param indices
 	 */
 	public Model(float[] positions, float[] textCoords, float[] normals, int[] indices) {
+		this(positions, textCoords, normals, indices, false);
+	}
+	
+	/**
+	 * For cube models only. A lot can go wrong if used incorrectly, so it's private. Hooray!
+	 * @param positions
+	 * @param textCoords
+	 * @param normals
+	 * @param indices
+	 * @param isCube
+	 */
+	private Model(float[] positions, float[] textCoords, float[] normals, int[] indices, boolean isCube) {
 		this.vertices = positions;
 		this.textCoords = textCoords;
 		this.normals = normals;
 		this.indices = indices;
+		this.isCube = isCube;
+	}
+	
+	static {
+		// Load the base cubes.
+		// WARNING! WHENEVER YOU ADD A NEW MODEL MAKE SURE THE FOLLOWING CONDITIONS ARE MET!
+		// 1. There are EXACTLY 4 vertices and 2 faces per side.
+		// 2. The faces and the vertices are SORTED by their `Neighbor` index.
+		Model block = loadModelFromFile("assets/.cubyz/WARNING/CHANGING_THINGS_HERE_MIGHT_BREAK_THE_GAME/cube_models/block.obj", true);
+		loadedModels.put("cubyz:block", block);
+		DEFAULT = loadModelFromID("cubyz:block");
 	}
 
 	/**
-	 * Read a model from an obj file.
+	 * Read a model from an obj file. The model might be a cube model.
 	 * @param filePath
+	 * @param isCube
 	 */
-	public static Model loadModelFromFile(String filePath) {
+	private static Model loadModelFromFile(String filePath, boolean isCube) {
 		AIScene aiScene = aiImportFile(filePath, flags);
 		if(aiScene == null) {
 			Log.warning("Couldn't find model in path: "+filePath+"! Using default model instead.");
@@ -63,7 +97,15 @@ public class Model {
 		float[] textCoords = processTextCoords(aiMesh);
 		float[] normals = process(aiMesh.mNormals());
 		int[] indices = processIndices(aiMesh);
-		return new Model(vertices, textCoords, normals, indices);
+		return new Model(vertices, textCoords, normals, indices, isCube);
+	}
+
+	/**
+	 * Read a model from an obj file.
+	 * @param filePath
+	 */
+	public static Model loadModelFromFile(String filePath) {
+		return loadModelFromFile(filePath, false);
 	}
 
 	/**
@@ -72,12 +114,17 @@ public class Model {
 	 * @param filePath
 	 */
 	public static Model loadModelFromID(String ID) {
-		String[] parts = ID.split(":");
-		if(parts.length != 2) {
-			Log.warning("Invalid Model ID \""+ID+"\"! Using default model instead.");
-			return DEFAULT;
+		Model model = loadedModels.get(ID); // Don't load models multiple times.
+		if(model == null) {
+			String[] parts = ID.split(":");
+			if(parts.length != 2) {
+				Log.warning("Invalid Model ID \""+ID+"\"! Using default model instead.");
+				return DEFAULT;
+			}
+			model = loadModelFromFile("assets/"+parts[0]+"/models/"+parts[1]+".obj");
+			loadedModels.put(ID, model);
 		}
-		return loadModelFromFile("assets/"+parts[0]+"/models/"+parts[1]+".obj");
+		return model;
 	}
 	
 	// Some functions to help extract the data from lwjgl Assimp:

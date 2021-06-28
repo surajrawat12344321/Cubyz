@@ -99,6 +99,10 @@ public class Blocks implements DataOrientedRegistry {
 		solid = Arrays.copyOf(solid, newCapacity);
 		selectable = Arrays.copyOf(selectable, newCapacity);
 	}
+	
+	public static int size() {
+		return size;
+	}
 
 	@Override
 	public void register(String registryID, JsonObject json) {
@@ -114,6 +118,8 @@ public class Blocks implements DataOrientedRegistry {
 		absorption[size] = json.getInt("absorption", 0);
 		solid[size] = json.getBool("solid", true);
 		selectable[size] = json.getBool("selectable", true);
+		reverseIndex.put(registryID, size);
+		size++;
 	}
 
 	@Override
