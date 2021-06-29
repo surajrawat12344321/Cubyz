@@ -1,5 +1,7 @@
 package io.meshes;
 
+import io.cubyz.renderUniverse.TextureAtlas;
+import io.cubyz.utils.Utils;
 import io.cubyz.utils.datastructures.DataOrientedRegistry;
 import io.cubyz.utils.json.JsonObject;
 
@@ -25,6 +27,7 @@ public class BlockMeshes implements DataOrientedRegistry {
 	public void register(String registryID, JsonObject json) {
 		// TODO
 		System.out.println(registryID);
+		TextureAtlas.BLOCKS.addTexture(Utils.readImage(Utils.idToFile(json.getString("texture", "cubyz:default"), "blocks/textures", ".png")));
 	}
 	
 }

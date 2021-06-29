@@ -32,3 +32,5 @@ cubyz-world/target/
 /logs/
 /saves
 settings.json
+
+debug_atlas.png

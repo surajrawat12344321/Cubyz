@@ -5,6 +5,7 @@ import io.cubyz.gui.SceneManager;
 import io.cubyz.gui.rendering.Input;
 import io.cubyz.gui.rendering.Window;
 import io.cubyz.renderUniverse.RenderUniverse;
+import io.cubyz.renderUniverse.TextureAtlas;
 import io.cubyz.server.BaseMod;
 import io.cubyz.server.modding.ModLoader;
 import io.cubyz.utils.gui.StatusInfo;
@@ -26,6 +27,9 @@ public class Main {
 			
 			SceneManager.init();
 			Game.init();
+			
+			// Output the texture atlas to a file.
+			TextureAtlas.BLOCKS.write();
 			
 			while(!Window.shouldClose()) {
 				try{

@@ -1,7 +1,6 @@
 package io.cubyz.world.blocks;
 
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.PointerBuffer;
@@ -10,6 +9,7 @@ import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.AIVector3D;
 
+import io.cubyz.utils.Utils;
 import io.cubyz.utils.log.Log;
 
 import static org.lwjgl.assimp.Assimp.*;
@@ -116,12 +116,7 @@ public class Model {
 	public static Model loadModelFromID(String ID) {
 		Model model = loadedModels.get(ID); // Don't load models multiple times.
 		if(model == null) {
-			String[] parts = ID.split(":");
-			if(parts.length != 2) {
-				Log.warning("Invalid Model ID \""+ID+"\"! Using default model instead.");
-				return DEFAULT;
-			}
-			model = loadModelFromFile("assets/"+parts[0]+"/models/"+parts[1]+".obj");
+			model = loadModelFromFile(Utils.idToFile(ID, "models", ".obj"));
 			loadedModels.put(ID, model);
 		}
 		return model;
