@@ -1,7 +1,6 @@
 package io.cubyz.renderUniverse;
 
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
 import io.cubyz.gui.rendering.Texture;
 import io.cubyz.utils.Utils;
@@ -23,6 +22,7 @@ public class TextureAtlas {
 	/** Specifies how filled a given row is. */
 	private int[] rows = new int[1];
 	private int size = 0;
+	private boolean textureUpdated = true;
 	public TextureAtlas(int initialSize) {
 		if((initialSize & (initialSize -1)) != 0) {
 			throw new IllegalArgumentException("Texture atlas size should be a power of 2!");
@@ -38,8 +38,13 @@ public class TextureAtlas {
 		rows = newRows;
 		size = newSize;
 	}
-	public void addTexture(BufferedImage image) {
-		if(image == null) return;
+	/**
+	 * Puts a new image onto the atlas. Returns the coordinates of the texture on the atlas, given as {x, y, width, height}.
+	 * @param image
+	 * @return {x, y, width, height}
+	 */
+	public int[] addTexture(BufferedImage image) {
+		if(image == null) return new int[] {0, 0, 0, 0};
 		// Get the sizes and make them fit to the grid size:
 		int width = (image.getWidth() + GRID_MASK)/GRID_SIZE;
 		int height = (image.getHeight() + GRID_MASK)/GRID_SIZE;
@@ -80,7 +85,12 @@ public class TextureAtlas {
 		for(int i = startY; i < startY + height; i++) {
 			rows[i] += width;
 		}
-		System.out.println(Arrays.toString(rows));
+		textureUpdated = true;
+		return new int[] {startX*GRID_SIZE, startY*GRID_SIZE, image.getWidth(), image.getHeight()};
+	}
+	
+	public int size() {
+		return size*GRID_SIZE;
 	}
 	
 	public void write() {
@@ -88,6 +98,13 @@ public class TextureAtlas {
 	}
 	
 	public void bindTexture() {
+		if(textureUpdated) {
+			if(texture == null) {
+				texture = new Texture(atlas);
+			} else {
+				texture.set(atlas);
+			}
+		}
 		texture.bind();
 	}
 	

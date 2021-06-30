@@ -13,6 +13,7 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glUniform3f;
 import static org.lwjgl.opengl.GL20.glUniformMatrix3fv;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -37,6 +38,7 @@ import io.cubyz.world.ChunkVisibilityData;
 import io.cubyz.world.Neighbor;
 import io.cubyz.world.blocks.Blocks;
 import io.cubyz.world.blocks.Model;
+import io.meshes.BlockMeshes;
 
 public class ChunkMesh {
 	// ThreadLocal lists, to prevent (re-)allocating tons of memory.
@@ -70,8 +72,41 @@ public class ChunkMesh {
 	public static final int UNIFORM_ROT_MAT = SHADER.getUniformLocation("rotationMatrix");
 	public static final int UNIFORM_PROJ_MAT = SHADER.getUniformLocation("projectionMatrix");
 	public static final int UNIFORM_TEXTURE = SHADER.getUniformLocation("texture_sampler");
+	public static final int UNIFORM_ATLAS_SIZE = SHADER.getUniformLocation("atlasSize");
 	public static final FloatBuffer ROT_MAT_BUFFER = FloatBuffer.allocate(9);
 	public static final FloatBuffer PROJ_MAT_BUFFER = FloatBuffer.allocate(16);
+	
+	/**
+	 * Binds all the stuff needed by the Chunk Mesh such as Shader and texture atlas.
+	 * Also initializes all teh uniforms.
+	 */
+	public static void bind(Matrix4f projectionMatrix, Matrix3f rotationMatrix) {
+		TextureAtlas.BLOCKS.bindTexture();
+		SHADER.bind();
+		// Uniforms:
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			// Dump the matrix into a float buffer
+			FloatBuffer fb = stack.mallocFloat(16);
+			projectionMatrix.get(fb);
+			glUniformMatrix4fv(UNIFORM_PROJ_MAT, false, fb);
+		}
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			// Dump the matrix into a float buffer
+			FloatBuffer fb = stack.mallocFloat(9);
+			rotationMatrix.get(fb);
+			glUniformMatrix3fv(UNIFORM_ROT_MAT, false, fb);
+		}
+		glUniform1i(UNIFORM_ATLAS_SIZE, TextureAtlas.BLOCKS.size());
+	}
+	
+	/**
+	 * Binds all the stuff needed by the Chunk Mesh such as Shader and texture atlas.
+	 */
+	public static void unbind() {
+		TextureAtlas.BLOCKS.unbindTexture();
+		SHADER.unbind();
+	}
+	
 	
 	int vao = -1;
 	int[] vbos = new int[4];
@@ -89,25 +124,11 @@ public class ChunkMesh {
 	 * Needs to be called inside the GL render thread!
 	 * Renders this chunk mesh and updates it if necessary.
 	 */
-	public void render(Matrix4f projectionMatrix, Matrix3f rotationMatrix, Vector3f playerPosition) {
+	public void render(Vector3f playerPosition) {
 		if(needsUpdate) {
 			generateMesh();
 		}
 		if(vao == -1) return;
-		SHADER.bind();
-		// Uniforms:
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			// Dump the matrix into a float buffer
-			FloatBuffer fb = stack.mallocFloat(16);
-			projectionMatrix.get(fb);
-			glUniformMatrix4fv(UNIFORM_PROJ_MAT, false, fb);
-		}
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			// Dump the matrix into a float buffer
-			FloatBuffer fb = stack.mallocFloat(9);
-			rotationMatrix.get(fb);
-			glUniformMatrix3fv(UNIFORM_ROT_MAT, false, fb);
-		}
 		glUniform3f(UNIFORM_PLAYER, playerPosition.x - visibilityData.wx, playerPosition.y - visibilityData.wy, playerPosition.z - visibilityData.wz);
 		// Init
 		glBindVertexArray(vao);
@@ -151,6 +172,10 @@ public class ChunkMesh {
 			int y = visibilityData.y[i];
 			int z = visibilityData.z[i];
 			Model model = Blocks.model(visibilityData.blocks[i]);
+			int atlasX = BlockMeshes.atlasX(visibilityData.blocks[i]);
+			int atlasY = BlockMeshes.atlasY(visibilityData.blocks[i]);
+			int atlasWidth = BlockMeshes.atlasWidth(visibilityData.blocks[i]);
+			int atlasHeight = BlockMeshes.atlasHeight(visibilityData.blocks[i]);
 			if(model.isCube) {
 				int skipped = 0;
 				for(int n = 0; n < Neighbor.NEIGHBORS; n++) {
@@ -162,7 +187,10 @@ public class ChunkMesh {
 							vertices.add(model.vertices[j++] + z);
 						}
 						normals.add(model.normals, n*4*3, 4*3);
-						textures.add(model.textCoords, n*4*2, 4*2);
+						for(int j = n*4*2; j < (n + 1)*4*2;) {
+							textures.add(model.textCoords[j++]*atlasWidth + atlasX);
+							textures.add(model.textCoords[j++]*atlasHeight + atlasY);
+						}
 						// There are 2 faces per side.
 						for(int j = n*2*3; j < (n + 1)*2*3; j++) {
 							faces.add(model.indices[j] + vertexCount - skipped*4);
@@ -180,7 +208,10 @@ public class ChunkMesh {
 					vertices.add(model.vertices[j++] + z);
 				}
 				normals.add(model.normals);
-				textures.add(model.textCoords);
+				for(int j = 0; j < model.textCoords.length;) {
+					textures.add(model.textCoords[j++]*atlasWidth + atlasX);
+					textures.add(model.textCoords[j++]*atlasHeight + atlasY);
+				}
 				for(int j = 0; j < model.indices.length; j++) {
 					faces.add(model.indices[j] + vertexCount);
 				}

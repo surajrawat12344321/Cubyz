@@ -6,11 +6,12 @@ in vec3 lightColor;
 out vec4 fragColor;
 
 uniform sampler2D texture_sampler;
+uniform int atlasSize;
 
 vec4 getTextureColor() {
-	return texture(texture_sampler, outTexCoord);
+	return texture(texture_sampler, outTexCoord/atlasSize);
 }
 
 void main() {
-	fragColor = vec4(1, 1, 1, 1)*vec4(lightColor, 1);
+	fragColor = getTextureColor()*vec4(lightColor, 1);
 }

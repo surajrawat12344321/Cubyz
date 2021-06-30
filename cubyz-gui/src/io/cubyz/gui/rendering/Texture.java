@@ -85,6 +85,11 @@ public class Texture {
 				byteBuffer);
 
 	}
+	
+	public void cleanup() {
+		glDeleteTextures(id);
+		id = -1;
+	}
 
 	public int getId() {
 		return id;

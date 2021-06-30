@@ -14,5 +14,5 @@ uniform mat4 projectionMatrix;
 void main() {
 	gl_Position = projectionMatrix*vec4(rotationMatrix*(position - relativePlayerPos), 1);
 	outTexCoord = texCoord;
-	lightColor = 0.5 + 0.5*vertexNormal;
+	lightColor = 0.95 + 0.05*vertexNormal;
 }
