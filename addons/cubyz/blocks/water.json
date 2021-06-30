@@ -5,5 +5,6 @@
 	"model" : "cubyz:block",
 	"absorbedLight" : 0x17171100,
 	"class" : "fluid",
-	"transparent" : true
+	"transparent" : true,
+	"transparencyMode" : 2
 }

@@ -48,9 +48,6 @@ public class TextureAtlas {
 		// Get the sizes and make them fit to the grid size:
 		int width = (image.getWidth() + GRID_MASK)/GRID_SIZE;
 		int height = (image.getHeight() + GRID_MASK)/GRID_SIZE;
-		System.out.println(image.getWidth()+" "+image.getHeight());
-		System.out.println((image.getWidth()+GRID_MASK));
-		System.out.println(width+" "+height);
 		while(width > size || height > size) {
 			resizeImage(size*2);
 		}

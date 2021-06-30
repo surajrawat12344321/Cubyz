@@ -16,6 +16,7 @@ import io.cubyz.world.Registries;
  * 0xff000000 : rotation data(which gets interpreted by the rotation mode).
  */
 public class Blocks implements DataOrientedRegistry {
+	public static final byte OPAQUE = 0, TRANSPARENT = 1, HIDES_SAME_TYPE = 2;
 	private static final int INITIAL_SIZE = 128;
 	private static int size = 1; // The initial size is 1, which is reserved for air.
 	private static final int capacity = INITIAL_SIZE;
@@ -28,6 +29,7 @@ public class Blocks implements DataOrientedRegistry {
 	private static RotationMode[] rotationMode = new RotationMode[INITIAL_SIZE];
 	private static boolean[] solid = new boolean[INITIAL_SIZE];
 	private static boolean[] selectable = new boolean[INITIAL_SIZE];
+	private static byte[] transparencyMode = new byte[INITIAL_SIZE];
 
 	private static HashMap<String, Integer> reverseIndex = new HashMap<String, Integer>();
 
@@ -73,6 +75,10 @@ public class Blocks implements DataOrientedRegistry {
 	public static boolean selectable(int blockData) {
 		return selectable[blockData & 0xffffff];
 	}
+	/** How the block should be handled by the engine. Possible values: OPAQUE, TRANSPARENT and HIDES_SAME_TYPE */
+	public static byte transparencyMode(int blockData) {
+		return transparencyMode[blockData & 0xffffff];
+	}
 	public static int getByID(String registryID) {
 		return reverseIndex.get(registryID);
 	}
@@ -84,8 +90,12 @@ public class Blocks implements DataOrientedRegistry {
 	 * @return
 	 */
 	public static boolean getsBlocked(int blockA, int blockB) {
-		return blockA == 0 || blockB != 0; // If A is air, then it shouldn't be rendered. If B is not air, then it also shouldn't be rendered.
-		// TODO: Transparent models
+		if(blockA == 0) return true; // Air blocks shouldn't be rendered.
+		if(blockB == 0) return false; // If the block that sits on the side is air, that means that the face is definitely visible.
+		if(!model(blockB).isCube) return false; // Non cube models are always handled as transparent.
+		if(transparencyMode(blockB) == TRANSPARENT) return false;
+		if(transparencyMode(blockB) == HIDES_SAME_TYPE && blockA != blockB) return false;
+		return true;
 	}
 	
 	private static void ensureCapacity(int newCapacity) {
@@ -98,6 +108,7 @@ public class Blocks implements DataOrientedRegistry {
 		rotationMode = Arrays.copyOf(rotationMode, newCapacity);
 		solid = Arrays.copyOf(solid, newCapacity);
 		selectable = Arrays.copyOf(selectable, newCapacity);
+		transparencyMode = Arrays.copyOf(transparencyMode, newCapacity);
 	}
 	
 	public static int size() {
@@ -109,7 +120,6 @@ public class Blocks implements DataOrientedRegistry {
 		if(size == capacity) {
 			ensureCapacity(size*3/2);
 		}
-		System.out.println(registryID);
 		Blocks.registryID[size] = registryID;
 		blockClass[size] = json.getInt("blockClass", 0);
 		hardness[size] = json.getFloat("hardness", 1);
@@ -118,6 +128,8 @@ public class Blocks implements DataOrientedRegistry {
 		absorption[size] = json.getInt("absorption", 0);
 		solid[size] = json.getBool("solid", true);
 		selectable[size] = json.getBool("selectable", true);
+		transparencyMode[size] = (byte)(json.getInt("transparencyMode", 0) & 255);
+		if(transparencyMode[size] != 0 && transparencyMode[size] != 1 && transparencyMode[size] != 2) transparencyMode[size] = 0; // Default if it's out of bounds.
 		reverseIndex.put(registryID, size);
 		size++;
 	}

@@ -6,5 +6,6 @@
 	"absorbedLight" : 0x0f100010,
 	"class" : "leaf",
 	"degradable" : true,
-	"transparent" : true
+	"transparent" : true,
+	"transparencyMode" : 1
 }
