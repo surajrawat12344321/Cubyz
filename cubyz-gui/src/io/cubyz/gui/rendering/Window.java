@@ -10,6 +10,7 @@ import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+
 import static org.lwjgl.opengl.GL33.*;
 import org.lwjgl.system.MemoryUtil;
 
@@ -89,8 +90,6 @@ public class Window {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glfwSwapBuffers(handle);
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

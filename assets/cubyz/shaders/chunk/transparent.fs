@@ -14,7 +14,8 @@ vec4 getTextureColor() {
 
 void main() {
 	vec4 color = getTextureColor();
-	if(color.a != 1)
+	if(color.a == 1 || color.a == 0)
 		discard;
+	color.rgb = (1 - color.rgb)*color.a;
 	fragColor = color*vec4(lightColor, 1);
 }

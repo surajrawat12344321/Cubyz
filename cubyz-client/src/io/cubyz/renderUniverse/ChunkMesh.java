@@ -1,9 +1,22 @@
 package io.cubyz.renderUniverse;
 
+import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_ONE;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_COLOR;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.GL_ZERO;
+import static org.lwjgl.opengl.GL11.glDepthMask;
+import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
+import static org.lwjgl.opengl.GL14.GL_FUNC_REVERSE_SUBTRACT;
+import static org.lwjgl.opengl.GL14.GL_MAX;
+import static org.lwjgl.opengl.GL14.glBlendFuncSeparate;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -11,6 +24,7 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL20.glBlendEquationSeparate;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glUniform1i;
@@ -66,13 +80,43 @@ public class ChunkMesh {
 			return new FloatSimpleList(40000);
 		}
 	};
+	public static final ThreadLocal<FloatSimpleList> localTransparentVertices = new ThreadLocal<FloatSimpleList>() {
+		@Override
+		protected FloatSimpleList initialValue() {
+			return new FloatSimpleList(50000);
+		}
+	};
+	public static final ThreadLocal<FloatSimpleList> localTransparentNormals = new ThreadLocal<FloatSimpleList>() {
+		@Override
+		protected FloatSimpleList initialValue() {
+			return new FloatSimpleList(50000);
+		}
+	};
+	public static final ThreadLocal<IntSimpleList> localTransparentFaces = new ThreadLocal<IntSimpleList>() {
+		@Override
+		protected IntSimpleList initialValue() {
+			return new IntSimpleList(30000);
+		}
+	};
+	public static final ThreadLocal<FloatSimpleList> localTransparentTextures = new ThreadLocal<FloatSimpleList>() {
+		@Override
+		protected FloatSimpleList initialValue() {
+			return new FloatSimpleList(40000);
+		}
+	};
 
 	public static final Shader SHADER = Shader.loadFromFile("assets/cubyz/shaders/chunk/chunk.vs", "assets/cubyz/shaders/chunk/chunk.fs");
+	public static final Shader SHADER_TRANSPARENT = Shader.loadFromFile("assets/cubyz/shaders/chunk/transparent.vs", "assets/cubyz/shaders/chunk/transparent.fs");
 	public static final int UNIFORM_PLAYER = SHADER.getUniformLocation("relativePlayerPos");
 	public static final int UNIFORM_ROT_MAT = SHADER.getUniformLocation("rotationMatrix");
 	public static final int UNIFORM_PROJ_MAT = SHADER.getUniformLocation("projectionMatrix");
 	public static final int UNIFORM_TEXTURE = SHADER.getUniformLocation("texture_sampler");
 	public static final int UNIFORM_ATLAS_SIZE = SHADER.getUniformLocation("atlasSize");
+	public static final int UNIFORM_TRANSPARENT_PLAYER = SHADER_TRANSPARENT.getUniformLocation("relativePlayerPos");
+	public static final int UNIFORM_TRANSPARENT_ROT_MAT = SHADER_TRANSPARENT.getUniformLocation("rotationMatrix");
+	public static final int UNIFORM_TRANSPARENT_PROJ_MAT = SHADER_TRANSPARENT.getUniformLocation("projectionMatrix");
+	public static final int UNIFORM_TRANSPARENT_TEXTURE = SHADER_TRANSPARENT.getUniformLocation("texture_sampler");
+	public static final int UNIFORM_TRANSPARENT_ATLAS_SIZE = SHADER_TRANSPARENT.getUniformLocation("atlasSize");
 	public static final FloatBuffer ROT_MAT_BUFFER = FloatBuffer.allocate(9);
 	public static final FloatBuffer PROJ_MAT_BUFFER = FloatBuffer.allocate(16);
 	
@@ -81,6 +125,8 @@ public class ChunkMesh {
 	 * Also initializes all teh uniforms.
 	 */
 	public static void bind(Matrix4f projectionMatrix, Matrix3f rotationMatrix) {
+		glDisable(GL_BLEND);
+		
 		TextureAtlas.BLOCKS.bindTexture();
 		SHADER.bind();
 		// Uniforms:
@@ -100,18 +146,53 @@ public class ChunkMesh {
 	}
 	
 	/**
+	 * Binds all the stuff needed by the transparent part of the Chunk Mesh such as Shader and texture atlas.
+	 * Also initializes all teh uniforms.
+	 */
+	public static void bindTransparent(Matrix4f projectionMatrix, Matrix3f rotationMatrix) {
+		glBlendEquationSeparate(GL_FUNC_REVERSE_SUBTRACT, GL_MAX);
+		glBlendFuncSeparate(GL_SRC_COLOR, GL_ONE, 0, 0);
+		glDepthMask(false);
+		
+		TextureAtlas.BLOCKS.bindTexture();
+		SHADER_TRANSPARENT.bind();
+		// Uniforms:
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			// Dump the matrix into a float buffer
+			FloatBuffer fb = stack.mallocFloat(16);
+			projectionMatrix.get(fb);
+			glUniformMatrix4fv(UNIFORM_TRANSPARENT_PROJ_MAT, false, fb);
+		}
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			// Dump the matrix into a float buffer
+			FloatBuffer fb = stack.mallocFloat(9);
+			rotationMatrix.get(fb);
+			glUniformMatrix3fv(UNIFORM_TRANSPARENT_ROT_MAT, false, fb);
+		}
+		glUniform1i(UNIFORM_TRANSPARENT_ATLAS_SIZE, TextureAtlas.BLOCKS.size());
+	}
+	
+	/**
 	 * Binds all the stuff needed by the Chunk Mesh such as Shader and texture atlas.
 	 */
 	public static void unbind() {
 		TextureAtlas.BLOCKS.unbindTexture();
 		SHADER.unbind();
+		SHADER_TRANSPARENT.unbind();
+		glEnable(GL_BLEND);
+		glDepthMask(true);
+		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 	}
 	
-	
+
 	int vao = -1;
 	int[] vbos = new int[4];
-	
+	int vaoTransparent = -1;
+	int[] vbosTransparent = new int[4];
+
 	int faceCount = 0;
+	int faceCountTransparent = 0;
 	
 	
 	public final ChunkVisibilityData visibilityData;
@@ -142,8 +223,30 @@ public class ChunkMesh {
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 		glBindVertexArray(0);
-		
-		SHADER.unbind();
+	}
+	
+	/**
+	 * Needs to be called inside the GL render thread!
+	 * Renders the transparent chunk mesh and updates it if necessary.
+	 */
+	public void renderTransparent(Vector3f playerPosition) {
+		if(needsUpdate) {
+			generateMesh();
+		}
+		if(vaoTransparent == -1) return;
+		glUniform3f(UNIFORM_TRANSPARENT_PLAYER, playerPosition.x - visibilityData.wx, playerPosition.y - visibilityData.wy, playerPosition.z - visibilityData.wz);
+		// Init
+		glBindVertexArray(vaoTransparent);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		// Draw
+		glDrawElements(GL_TRIANGLES, faceCountTransparent, GL_UNSIGNED_INT, 0);
+		// Restore state
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		glBindVertexArray(0);
 	}
 	
 	/**
@@ -153,75 +256,66 @@ public class ChunkMesh {
 		needsUpdate = true;
 	}
 	
-	private void generateMesh() {
-		needsUpdate = false;
-		if(vao != -1) {
-			cleanup();
-		}
-		FloatSimpleList vertices = localVertices.get();
-		vertices.clear();
-		FloatSimpleList normals = localNormals.get();
-		normals.clear();
-		IntSimpleList faces = localFaces.get();
-		faces.clear();
-		FloatSimpleList textures = localTextures.get();
-		textures.clear();
-		int vertexCount = 0;
-		for(int i = 0; i < visibilityData.size; i++) {
-			int x = visibilityData.x[i];
-			int y = visibilityData.y[i];
-			int z = visibilityData.z[i];
-			Model model = Blocks.model(visibilityData.blocks[i]);
-			int atlasX = BlockMeshes.atlasX(visibilityData.blocks[i]);
-			int atlasY = BlockMeshes.atlasY(visibilityData.blocks[i]);
-			int atlasWidth = BlockMeshes.atlasWidth(visibilityData.blocks[i]);
-			int atlasHeight = BlockMeshes.atlasHeight(visibilityData.blocks[i]);
-			if(model.isCube) {
-				int skipped = 0;
-				for(int n = 0; n < Neighbor.NEIGHBORS; n++) {
-					if((visibilityData.neighbors[i] & Neighbor.BIT_MASK[n]) != 0) {
-						// There are 4 vertices per side.
-						for(int j = n*4*3; j < (n + 1)*4*3;) {
-							vertices.add(model.vertices[j++] + x);
-							vertices.add(model.vertices[j++] + y);
-							vertices.add(model.vertices[j++] + z);
-						}
-						normals.add(model.normals, n*4*3, 4*3);
-						for(int j = n*4*2; j < (n + 1)*4*2;) {
-							textures.add(model.textCoords[j++]*atlasWidth + atlasX);
-							textures.add(model.textCoords[j++]*atlasHeight + atlasY);
-						}
-						// There are 2 faces per side.
-						for(int j = n*2*3; j < (n + 1)*2*3; j++) {
-							faces.add(model.indices[j] + vertexCount - skipped*4);
-						}
-					} else {
-						skipped++;
+	private int addModel(FloatSimpleList vertices, FloatSimpleList normals, IntSimpleList faces, FloatSimpleList textures, int i, int vertexCount) {
+		int x = visibilityData.x[i];
+		int y = visibilityData.y[i];
+		int z = visibilityData.z[i];
+		Model model = Blocks.model(visibilityData.blocks[i]);
+		int atlasX = BlockMeshes.atlasX(visibilityData.blocks[i]);
+		int atlasY = BlockMeshes.atlasY(visibilityData.blocks[i]);
+		int atlasWidth = BlockMeshes.atlasWidth(visibilityData.blocks[i]);
+		int atlasHeight = BlockMeshes.atlasHeight(visibilityData.blocks[i]);
+		if(model.isCube) {
+			int skipped = 0;
+			for(int n = 0; n < Neighbor.NEIGHBORS; n++) {
+				if((visibilityData.neighbors[i] & Neighbor.BIT_MASK[n]) != 0) {
+					// There are 4 vertices per side.
+					for(int j = n*4*3; j < (n + 1)*4*3;) {
+						vertices.add(model.vertices[j++] + x);
+						vertices.add(model.vertices[j++] + y);
+						vertices.add(model.vertices[j++] + z);
 					}
+					normals.add(model.normals, n*4*3, 4*3);
+					for(int j = n*4*2; j < (n + 1)*4*2;) {
+						textures.add(model.textCoords[j++]*atlasWidth + atlasX);
+						textures.add(model.textCoords[j++]*atlasHeight + atlasY);
+					}
+					// There are 2 faces per side.
+					for(int j = n*2*3; j < (n + 1)*2*3; j++) {
+						faces.add(model.indices[j] + vertexCount - skipped*4);
+					}
+				} else {
+					skipped++;
 				}
-				
-				vertexCount += 24 - skipped*4;
-			} else {
-				for(int j = 0; j < model.vertices.length;) {
-					vertices.add(model.vertices[j++] + x);
-					vertices.add(model.vertices[j++] + y);
-					vertices.add(model.vertices[j++] + z);
-				}
-				normals.add(model.normals);
-				for(int j = 0; j < model.textCoords.length;) {
-					textures.add(model.textCoords[j++]*atlasWidth + atlasX);
-					textures.add(model.textCoords[j++]*atlasHeight + atlasY);
-				}
-				for(int j = 0; j < model.indices.length; j++) {
-					faces.add(model.indices[j] + vertexCount);
-				}
-				
-				vertexCount += model.vertices.length/3;
 			}
+			
+			vertexCount += 24 - skipped*4;
+		} else {
+			for(int j = 0; j < model.vertices.length;) {
+				vertices.add(model.vertices[j++] + x);
+				vertices.add(model.vertices[j++] + y);
+				vertices.add(model.vertices[j++] + z);
+			}
+			normals.add(model.normals);
+			for(int j = 0; j < model.textCoords.length;) {
+				textures.add(model.textCoords[j++]*atlasWidth + atlasX);
+				textures.add(model.textCoords[j++]*atlasHeight + atlasY);
+			}
+			for(int j = 0; j < model.indices.length; j++) {
+				faces.add(model.indices[j] + vertexCount);
+			}
+			
+			vertexCount += model.vertices.length/3;
 		}
-		faceCount = faces.size;
-		// Create the VAO und VBOs.
-		vao = glGenVertexArrays();
+		return vertexCount;
+	}
+	
+	/**
+	 *
+	 * @return vao
+	 */
+	private int sendToGPU(FloatSimpleList vertices, FloatSimpleList normals, IntSimpleList faces, FloatSimpleList textures, int[] vbos) {
+		int vao = glGenVertexArrays();
 		glBindVertexArray(vao);
 
 		// Position VBO
@@ -266,6 +360,45 @@ public class ChunkMesh {
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+		return vao;
+	}
+	
+	private void generateMesh() {
+		needsUpdate = false;
+		if(vao != -1 || vaoTransparent != -1) {
+			cleanup();
+		}
+		FloatSimpleList vertices = localVertices.get();
+		vertices.clear();
+		FloatSimpleList normals = localNormals.get();
+		normals.clear();
+		IntSimpleList faces = localFaces.get();
+		faces.clear();
+		FloatSimpleList textures = localTextures.get();
+		textures.clear();
+		FloatSimpleList verticesTransparent = localTransparentVertices.get();
+		verticesTransparent.clear();
+		FloatSimpleList normalsTransparent = localTransparentNormals.get();
+		normalsTransparent.clear();
+		IntSimpleList facesTransparent = localTransparentFaces.get();
+		facesTransparent.clear();
+		FloatSimpleList texturesTransparent = localTransparentTextures.get();
+		texturesTransparent.clear();
+		int vertexCount = 0;
+		int vertexCountTransparent = 0;
+		for(int i = 0; i < visibilityData.size; i++) {
+			if(BlockMeshes.opaque(visibilityData.blocks[i])) {
+				vertexCount = addModel(vertices, normals, faces, textures, i, vertexCount);
+			}
+			if(BlockMeshes.transparent(visibilityData.blocks[i])) {
+				vertexCountTransparent = addModel(verticesTransparent, normalsTransparent, facesTransparent, texturesTransparent, i, vertexCountTransparent);
+			}
+		}
+		faceCount = faces.size;
+		faceCountTransparent = facesTransparent.size;
+		// Create the VAO und VBOs.
+		vao = sendToGPU(vertices, normals, faces, textures, vbos);
+		vaoTransparent = sendToGPU(verticesTransparent, normalsTransparent, facesTransparent, texturesTransparent, vbos);
 	}
 	
 	/**
