@@ -54,7 +54,7 @@ import io.cubyz.world.blocks.Blocks;
 import io.cubyz.world.blocks.Model;
 import io.meshes.BlockMeshes;
 
-public class ChunkMesh {
+public class ChunkMesh implements Comparable<ChunkMesh> {
 	// ThreadLocal lists, to prevent (re-)allocating tons of memory.
 	public static final ThreadLocal<FloatSimpleList> localVertices = new ThreadLocal<FloatSimpleList>() {
 		@Override
@@ -194,11 +194,19 @@ public class ChunkMesh {
 	int faceCount = 0;
 	int faceCountTransparent = 0;
 	
+	private final float priority;
+	
 	
 	public final ChunkVisibilityData visibilityData;
 	boolean needsUpdate = true;
-	public ChunkMesh(ChunkVisibilityData visibilityData) {
+	/**
+	 * 
+	 * @param visibilityData
+	 * @param priority Higher value means that it will be generated faster.
+	 */
+	public ChunkMesh(ChunkVisibilityData visibilityData, float priority) {
 		this.visibilityData = visibilityData;
+		this.priority = priority;
 	}
 	
 	/**
@@ -206,9 +214,6 @@ public class ChunkMesh {
 	 * Renders this chunk mesh and updates it if necessary.
 	 */
 	public void render(Vector3f playerPosition) {
-		if(needsUpdate) {
-			generateMesh();
-		}
 		if(vao == -1) return;
 		glUniform3f(UNIFORM_PLAYER, playerPosition.x - visibilityData.wx, playerPosition.y - visibilityData.wy, playerPosition.z - visibilityData.wz);
 		// Init
@@ -230,9 +235,6 @@ public class ChunkMesh {
 	 * Renders the transparent chunk mesh and updates it if necessary.
 	 */
 	public void renderTransparent(Vector3f playerPosition) {
-		if(needsUpdate) {
-			generateMesh();
-		}
 		if(vaoTransparent == -1) return;
 		glUniform3f(UNIFORM_TRANSPARENT_PLAYER, playerPosition.x - visibilityData.wx, playerPosition.y - visibilityData.wy, playerPosition.z - visibilityData.wz);
 		// Init
@@ -363,7 +365,11 @@ public class ChunkMesh {
 		return vao;
 	}
 	
-	private void generateMesh() {
+	/**
+	 * Regenerates the mesh and uploads it to the GPU.
+	 * NEEDS TO BE CALLED IN THE OPENGL THREAD!
+	 */
+	public void generateMesh() {
 		needsUpdate = false;
 		if(vao != -1 || vaoTransparent != -1) {
 			cleanup();
@@ -413,5 +419,10 @@ public class ChunkMesh {
 		glBindVertexArray(0);
 		glDeleteVertexArrays(vao);
 		vao = -1;
+	}
+
+	@Override
+	public int compareTo(ChunkMesh o) {
+		return priority < o.priority ? -1 : priority > o.priority ? 1 : 0;
 	}
 }
