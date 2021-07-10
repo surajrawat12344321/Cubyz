@@ -73,6 +73,8 @@ public class Model {
 		// 2. The faces and the vertices are SORTED by their `Neighbor` index.
 		Model block = loadModelFromFile("assets/.cubyz/WARNING/CHANGING_THINGS_HERE_MIGHT_BREAK_THE_GAME/cube_models/block.obj", true);
 		loadedModels.put("cubyz:block", block);
+		block = loadModelFromFile("assets/.cubyz/WARNING/CHANGING_THINGS_HERE_MIGHT_BREAK_THE_GAME/cube_models/block_log.obj", true);
+		loadedModels.put("cubyz:block_log", block);
 		DEFAULT = loadModelFromID("cubyz:block");
 	}
 

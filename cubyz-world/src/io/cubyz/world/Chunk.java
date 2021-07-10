@@ -52,7 +52,10 @@ public class Chunk {
 		float val10 = rand.nextFloat()*92 - 64;
 		rand = new Random((wx + Chunk.CHUNK_WIDTH)*65783906349L ^ (wz + Chunk.CHUNK_WIDTH)*6758496543365421L);
 		float val11 = rand.nextFloat()*92 - 64;
-		int block = (int)(Math.random()*(Blocks.size()));
+		int block;
+		do {
+			block = 1+(int)(Math.random()*(Blocks.size()-1));
+		} while(!Blocks.model(block).isCube);
 		for(byte dx = 0; dx < CHUNK_WIDTH; dx++) {
 			for(byte dz = 0; dz < CHUNK_WIDTH; dz++) {
 				float height = dx*dz*val11/Chunk.CHUNK_WIDTH/Chunk.CHUNK_WIDTH

@@ -1,7 +1,0 @@
-{
-	"drop" : "cubyz:soil",
-	"hardness" : 6.5,
-	"texture" : "cubyz:snow_grass",
-	"model" : "cubyz:persidetexture",
-	"class" : "sand"
-}
