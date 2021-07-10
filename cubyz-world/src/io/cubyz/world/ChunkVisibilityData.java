@@ -16,6 +16,8 @@ public class ChunkVisibilityData {
 	public final int wx, wy, wz;
 	/** The base unit of one block inside this chunk. */
 	public final int resolution;
+	/** The world this chunk is in. */
+	public final World world;
 	/** The number of visible blocks in this Chunk.*/
 	public int size = 0, capacity = INITIAL_CAPACITY;
 	/** The relative position data for each visible block */
@@ -25,11 +27,19 @@ public class ChunkVisibilityData {
 	/** Densely packed information about what neighbors are solid, to reduce amount of faces drawn. */
 	public byte[] neighbors = new byte[INITIAL_CAPACITY];
 	
-	public ChunkVisibilityData(Chunk source, Chunk[] neighbors) {
+	public ChunkVisibilityData(Chunk source) {
+		world = source.world;
 		wx = source.wx;
 		wy = source.wy;
 		wz = source.wz;
 		resolution = source.resolution;
+		Chunk[] neighbors = new Chunk[Neighbor.NEIGHBORS];
+		for(int i = 0; i < Neighbor.NEIGHBORS; i++) {
+			int nx = wx + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_X[i];
+			int ny = wy + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_Y[i];
+			int nz = wz + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_Z[i];
+			neighbors[i] = ChunkCache.getChunk(world, nx, ny, nz, resolution);
+		}
 		for(byte rx = 0; rx < Chunk.CHUNK_WIDTH; rx++) {
 			for(byte rz = 0; rz < Chunk.CHUNK_WIDTH; rz++) {
 				for(byte ry = 0; ry < Chunk.CHUNK_WIDTH; ry++) {

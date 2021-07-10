@@ -12,8 +12,8 @@ public abstract class RenderUniverse {
 
 	//data comes from Game.connection
 	public static void draw() {
-		//if(universe==null)
-		//	return;
+		if(universe==null)
+			return;
 		RenderPlanet.render();
 	}
 }

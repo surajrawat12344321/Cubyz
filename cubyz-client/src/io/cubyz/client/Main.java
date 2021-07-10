@@ -36,9 +36,9 @@ public class Main {
 					Thread.sleep(10);
 				} catch(Exception e) {}
 				Input.update();
+				RenderUniverse.draw();
 				SceneManager.update();
 				SceneManager.draw();
-				RenderUniverse.draw();
 				Window.render();
 			}
 			Log.info("Execution stopped.");

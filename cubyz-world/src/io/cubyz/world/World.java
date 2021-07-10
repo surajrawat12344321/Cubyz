@@ -6,5 +6,5 @@ package io.cubyz.world;
  */
 
 public class World {
-
+	int worldID = 0;
 }

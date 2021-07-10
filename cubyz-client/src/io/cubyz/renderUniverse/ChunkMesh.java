@@ -3,17 +3,13 @@ package io.cubyz.renderUniverse;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_ONE;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_COLOR;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
-import static org.lwjgl.opengl.GL11.GL_ZERO;
 import static org.lwjgl.opengl.GL11.glDepthMask;
 import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL14.GL_FUNC_ADD;
 import static org.lwjgl.opengl.GL14.GL_FUNC_REVERSE_SUBTRACT;
 import static org.lwjgl.opengl.GL14.GL_MAX;
 import static org.lwjgl.opengl.GL14.glBlendFuncSeparate;
@@ -181,8 +177,6 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 		SHADER_TRANSPARENT.unbind();
 		glEnable(GL_BLEND);
 		glDepthMask(true);
-		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
 	}
 	
 
@@ -194,7 +188,7 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 	int faceCount = 0;
 	int faceCountTransparent = 0;
 	
-	private final float priority;
+	final float priority;
 	
 	
 	public final ChunkVisibilityData visibilityData;

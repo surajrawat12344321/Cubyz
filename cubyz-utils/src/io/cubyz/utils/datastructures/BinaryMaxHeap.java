@@ -30,12 +30,14 @@ public class BinaryMaxHeap<T extends Comparable<T>> {
 		while(i*2 + 2 < size) {
 			int biggest = array[i*2 + 1].compareTo(array[i*2 + 2]) > 0 ? i*2 + 1 : i*2 + 2;
 			biggest = array[biggest].compareTo(array[i]) > 0 ? biggest : i;
-			// Break if all childs are bigger.
+			// Break if all childs are smaller.
 			if(biggest == i) return;
 			// Swap it:
 			T local = array[biggest];
 			array[biggest] = array[i];
 			array[i] = local;
+			// goto the next node:
+			i = biggest;
 		}
 	}
 	
