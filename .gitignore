@@ -23,12 +23,8 @@ test.png
 #Eclipse workspace/projects files
 .metadata/
 .recommenders/
-cubyz-client/dependency-reduced-pom.xml
-cubyz-client/target/
-cubyz-gui/target/
-cubyz-server/target/
-cubyz-utils/target/
-cubyz-world/target/
+/dependency-reduced-pom.xml
+/target/
 /logs/
 /saves
 settings.json

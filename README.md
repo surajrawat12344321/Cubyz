@@ -35,7 +35,7 @@ Cubyz is tested to compile and run with maven and eclipse.
 1. Clone Cubyz from github:
 - Either run `git clone https://github.com/PixelGuys/Cubyz`
 - Or [download](https://github.com/PixelGuys/Cubyz/archive/master.zip) and unzip Cubyz master branch from github.
-2. `cd` to the directory you want to compile(Cubyz/cubyz-client or Cubyz/cubyz-server).
+2. Go into the directory: `cd Cubyz`
 3. Run `mvn clean compile` to compile Cubyz.
 4. Run `mvn exec:exec` to run Cubyz after compilation.
 ### eclipse
@@ -46,7 +46,7 @@ Cubyz is tested to compile and run with maven and eclipse.
 - Copy `https://github.com/PixelGuys/Cubyz` into the field URI
 - Press next a couple times and maybe choose a custom Destination Directory.
 3. Wait some time for eclipse to download the project. If the source code shows any errors try refreshing the project(right click on project, refresh).
-4. Run `GameLauncher` in `cubyz-client` to start the game.
+4. Run `Main` to start the game.
 ## Requirements
 Vary a lot depending on your render distance.
 All you need is a computer that runs java.
