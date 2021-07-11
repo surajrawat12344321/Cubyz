@@ -15,8 +15,7 @@ public class UniverseServerConnection extends UniverseInterface{
 	}
 
 	@Override
-	public void generateVisibilityData(int x, int y, int z, int resolution, float priority,
-			Consumer<ChunkVisibilityData> callback) {
+	public void generateVisibilityData(UUID playerUuid, int x, int y, int z, int resolution, float priority, Consumer<ChunkVisibilityData> callback) {
 		// TODO Auto-generated method stub
 		
 	}

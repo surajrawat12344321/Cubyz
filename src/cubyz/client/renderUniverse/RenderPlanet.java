@@ -7,8 +7,6 @@ import cubyz.gui.rendering.Window;
 import cubyz.utils.datastructures.BinaryMaxHeap;
 import cubyz.world.Chunk;
 import cubyz.world.ChunkCache;
-import cubyz.world.ChunkVisibilityData;
-import cubyz.world.World;
 
 /**
  * Stores all the chunks and data from the currently loaded planet.
@@ -23,22 +21,23 @@ public final class RenderPlanet {
 	
 	// Some stuff for testing:
 	static Vector3f cameraPos = new Vector3f(0, 148, 148);
-	static ChunkVisibilityData[] visDat;
 	static ChunkMesh[] meshes;
 	static {
-		World world = new World();
-		visDat = new ChunkVisibilityData[8*8*8];
-		meshes = new ChunkMesh[visDat.length];
+		meshes = new ChunkMesh[8*8*8];
 		for(int x = 0; x < 8; x++) {
 			for(int y = 0; y < 8; y++) {
 				for(int z = 0; z < 8; z++) {
-					visDat[x + y*8 + z*64] = ChunkCache.getVisibilityData(world, Chunk.CHUNK_WIDTH*(x-4), Chunk.CHUNK_WIDTH*(y-4), Chunk.CHUNK_WIDTH*(z-4), 1);
-					meshes[x + y*8 + z*64] = new ChunkMesh(visDat[x + y*8 + z*64], -(x-4)*(x-4) - (y-4)*(y-4) - (z-4)*(z-4));
-					updateQueue.add(meshes[x + y*8 + z*64]);
+					float priority = -(x-4)*(x-4) - (y-4)*(y-4) - (z-4)*(z-4);
+					int index = x + y*8 + z*64;
+					RenderUniverse.universe.generateVisibilityData(null, Chunk.CHUNK_WIDTH*(x-4), Chunk.CHUNK_WIDTH*(y-4), Chunk.CHUNK_WIDTH*(z-4), 1, priority, (visDat) -> {
+						meshes[index].visibilityData = visDat;
+						updateQueue.add(meshes[index]);
+					});
+					meshes[index] = new ChunkMesh();
+					meshes[index].priority = priority;
 				}
 			}
 		}
-		System.out.println("Cache misses: "+ChunkCache.cacheMisses+"/"+ChunkCache.cacheRequests);
 	}
 	
 	public static void render() {
@@ -64,5 +63,6 @@ public final class RenderPlanet {
 			mesh.renderTransparent(camera);
 		}
 		ChunkMesh.unbind();
+		System.out.println("Cache misses: "+ChunkCache.cacheMisses+"/"+ChunkCache.cacheRequests);
 	}
 }

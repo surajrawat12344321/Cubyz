@@ -188,20 +188,11 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 	int faceCount = 0;
 	int faceCountTransparent = 0;
 	
-	final float priority;
+	float priority;
 	
 	
-	public final ChunkVisibilityData visibilityData;
+	ChunkVisibilityData visibilityData;
 	boolean needsUpdate = true;
-	/**
-	 * 
-	 * @param visibilityData
-	 * @param priority Higher value means that it will be generated faster.
-	 */
-	public ChunkMesh(ChunkVisibilityData visibilityData, float priority) {
-		this.visibilityData = visibilityData;
-		this.priority = priority;
-	}
 	
 	/**
 	 * Needs to be called inside the GL render thread!

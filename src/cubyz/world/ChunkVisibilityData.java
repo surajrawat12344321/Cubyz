@@ -10,14 +10,8 @@ import cubyz.world.blocks.Blocks;
  * Even in worst case (Every second block of the chunk filled) sending this over to the client will be cheaper than sending the whole chunk.
  */
 
-public class ChunkVisibilityData {
+public class ChunkVisibilityData extends ChunkData {
 	private static final int INITIAL_CAPACITY = 128;
-	/** World position of the Chunk. */
-	public final int wx, wy, wz;
-	/** The base unit of one block inside this chunk. */
-	public final int resolution;
-	/** The world this chunk is in. */
-	public final World world;
 	/** The number of visible blocks in this Chunk.*/
 	public int size = 0, capacity = INITIAL_CAPACITY;
 	/** The relative position data for each visible block */
@@ -28,17 +22,13 @@ public class ChunkVisibilityData {
 	public byte[] neighbors = new byte[INITIAL_CAPACITY];
 	
 	public ChunkVisibilityData(Chunk source) {
-		world = source.world;
-		wx = source.wx;
-		wy = source.wy;
-		wz = source.wz;
-		resolution = source.resolution;
+		super(source);
 		Chunk[] neighbors = new Chunk[Neighbor.NEIGHBORS];
 		for(int i = 0; i < Neighbor.NEIGHBORS; i++) {
 			int nx = wx + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_X[i];
 			int ny = wy + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_Y[i];
 			int nz = wz + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_Z[i];
-			neighbors[i] = ChunkCache.getChunk(world, nx, ny, nz, resolution);
+			neighbors[i] = ChunkCache.getChunk(new ChunkData(world, nx, ny, nz, resolution));
 		}
 		for(byte rx = 0; rx < Chunk.CHUNK_WIDTH; rx++) {
 			for(byte rz = 0; rz < Chunk.CHUNK_WIDTH; rz++) {
