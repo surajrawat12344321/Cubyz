@@ -398,6 +398,7 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 		glDeleteVertexArrays(vao);
 		glDeleteVertexArrays(vaoTransparent);
 		vao = -1;
+		vaoTransparent = -1;
 	}
 
 	@Override

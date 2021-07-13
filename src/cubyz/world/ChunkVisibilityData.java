@@ -28,7 +28,7 @@ public class ChunkVisibilityData extends ChunkData {
 			int nx = wx + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_X[i];
 			int ny = wy + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_Y[i];
 			int nz = wz + resolution*Chunk.CHUNK_WIDTH*Neighbor.REL_Z[i];
-			neighbors[i] = ChunkCache.getChunk(new ChunkData(world, nx, ny, nz, resolution));
+			neighbors[i] = ChunkCache.getOrGenerateChunk(new ChunkData(world, nx, ny, nz, resolution));
 		}
 		for(byte rx = 0; rx < Chunk.CHUNK_WIDTH; rx++) {
 			for(byte rz = 0; rz < Chunk.CHUNK_WIDTH; rz++) {

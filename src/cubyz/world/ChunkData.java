@@ -30,7 +30,21 @@ public class ChunkData {/** World coordinates */
 	 * @param other
 	 * @return
 	 */
-	public boolean equals(ChunkData other) {
-		return other != null && other.world == world && other.wx == wx && other.wy == wy && other.wz == wz && other.resolution == resolution;
+	@Override
+	public boolean equals(Object other) {
+		return other != null && other instanceof ChunkData
+				&& ((ChunkData)other).world == world
+				&& ((ChunkData)other).wx == wx
+				&& ((ChunkData)other).wy == wy
+				&& ((ChunkData)other).wz == wz
+				&& ((ChunkData)other).resolution == resolution;
+	}
+	
+	@Override
+	public int hashCode() {
+		int cx = wx>>Chunk.CHUNK_SHIFT;
+		int cy = wy>>Chunk.CHUNK_SHIFT;
+		int cz = wz>>Chunk.CHUNK_SHIFT;
+		return world.worldID ^ cx ^ cx<<4 ^ cy ^ cy<<2 ^ cz ^ cz<<5;
 	}
 }
