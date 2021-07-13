@@ -101,6 +101,7 @@ public class TextureAtlas {
 			} else {
 				texture.set(atlas);
 			}
+			textureUpdated = false;
 		}
 		texture.bind();
 	}

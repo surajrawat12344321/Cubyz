@@ -10,7 +10,7 @@ package cubyz.world;
 public class ChunkCache {
 	/** How many chunks there can be for each hash. */
 	public static final int ASSOCIATIVITY = 4;
-	public static final int BIT_SIZE = 8;
+	public static final int BIT_SIZE = 10;
 	/** How many blocks of size ASSOCIATIVITY there are in this cache. */
 	public static final int SIZE = 1 << BIT_SIZE;
 	public static final int HASH_MASK = SIZE-1;

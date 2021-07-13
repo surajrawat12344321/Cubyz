@@ -203,18 +203,9 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 	public void render(Vector3f playerPosition) {
 		if(vao == -1) return;
 		glUniform3f(UNIFORM_PLAYER, playerPosition.x - visibilityData.wx, playerPosition.y - visibilityData.wy, playerPosition.z - visibilityData.wz);
-		// Init
+
 		glBindVertexArray(vao);
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-		// Draw
 		glDrawElements(GL_TRIANGLES, faceCount, GL_UNSIGNED_INT, 0);
-		// Restore state
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-		glBindVertexArray(0);
 	}
 	
 	/**
@@ -224,18 +215,10 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 	public void renderTransparent(Vector3f playerPosition) {
 		if(vaoTransparent == -1) return;
 		glUniform3f(UNIFORM_TRANSPARENT_PLAYER, playerPosition.x - visibilityData.wx, playerPosition.y - visibilityData.wy, playerPosition.z - visibilityData.wz);
-		// Init
+		
 		glBindVertexArray(vaoTransparent);
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glEnableVertexAttribArray(2);
-		// Draw
 		glDrawElements(GL_TRIANGLES, faceCountTransparent, GL_UNSIGNED_INT, 0);
-		// Restore state
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-		glBindVertexArray(0);
+		
 	}
 	
 	/**
@@ -307,6 +290,9 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 	private int sendToGPU(FloatSimpleList vertices, FloatSimpleList normals, IntSimpleList faces, FloatSimpleList textures, int[] vbos) {
 		int vao = glGenVertexArrays();
 		glBindVertexArray(vao);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 
 		// Position VBO
 		int vbo = glGenBuffers();
@@ -405,8 +391,12 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 		for (int vbo : vbos) {
 			glDeleteBuffers(vbo);
 		}
+		for (int vbo : vbosTransparent) {
+			glDeleteBuffers(vbo);
+		}
 		glBindVertexArray(0);
 		glDeleteVertexArrays(vao);
+		glDeleteVertexArrays(vaoTransparent);
 		vao = -1;
 	}
 
