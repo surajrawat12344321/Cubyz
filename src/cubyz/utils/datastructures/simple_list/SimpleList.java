@@ -11,13 +11,11 @@ public class SimpleList<T> {
 	public int size;
 	public T[] array;
 	/**
-	 * @param initialCapacity
+	 * You need to specify an initial array, for the List to be able to use generic arrays.
+	 * @param initialArray
 	 */
-	public SimpleList(int initialCapacity) {
-		array = (T[])new Object[initialCapacity];
-	}
-	public SimpleList() {
-		this(10);
+	public SimpleList(T[] initialArray) {
+		array = initialArray;
 	}
 	/**
 	 * Adds one element.
@@ -66,6 +64,13 @@ public class SimpleList<T> {
 	 * Removes all elements inside. WARNING: This does not delete references, so beware of memory leaks!
 	 */
 	public void clear() {
+		size = 0;
+	}
+	/**
+	 * Removes all elements inside and overwrites them with null.
+	 */
+	public void clearFully() {
+		Arrays.fill(array, 0, size, null);
 		size = 0;
 	}
 	

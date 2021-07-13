@@ -193,6 +193,8 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 	
 	ChunkVisibilityData visibilityData;
 	boolean needsUpdate = true;
+	/** If the ChunkMesh was already taken out of all data structures it is considered dead. If a ChunkMesh is dead, then it won't put any more data on the GPU to prevent leaks. */
+	boolean isDead = false;
 	
 	/**
 	 * Needs to be called inside the GL render thread!
@@ -252,15 +254,16 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 		int atlasY = BlockMeshes.atlasY(visibilityData.blocks[i]);
 		int atlasWidth = BlockMeshes.atlasWidth(visibilityData.blocks[i]);
 		int atlasHeight = BlockMeshes.atlasHeight(visibilityData.blocks[i]);
+		int resolution = visibilityData.resolution;
 		if(model.isCube) {
 			int skipped = 0;
 			for(int n = 0; n < Neighbor.NEIGHBORS; n++) {
 				if((visibilityData.neighbors[i] & Neighbor.BIT_MASK[n]) != 0) {
 					// There are 4 vertices per side.
 					for(int j = n*4*3; j < (n + 1)*4*3;) {
-						vertices.add(model.vertices[j++] + x);
-						vertices.add(model.vertices[j++] + y);
-						vertices.add(model.vertices[j++] + z);
+						vertices.add((model.vertices[j++] + x)*resolution);
+						vertices.add((model.vertices[j++] + y)*resolution);
+						vertices.add((model.vertices[j++] + z)*resolution);
 					}
 					normals.add(model.normals, n*4*3, 4*3);
 					for(int j = n*4*2; j < (n + 1)*4*2;) {
@@ -279,9 +282,9 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 			vertexCount += 24 - skipped*4;
 		} else {
 			for(int j = 0; j < model.vertices.length;) {
-				vertices.add(model.vertices[j++] + x);
-				vertices.add(model.vertices[j++] + y);
-				vertices.add(model.vertices[j++] + z);
+				vertices.add((model.vertices[j++] + x)*resolution);
+				vertices.add((model.vertices[j++] + y)*resolution);
+				vertices.add((model.vertices[j++] + z)*resolution);
 			}
 			normals.add(model.normals);
 			for(int j = 0; j < model.textCoords.length;) {
@@ -355,10 +358,11 @@ public class ChunkMesh implements Comparable<ChunkMesh> {
 	 * NEEDS TO BE CALLED IN THE OPENGL THREAD!
 	 */
 	public void generateMesh() {
-		needsUpdate = false;
 		if(vao != -1 || vaoTransparent != -1) {
 			cleanup();
 		}
+		if(isDead) return;
+		needsUpdate = false;
 		FloatSimpleList vertices = localVertices.get();
 		vertices.clear();
 		FloatSimpleList normals = localNormals.get();

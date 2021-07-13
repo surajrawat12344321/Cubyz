@@ -44,14 +44,14 @@ public class Chunk extends ChunkData {
 		// TODO: Remove test.
 		Random rand = new Random(wx*65783906349L ^ wz*6758496543365421L);
 		float val00 = rand.nextFloat()*92 - 64;
-		rand = new Random(wx*65783906349L ^ (wz + Chunk.CHUNK_WIDTH)*6758496543365421L);
+		rand = new Random(wx*65783906349L ^ (wz + Chunk.CHUNK_WIDTH*resolution)*6758496543365421L);
 		float val01 = rand.nextFloat()*92 - 64;
-		rand = new Random((wx + Chunk.CHUNK_WIDTH)*65783906349L ^ wz*6758496543365421L);
+		rand = new Random((wx + Chunk.CHUNK_WIDTH*resolution)*65783906349L ^ wz*6758496543365421L);
 		float val10 = rand.nextFloat()*92 - 64;
-		rand = new Random((wx + Chunk.CHUNK_WIDTH)*65783906349L ^ (wz + Chunk.CHUNK_WIDTH)*6758496543365421L);
+		rand = new Random((wx + Chunk.CHUNK_WIDTH*resolution)*65783906349L ^ (wz + Chunk.CHUNK_WIDTH*resolution)*6758496543365421L);
 		float val11 = rand.nextFloat()*92 - 64;
 		int block;
-		rand.setSeed((wx + Chunk.CHUNK_WIDTH)*65783906349L ^ wy ^ (wz + Chunk.CHUNK_WIDTH)*6758496543365421L);
+		rand.setSeed((wx + Chunk.CHUNK_WIDTH*resolution)*65783906349L ^ wy ^ (wz + Chunk.CHUNK_WIDTH*resolution)*6758496543365421L);
 		do {
 			block = 1+(int)(rand.nextFloat()*(Blocks.size()-1));
 		} while(!Blocks.model(block).isCube);
@@ -62,7 +62,7 @@ public class Chunk extends ChunkData {
 						+ (Chunk.CHUNK_WIDTH-dx)*dz*val01/Chunk.CHUNK_WIDTH/Chunk.CHUNK_WIDTH
 						+ (Chunk.CHUNK_WIDTH-dx)*(Chunk.CHUNK_WIDTH-dz)*val00/Chunk.CHUNK_WIDTH/Chunk.CHUNK_WIDTH;
 				height -= wy;
-				height = Math.min(32, height);
+				height = Math.min(32, height/resolution);
 				for(byte dy = 0; dy < height; dy++) {
 					int index = getIndex(dx, dy, dz);
 					blocks[index] = block;
