@@ -3,7 +3,8 @@ package cubyz.world;
 /**
  * Contains all the data used by Chunks and similar.
  */
-public class ChunkData {/** World coordinates */
+public class ChunkData {
+	/** World coordinates */
 	public final int wx, wy, wz;
 	/** The base unit of one block inside this chunk. */
 	public final int resolution;

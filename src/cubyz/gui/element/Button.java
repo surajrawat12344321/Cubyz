@@ -34,9 +34,9 @@ public class Button extends Component {
 	public boolean release = false;
 	
 	//colors
-	public float[] color_std 	 = 	{156, 166, 191, 255}; // standard colour
-	public float[] color_pressed = 	{146, 154, 179, 255}; // pressed colour
-	public float[] color_hovered = 	{156, 166, 221, 255}; // hovered colour
+	public float[] color_std 	 = 	{156, 166, 191, 255}; // standard color
+	public float[] color_pressed = 	{146, 154, 179, 255}; // pressed color
+	public float[] color_hovered = 	{156, 166, 221, 255}; // hovered color
 	
 	//shadow
 	public float shadowWidth = 20;

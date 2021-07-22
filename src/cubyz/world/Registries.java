@@ -3,12 +3,12 @@ package cubyz.world;
 import cubyz.utils.datastructures.DataOrientedRegistry;
 import cubyz.utils.datastructures.Registry;
 import cubyz.world.biomes.Biome;
-import cubyz.world.blocks.Blocks;
 import cubyz.world.blocks.RotationMode;
 import cubyz.world.entity.Effect;
 import cubyz.world.entity.EntityComponent;
 import cubyz.world.entity.EntityType;
 import cubyz.world.items.Item;
+import cubyz.world.terrain.Generator;
 
 /**
  * All the registries of the current universe.

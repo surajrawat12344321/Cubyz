@@ -1,6 +1,7 @@
 package cubyz.world;
 
 import cubyz.utils.datastructures.Cache;
+import cubyz.world.terrain.MapGenerator;
 
 /**
  * Chunks that get requested by users are cached in case they are needed again.
@@ -18,6 +19,7 @@ public class ChunkCache {
 	public static final int HASH_MASK = SIZE-1;
 	public static final Cache<Chunk> chunkCache = new Cache<Chunk>(new Chunk[SIZE][ASSOCIATIVITY]);
 	public static final Cache<ChunkVisibilityData> visibilityDataCache = new Cache<ChunkVisibilityData>(new ChunkVisibilityData[SIZE][ASSOCIATIVITY]);
+	public static final Cache<MapGenerator> mapGeneratorCache = new Cache<MapGenerator>(new MapGenerator[SIZE][ASSOCIATIVITY]);
 	
 	public static Chunk getOrGenerateChunk(ChunkData request) {
 		int hash = request.hashCode() & HASH_MASK;
