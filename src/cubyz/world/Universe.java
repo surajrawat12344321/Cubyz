@@ -61,7 +61,7 @@ public class Universe extends UniverseInterface {
 		// TODO: Divide the player priority by their average or something, to prevent abuse.
 		ChunkGenerationRequest request = new ChunkGenerationRequest(loadedWorlds[0], x, y, z, resolution, priority, callback);
 		// Test if it is already cached:
-		ChunkVisibilityData dat = ChunkCache.getOrGenerateVisibilityData(request);
+		ChunkVisibilityData dat = ChunkCache.getOrNull(request);
 		if(dat != null) {
 			callback.accept(dat);
 		} else {

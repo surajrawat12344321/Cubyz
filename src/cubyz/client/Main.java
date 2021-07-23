@@ -26,7 +26,6 @@ public class Main {
 			
 			Window.createWindow(1280, 720);
 			Window.setBackgroundColor(0.5f, 1f, 0.5f, 1);
-			new MapGenerator(new World(), 0, 0, 1);
 			SceneManager.init();
 			Game.init();
 			

@@ -3,6 +3,8 @@ package cubyz.world;
 import java.util.Random;
 
 import cubyz.world.blocks.Blocks;
+import cubyz.world.terrain.MapGenerator;
+import cubyz.world.terrain.generators.SurfaceGenerator;
 
 /**
  * A Chunk how it's stored on the server. Contains data about every single block as well as the visibility data that is shared with the client.
@@ -41,33 +43,8 @@ public class Chunk extends ChunkData {
 		generate();
 	}
 	private void generate() {
-		// TODO: Remove test.
-		Random rand = new Random(wx*65783906349L ^ wz*6758496543365421L);
-		float val00 = rand.nextFloat()*92 - 64;
-		rand = new Random(wx*65783906349L ^ (wz + Chunk.CHUNK_WIDTH*resolution)*6758496543365421L);
-		float val01 = rand.nextFloat()*92 - 64;
-		rand = new Random((wx + Chunk.CHUNK_WIDTH*resolution)*65783906349L ^ wz*6758496543365421L);
-		float val10 = rand.nextFloat()*92 - 64;
-		rand = new Random((wx + Chunk.CHUNK_WIDTH*resolution)*65783906349L ^ (wz + Chunk.CHUNK_WIDTH*resolution)*6758496543365421L);
-		float val11 = rand.nextFloat()*92 - 64;
-		int block;
-		rand.setSeed((wx + Chunk.CHUNK_WIDTH*resolution)*65783906349L ^ wy ^ (wz + Chunk.CHUNK_WIDTH*resolution)*6758496543365421L);
-		do {
-			block = 1+(int)(rand.nextFloat()*(Blocks.size()-1));
-		} while(!Blocks.model(block).isCube);
-		for(byte dx = 0; dx < CHUNK_WIDTH; dx++) {
-			for(byte dz = 0; dz < CHUNK_WIDTH; dz++) {
-				float height = dx*dz*val11/Chunk.CHUNK_WIDTH/Chunk.CHUNK_WIDTH
-						+ dx*(Chunk.CHUNK_WIDTH-dz)*val10/Chunk.CHUNK_WIDTH/Chunk.CHUNK_WIDTH
-						+ (Chunk.CHUNK_WIDTH-dx)*dz*val01/Chunk.CHUNK_WIDTH/Chunk.CHUNK_WIDTH
-						+ (Chunk.CHUNK_WIDTH-dx)*(Chunk.CHUNK_WIDTH-dz)*val00/Chunk.CHUNK_WIDTH/Chunk.CHUNK_WIDTH;
-				height -= wy;
-				height = Math.min(32, height/resolution);
-				for(byte dy = 0; dy < height; dy++) {
-					int index = getIndex(dx, dy, dz);
-					blocks[index] = block;
-				}
-			}
-		}
+		MapGenerator map = ChunkCache.getOrGenerateMap(world, wx, wz);
+		map.ensureResolution(resolution);
+		new SurfaceGenerator().generate(world, this, map);
 	}
 }

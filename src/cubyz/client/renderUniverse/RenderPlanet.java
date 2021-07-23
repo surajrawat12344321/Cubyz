@@ -236,7 +236,7 @@ public final class RenderPlanet {
 		Matrix3f rotation = new Matrix3f().identity().rotateY(-((System.currentTimeMillis() & 65535)/10000.0f));
 		Vector3f camera = cameraPos.mul(rotation, new Vector3f());
 		rotation = new Matrix3f().identity().rotateX(0.2f).rotateY(((System.currentTimeMillis() & 65535)/10000.0f));
-		update(camera, 2000, 2.0f); // TODO: Do that in an extra Thread.
+		update(camera, 5000, 2.0f); // TODO: Do that in an extra Thread.
 		
 		synchronized(renderMeshes) {
 			ChunkMesh.bind(Window.projectionMatrix, rotation);

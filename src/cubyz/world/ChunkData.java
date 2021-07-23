@@ -1,5 +1,7 @@
 package cubyz.world;
 
+import cubyz.world.terrain.MapGenerator;
+
 /**
  * Contains all the data used by Chunks and similar.
  */
@@ -33,12 +35,19 @@ public class ChunkData {
 	 */
 	@Override
 	public boolean equals(Object other) {
-		return other != null && other instanceof ChunkData
-				&& ((ChunkData)other).world == world
-				&& ((ChunkData)other).wx == wx
-				&& ((ChunkData)other).wy == wy
-				&& ((ChunkData)other).wz == wz
-				&& ((ChunkData)other).resolution == resolution;
+		if(other == null) return false;
+		if(other instanceof ChunkData) {
+			return ((ChunkData)other).world == world
+					&& ((ChunkData)other).wx == wx
+					&& ((ChunkData)other).wy == wy
+					&& ((ChunkData)other).wz == wz
+					&& ((ChunkData)other).resolution == resolution;
+		} else if(other instanceof MapGenerator) {
+			return ((MapGenerator)other).world == world
+					&& ((MapGenerator)other).wx == wx
+					&& ((MapGenerator)other).wz == wz;
+		}
+		return false;
 	}
 	
 	@Override

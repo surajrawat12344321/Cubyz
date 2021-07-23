@@ -1,9 +1,7 @@
 package cubyz.world.terrain;
 
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
-import cubyz.utils.Utils;
 import cubyz.world.Registries;
 import cubyz.world.World;
 import cubyz.world.terrain.noise.FractalNoise;
@@ -56,6 +54,7 @@ public class MapGenerator {
 	public static final int BIOME_SIZE = 1 << BIOME_SHIFT;
 	public static final int MAP_SHIFT = 10;
 	public static final int MAP_SIZE = 1 << MAP_SHIFT;
+	public static final int MAP_MASK = MAP_SIZE - 1;
 	
 	private static ThreadLocal<PerlinNoise> threadLocalNoise = new ThreadLocal<PerlinNoise>() {
 		@Override
@@ -66,15 +65,13 @@ public class MapGenerator {
 	
 	public final World world;
 	public final int wx, wz;
-	private int resolution = Integer.MAX_VALUE;
-	private float[][] heightMap;
-	private Biome[][] biomeMap;
-	public MapGenerator(World world, int wx, int wz, int resolution) {
+	public int resolution = Integer.MAX_VALUE;
+	public float[][] heightMap;
+	public Biome[][] biomeMap;
+	public MapGenerator(World world, int wx, int wz) {
 		this.world = world;
 		this.wx = wx;
 		this.wz = wz;
-		
-		ensureResolution(resolution);
 	}
 	
 	public synchronized void ensureResolution(int resolution) {
@@ -111,7 +108,6 @@ public class MapGenerator {
 		float[][] roughMap = new float[scaledSize][scaledSize];
 		FractalNoise.generateSparseFractalTerrain(wx, wz, MAP_SIZE, MAP_SIZE, 64, world.seed ^ -954936678493L, world.sizeX, world.sizeZ, roughMap, resolution);
 		
-		BufferedImage img = new BufferedImage(scaledSize, scaledSize, BufferedImage.TYPE_INT_ARGB);
 		for(int x = 0; x < heightMap.length; x++) {
 			for(int z = 0; z < heightMap.length; z++) {
 				// Do the biome interpolation:
@@ -173,10 +169,8 @@ public class MapGenerator {
 					}
 				}
 				biomeMap[x][z] = shortestBiome.getFittingReplacement(height + rand.nextFloat()*4 - 2);
-				img.setRGB(x, z, biomeMap[x][z].hashCode() | 0xff000000);
 			}
 		}
-		Utils.writeImage(img, "test.png");
 		synchronized(this) {
 			this.biomeMap = biomeMap;
 			this.heightMap = heightMap;

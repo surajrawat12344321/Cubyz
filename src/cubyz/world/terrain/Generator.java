@@ -21,5 +21,5 @@ public interface Generator extends RegistryElement {
 	 * @param containingRegion
 	 * @param surface
 	 */
-	abstract void generate(World world, int wx, int wy, int wz, Chunk chunk, MapGenerator heightMap);
+	abstract void generate(World world, Chunk chunk, MapGenerator map);
 }
