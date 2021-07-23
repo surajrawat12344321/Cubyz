@@ -13,6 +13,7 @@ import cubyz.server.AddonsLoader;
 import cubyz.utils.gui.StatusInfo;
 import cubyz.utils.log.Log;
 import cubyz.world.Registries;
+import cubyz.world.terrain.Biome;
 
 /**
  * Loads mods from the mods folder using java Reflections API.<br>
@@ -148,6 +149,8 @@ public class ModLoader {
 			
 			mod.registerBiomes(Registries.BIOMES);
 		}
+		AddonsLoader.loadBiomes("assets");
+		postProcessBiomes();
 
 		modLoadingStatus.currentProcess = 7;
 		modLoadingStatus.processName = "Post-Initializing Mods...";
@@ -210,6 +213,43 @@ public class ModLoader {
 			Log.severe("Could not download mod: "+description+".");
 			Log.severe(e);
 			return null;
+		}
+	}
+	
+	public static void postProcessBiomes() {
+		// Get a list of replacement biomes for each biome:
+		for(Biome biome : Registries.BIOMES.toArray(new Biome[0])) {
+			// Check lower replacements:
+			// Check if there are replacement biomes of the same type:
+			Registries.BIOMES.byTypeBiomes.get(biome.type).forEach(replacement -> {
+				if(replacement.maxHeight > biome.minHeight && replacement.minHeight < biome.minHeight) {
+					biome.lowerReplacements.add(replacement);
+				}
+			});
+			// If that doesn't work, check for the next smaller height region:
+			if(biome.lowerReplacements.size() == 0) {
+				Biome.checkLowerTypesInRegistry(biome.type, replacement -> {
+					if(replacement.maxHeight > biome.minHeight && replacement.minHeight < biome.minHeight) {
+						biome.lowerReplacements.add(replacement);
+					}
+				});
+			}
+			
+			// Check upper replacements:
+			// Check if there are replacement biomes of the same type:
+			Registries.BIOMES.byTypeBiomes.get(biome.type).forEach(replacement -> {
+				if(replacement.minHeight < biome.maxHeight && replacement.maxHeight > biome.maxHeight) {
+					biome.upperReplacements.add(replacement);
+				}
+			});
+			// If that doesn't work, check for the next smaller height region:
+			if(biome.upperReplacements.size() == 0) {
+				Biome.checkHigherTypesInRegistry(biome.type, replacement -> {
+					if(replacement.minHeight < biome.maxHeight && replacement.maxHeight > biome.maxHeight) {
+						biome.upperReplacements.add(replacement);
+					}
+				});
+			}
 		}
 	}
 }

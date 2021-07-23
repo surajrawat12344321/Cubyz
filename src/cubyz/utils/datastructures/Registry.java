@@ -17,11 +17,14 @@ public class Registry<T extends RegistryElement> {
 	}
 	
 	
-	public void add(T element) {
-		if(elements.containsKey(element.getID()))
+	public boolean add(T element) {
+		if(elements.containsKey(element.getID())) {
 			Log.severe(new Exception("registryID duplicant."));
+			return false;
+		}
 		elements.put(element.getID(), element);
 		array.add(element);
+		return true;
 	}
 	public T getById(String string) {
 		return elements.get(string);

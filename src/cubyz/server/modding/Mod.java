@@ -1,7 +1,7 @@
 package cubyz.server.modding;
 
 import cubyz.utils.datastructures.Registry;
-import cubyz.world.biomes.Biome;
+import cubyz.world.terrain.Biome;
 import cubyz.world.entity.EntityType;
 import cubyz.world.items.Item;
 
