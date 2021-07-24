@@ -98,9 +98,8 @@ public class TextureAtlas {
 		if(textureUpdated) {
 			if(texture == null) {
 				texture = new Texture(atlas);
-			} else {
-				texture.set(atlas);
 			}
+			texture.set(atlas, 4);
 			textureUpdated = false;
 		}
 		texture.bind();
