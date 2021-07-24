@@ -135,7 +135,7 @@ public class Biome implements RegistryElement, ChanceObject {
 					} else if(line.startsWith("chance")) {
 						chance = Float.parseFloat(line.substring(6).trim());
 					} else if(line.startsWith("ground_structure")) {
-						blocks = new BlockStructure(line.substring(16));
+						blocks = new BlockStructure(line.substring(16), lineNumber, file);
 					} else if(line.startsWith("structures:")) {
 						startedStructures = true;
 					} else {
@@ -165,7 +165,7 @@ public class Biome implements RegistryElement, ChanceObject {
 		this.maxHeight = maxHeight;
 		this.chance = (int)(chance*1000);
 		if(blocks == null) {
-			blocks = new BlockStructure("");
+			blocks = new BlockStructure("cubyz:dirt", 0, file);
 			Log.warning("Biome block structure not specified in file "+file.getPath());
 		}
 		this.blocks = blocks;

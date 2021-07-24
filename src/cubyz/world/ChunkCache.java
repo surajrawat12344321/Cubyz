@@ -2,7 +2,6 @@ package cubyz.world;
 
 import cubyz.utils.datastructures.Cache;
 import cubyz.world.terrain.MapGenerator;
-import cubyz.world.terrain.generators.SurfaceGenerator;
 
 /**
  * Chunks that get requested by users are cached in case they are needed again.
