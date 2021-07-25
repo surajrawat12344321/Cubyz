@@ -2,7 +2,7 @@ package cubyz.client.renderUniverse;
 
 import java.awt.image.BufferedImage;
 
-import cubyz.gui.rendering.Texture;
+import cubyz.rendering.Texture;
 import cubyz.utils.Utils;
 
 /**

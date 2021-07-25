@@ -1,4 +1,4 @@
-package cubyz.gui.rendering;
+package cubyz.rendering;
 
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;

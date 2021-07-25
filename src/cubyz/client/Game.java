@@ -4,6 +4,7 @@ import cubyz.client.renderUniverse.RenderUniverse;
 import cubyz.gui.Component;
 import cubyz.gui.EventListener;
 import cubyz.gui.SceneManager;
+import cubyz.rendering.Input;
 import cubyz.world.Universe;
 import cubyz.world.UniverseInterface;
 
@@ -30,7 +31,8 @@ public class Game {
 		SceneManager.getScene("singleplayerMenu").eventListener.add(new EventListener() {	
 			@Override public void onEvent(Component source, String event) {
 				if(source.name.equals("logo")&&event.equals("button_release")) {
-					//SceneManager.setCurrentScene("mainMenu");
+					SceneManager.setCurrentScene("inGame");
+					Input.grabMouse();
 					RenderUniverse.universe = new Universe();
 				}
 			}

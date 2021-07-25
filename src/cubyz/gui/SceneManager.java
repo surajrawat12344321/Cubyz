@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL20.glBlendEquationSeparate;
 import java.io.File;
 import java.util.HashMap;
 
-import cubyz.gui.rendering.Window;
+import cubyz.rendering.Window;
 
 public class SceneManager {
 	public static HashMap<String, Scene> scenes = new HashMap<String,Scene>();

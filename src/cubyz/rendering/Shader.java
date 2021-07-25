@@ -1,4 +1,4 @@
-package cubyz.gui.rendering;
+package cubyz.rendering;
 
 import static org.lwjgl.opengl.GL30.glUseProgram;
 import static org.lwjgl.opengl.GL30.*;

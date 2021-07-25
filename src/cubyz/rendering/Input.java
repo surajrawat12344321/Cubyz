@@ -1,4 +1,4 @@
-package cubyz.gui.rendering;
+package cubyz.rendering;
 
 import java.nio.DoubleBuffer;
 import java.util.HashMap;
@@ -20,11 +20,10 @@ import static org.lwjgl.glfw.GLFW.*;
 public final class Input {
 	//public
 	public static Component selectedText;
+
+	public static final Vector2d mousePosition = new Vector2d();
 	
-	private static final Vector2d mousePosition = new Vector2d();
-	public static Vector2d getMousePosition(Design design) {
-		return new Vector2d(mousePosition);
-	}
+	private static boolean isMouseGrabbed = false;
 	
 	//which real keys are pressed
 	private static final int key_count_mouse = 200;
@@ -115,5 +114,20 @@ public final class Input {
 			mousePosition.x = xBuffer.get(0);
 			mousePosition.y = yBuffer.get(0);
 		}
+		System.out.println(mousePosition);
+	}
+	
+	public static void grabMouse() {
+		glfwSetInputMode(Window.handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		if (glfwRawMouseMotionSupported())
+		    glfwSetInputMode(Window.handle, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		isMouseGrabbed = true;
+	}
+	
+	public static void ungrabMouse() {
+		glfwSetInputMode(Window.handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		if (glfwRawMouseMotionSupported())
+		    glfwSetInputMode(Window.handle, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+		isMouseGrabbed = false;
 	}
 }

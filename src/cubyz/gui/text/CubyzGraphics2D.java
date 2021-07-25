@@ -31,7 +31,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 import cubyz.gui.Design;
-import cubyz.gui.rendering.Shader;
+import cubyz.rendering.Shader;
 
 /**
  * Essentially just an interface for drawing with {@code Textlayout.draw}. Not much else of {@code Graphics2D} is supported.

@@ -4,14 +4,12 @@ import cubyz.client.renderUniverse.RenderUniverse;
 import cubyz.client.renderUniverse.TextureAtlas;
 import cubyz.gui.Init;
 import cubyz.gui.SceneManager;
-import cubyz.gui.rendering.Input;
-import cubyz.gui.rendering.Window;
+import cubyz.rendering.Input;
+import cubyz.rendering.Window;
 import cubyz.server.BaseMod;
 import cubyz.server.modding.ModLoader;
 import cubyz.utils.gui.StatusInfo;
 import cubyz.utils.log.Log;
-import cubyz.world.World;
-import cubyz.world.terrain.MapGenerator;
 
 /**
  *	Starting point of the client.

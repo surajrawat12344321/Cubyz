@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
-import cubyz.gui.rendering.Window;
+import cubyz.rendering.Window;
 import cubyz.utils.datastructures.BinaryMaxHeap;
 import cubyz.utils.datastructures.simple_list.SimpleList;
 import cubyz.world.Chunk;
@@ -235,7 +235,7 @@ public final class RenderPlanet {
 		// Render the chunks:
 		Matrix3f rotation = new Matrix3f().identity().rotateY(-((System.currentTimeMillis() & 65535)/10000.0f));
 		Vector3f camera = cameraPos.mul(rotation, new Vector3f());
-		rotation = new Matrix3f().identity().rotateX(0.2f).rotateY(((System.currentTimeMillis() & 65535)/10000.0f));
+		rotation = Camera.getMatrix();
 		update(camera, 5000, 2.0f); // TODO: Do that in an extra Thread.
 		
 		synchronized(renderMeshes) {

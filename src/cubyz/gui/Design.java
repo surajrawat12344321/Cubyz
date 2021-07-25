@@ -6,9 +6,9 @@ import java.io.FileWriter;
 
 import org.lwjgl.opengl.GL30;
 
-import cubyz.gui.rendering.Input;
-import cubyz.gui.rendering.Keys;
 import cubyz.gui.text.CubyzGraphics2D;
+import cubyz.rendering.Input;
+import cubyz.rendering.Keys;
 import cubyz.utils.json.*;
 import cubyz.utils.log.Log;
 

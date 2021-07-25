@@ -5,9 +5,9 @@ import org.joml.Vector2d;
 import cubyz.gui.Component;
 import cubyz.gui.Design;
 import cubyz.gui.SceneManager;
-import cubyz.gui.rendering.Input;
-import cubyz.gui.rendering.Keys;
 import cubyz.gui.text.Text;
+import cubyz.rendering.Input;
+import cubyz.rendering.Keys;
 import cubyz.utils.json.*;
 
 public class GuiWindow extends Component {
@@ -89,7 +89,7 @@ public class GuiWindow extends Component {
 		super.update(design, parentalOffsetX, parentalOffsetY);
 		
 		
-		Vector2d mousepos = Input.getMousePosition(design);
+		Vector2d mousepos = Input.mousePosition;
 		mousepos.x -= parentalOffsetX;
 		mousepos.y -= parentalOffsetY;
 

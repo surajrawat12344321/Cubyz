@@ -15,12 +15,12 @@ import org.lwjgl.system.MemoryUtil;
 import cubyz.gui.Component;
 import cubyz.gui.Design;
 import cubyz.gui.SceneManager;
-import cubyz.gui.rendering.Input;
-import cubyz.gui.rendering.Keys;
-import cubyz.gui.rendering.Shader;
-import cubyz.gui.rendering.Texture;
-import cubyz.gui.rendering.TextureManager;
 import cubyz.gui.text.Text;
+import cubyz.rendering.Input;
+import cubyz.rendering.Keys;
+import cubyz.rendering.Shader;
+import cubyz.rendering.Texture;
+import cubyz.rendering.TextureManager;
 import cubyz.utils.json.*;
 
 public class Button extends Component {
@@ -153,9 +153,9 @@ public class Button extends Component {
 	public void update(Design design,float parentalOffsetX,float parentalOffsetY) {
 		super.update(design,parentalOffsetX,parentalOffsetY);
 		
-		Vector2d mousepos = Input.getMousePosition(design);
-		mousepos.x-=parentalOffsetX;
-		mousepos.y-=parentalOffsetY;
+		Vector2d mousepos = new Vector2d(Input.mousePosition);
+		mousepos.x -= parentalOffsetX;
+		mousepos.y -= parentalOffsetY;
 		
 		
 		hovered = (left.getAsValue()<=mousepos.x&&

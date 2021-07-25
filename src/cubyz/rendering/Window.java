@@ -1,4 +1,4 @@
-package cubyz.gui.rendering;
+package cubyz.rendering;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -18,7 +18,7 @@ import cubyz.Settings;
 import cubyz.server.Constants;
 
 public class Window {
-	private static long handle;
+	public static long handle;
 	
 	private static boolean fullscreen = false;
 	
@@ -73,7 +73,7 @@ public class Window {
 		if(height==0)
 			return;
 		glViewport(0, 0, width, height);
-		float aspectRatio = width / height;
+		float aspectRatio = width / (float)height;
 		projectionMatrix.identity();
 		projectionMatrix.perspective((float)Math.toRadians(Settings.FOV), aspectRatio, Settings.Z_NEAR, Settings.Z_FAR);
 	}

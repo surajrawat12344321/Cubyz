@@ -9,7 +9,7 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
-import cubyz.gui.rendering.Texture;
+import cubyz.rendering.Texture;
 
 public class GraphicFont {
 	

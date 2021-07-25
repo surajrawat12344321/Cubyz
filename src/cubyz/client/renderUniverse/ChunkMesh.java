@@ -42,7 +42,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import cubyz.client.meshes.BlockMeshes;
-import cubyz.gui.rendering.Shader;
+import cubyz.rendering.Shader;
 import cubyz.utils.datastructures.simple_list.FloatSimpleList;
 import cubyz.utils.datastructures.simple_list.IntSimpleList;
 import cubyz.world.ChunkVisibilityData;

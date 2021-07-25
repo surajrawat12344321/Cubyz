@@ -1,4 +1,4 @@
-package cubyz.gui.rendering;
+package cubyz.rendering;
 
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
