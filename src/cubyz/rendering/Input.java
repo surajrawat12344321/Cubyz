@@ -10,7 +10,6 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
 import cubyz.gui.Component;
-import cubyz.gui.Design;
 import cubyz.gui.SceneManager;
 import cubyz.gui.text.Text;
 import cubyz.utils.log.Log;
@@ -114,7 +113,6 @@ public final class Input {
 			mousePosition.x = xBuffer.get(0);
 			mousePosition.y = yBuffer.get(0);
 		}
-		System.out.println(mousePosition);
 	}
 	
 	public static void grabMouse() {

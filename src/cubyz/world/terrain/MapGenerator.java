@@ -95,18 +95,18 @@ public class MapGenerator {
 		int scaledBiomeSize = BIOME_SIZE/resolution;
 		float[][] xOffsetMap = new float[scaledSize][scaledSize];
 		float[][] zOffsetMap = new float[scaledSize][scaledSize];
-		FractalNoise.generateSparseFractalTerrain(wx, wz, MAP_SIZE, MAP_SIZE, BIOME_SIZE/2, world.seed^675396758496549L, world.sizeX, world.sizeZ, xOffsetMap, resolution);
-		FractalNoise.generateSparseFractalTerrain(wx, wz, MAP_SIZE, MAP_SIZE, BIOME_SIZE/2, world.seed^543864367373859L, world.sizeX, world.sizeZ, zOffsetMap, resolution);
+		FractalNoise.generateSparseFractalTerrain(wx, wz, MAP_SIZE, MAP_SIZE, BIOME_SIZE/2, world.seed^675396758496549L, xOffsetMap, resolution);
+		FractalNoise.generateSparseFractalTerrain(wx, wz, MAP_SIZE, MAP_SIZE, BIOME_SIZE/2, world.seed^543864367373859L, zOffsetMap, resolution);
 
 		// A ridgid noise map to generate interesting mountains.
-		float[][] mountainMap = threadLocalNoise.get().generateRidgidNoise(wx, wz, MAP_SIZE, MAP_SIZE, 1024, 16, world.seed ^ -954936678493L, world.sizeX, world.sizeZ, resolution, 0.5f);
+		float[][] mountainMap = threadLocalNoise.get().generateRidgidNoise(wx, wz, MAP_SIZE, MAP_SIZE, 1024, 16, world.seed ^ 6758947592930535L, resolution, 0.5f);
 		
 		// A smooth map for smaller hills.
-		float[][] hillMap = threadLocalNoise.get().generateRidgidNoise(wx, wz, MAP_SIZE, MAP_SIZE, 128, 32, world.seed ^ -954936678493L, world.sizeX, world.sizeZ, resolution, 0.5f);
+		float[][] hillMap = threadLocalNoise.get().generateSmoothNoise(wx, wz, MAP_SIZE, MAP_SIZE, 128, 32, world.seed ^ -157839765839495820L, resolution, 0.5f);
 		
 		// A fractal map to generate high-detail roughness.
 		float[][] roughMap = new float[scaledSize][scaledSize];
-		FractalNoise.generateSparseFractalTerrain(wx, wz, MAP_SIZE, MAP_SIZE, 64, world.seed ^ -954936678493L, world.sizeX, world.sizeZ, roughMap, resolution);
+		FractalNoise.generateSparseFractalTerrain(wx, wz, MAP_SIZE, MAP_SIZE, 64, world.seed ^ -954936678493L, roughMap, resolution);
 		
 		for(int x = 0; x < heightMap.length; x++) {
 			for(int z = 0; z < heightMap.length; z++) {
