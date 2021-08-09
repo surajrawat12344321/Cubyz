@@ -1,12 +1,12 @@
 package cubyz.client;
 
-import cubyz.client.renderUniverse.RenderUniverse;
+import cubyz.client.renderUniverse.RenderWorld;
 import cubyz.gui.Component;
 import cubyz.gui.EventListener;
 import cubyz.gui.SceneManager;
 import cubyz.rendering.Input;
-import cubyz.world.Universe;
-import cubyz.world.UniverseInterface;
+import cubyz.world.World;
+import cubyz.world.WorldInterface;
 
 /**
  * 
@@ -14,7 +14,7 @@ import cubyz.world.UniverseInterface;
  *
  */
 public class Game {
-	public static UniverseInterface connection;
+	public static WorldInterface connection;
 	/**
 	 * for joining a server:		connection = new UniverseServerConnection(ip etc.);
 	 * for joining a local world:	connection = new Universe(path etc.);
@@ -33,7 +33,7 @@ public class Game {
 				if(source.name.equals("logo")&&event.equals("button_release")) {
 					SceneManager.setCurrentScene("inGame");
 					Input.grabMouse();
-					RenderUniverse.universe = new Universe();
+					RenderWorld.world = new World();
 				}
 			}
 		});

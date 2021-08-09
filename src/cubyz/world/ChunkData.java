@@ -55,6 +55,6 @@ public class ChunkData {
 		int cx = wx>>Chunk.CHUNK_SHIFT;
 		int cy = wy>>Chunk.CHUNK_SHIFT;
 		int cz = wz>>Chunk.CHUNK_SHIFT;
-		return world.worldID ^ cx ^ cx<<4 ^ cy ^ cy<<2 ^ cz ^ cz<<5;
+		return cx ^ cx<<4 ^ cy ^ cy<<2 ^ cz ^ cz<<5;
 	}
 }

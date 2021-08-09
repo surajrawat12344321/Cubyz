@@ -32,7 +32,7 @@ public class Shader {
 			if(type == GL_VERTEX_SHADER)
 				throw new Exception("Couldn't create vertexshader.");
 			if(type == GL_FRAGMENT_SHADER)
-				throw new Exception("Coudln't create fragmentshader.");
+				throw new Exception("Couldn't create fragmentshader.");
 			
 		}
 		glShaderSource(id, code);

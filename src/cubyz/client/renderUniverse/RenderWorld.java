@@ -11,13 +11,15 @@ import cubyz.utils.datastructures.simple_list.SimpleList;
 import cubyz.world.Chunk;
 import cubyz.world.ChunkCache;
 import cubyz.world.ChunkData;
+import cubyz.world.WorldInterface;
 
 /**
  * Stores all the chunks and data from the currently loaded planet.
  * On the client there can only be one planet loaded at a time(except for stellar bodies) therefore its all static.
  */
 
-public final class RenderPlanet {
+public final class RenderWorld {
+	public static WorldInterface world;
 	/**
 	 * The chunks on the client are ordered using an array of OctTrees. This allows
 	 */
@@ -31,7 +33,7 @@ public final class RenderPlanet {
 			float priority = (wx - playerPosition.x)*(wx - playerPosition.x)
 					+ (wy - playerPosition.y)*(wy - playerPosition.y)
 					+ (wz - playerPosition.z)*(wz - playerPosition.z);
-			RenderUniverse.universe.generateVisibilityData(null, wx, wy, wz, resolution, -priority/resolution, (visDat) -> {
+			RenderWorld.world.generateVisibilityData(null, wx, wy, wz, resolution, -priority/resolution, (visDat) -> {
 				if(!mesh.isDead) {
 					mesh.visibilityData = visDat;
 					updateQueue.add(mesh);
@@ -211,10 +213,10 @@ public final class RenderPlanet {
 	}
 	
 	public static void update(Vector3f playerPosition, int renderDistance, float lodFactor) {
-		RenderPlanet.playerPosition.set(playerPosition);
-		RenderPlanet.lodFactor = lodFactor;
-		if(renderDistance != RenderPlanet.renderDistance) {
-			RenderPlanet.renderDistance = renderDistance;
+		RenderWorld.playerPosition.set(playerPosition);
+		RenderWorld.lodFactor = lodFactor;
+		if(renderDistance != RenderWorld.renderDistance) {
+			RenderWorld.renderDistance = renderDistance;
 			updateRenderDistance();
 		} else {
 			updatePosition();
@@ -225,6 +227,7 @@ public final class RenderPlanet {
 	static Vector3f cameraPos = new Vector3f(0, 64, 148);
 	
 	public static void render() {
+		if(world == null) return;
 		// Create the chunk meshes:
 		long endMeshing = System.nanoTime() + MAX_TIME_FOR_CHUNK_MESHING;
 		while(updateQueue.notEmpty() && endMeshing > System.nanoTime()) {

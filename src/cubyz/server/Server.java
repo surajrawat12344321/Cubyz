@@ -7,8 +7,8 @@ import java.net.Socket;
 import cubyz.server.modding.ModLoader;
 import cubyz.utils.gui.StatusInfo;
 import cubyz.utils.log.Log;
-import cubyz.world.Universe;
-import cubyz.world.UniverseInterface;
+import cubyz.world.World;
+import cubyz.world.WorldInterface;
 
 public class Server{
 	/**
@@ -19,7 +19,7 @@ public class Server{
 	public static ServerSocket tcpSocket;
 	public static void start(int port){
 		try {
-			universe = new Universe();
+			world = new World();
 			
 			tcpSocket = new ServerSocket(port);
 			Log.info("[Server] server is started on port:"+port);
@@ -30,7 +30,7 @@ public class Server{
 		
 	}
 	
-	public static UniverseInterface universe;
+	public static WorldInterface world;
 	public static void main(String[] strings) {
 		ModLoader modLoader = new ModLoader(null, new StatusInfo(), new BaseMod());
 		

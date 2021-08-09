@@ -1,6 +1,6 @@
 package cubyz.client;
 
-import cubyz.client.renderUniverse.RenderUniverse;
+import cubyz.client.renderUniverse.RenderWorld;
 import cubyz.client.renderUniverse.TextureAtlas;
 import cubyz.gui.Init;
 import cubyz.gui.SceneManager;
@@ -35,7 +35,7 @@ public class Main {
 					Thread.sleep(10);
 				} catch(Exception e) {}
 				Input.update();
-				RenderUniverse.draw();
+				RenderWorld.render();
 				SceneManager.update();
 				SceneManager.draw();
 				Window.render();

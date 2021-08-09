@@ -4,9 +4,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import cubyz.world.ChunkVisibilityData;
-import cubyz.world.UniverseInterface;
+import cubyz.world.WorldInterface;
 
-public class UniverseServerConnection extends UniverseInterface{
+public class WorldServerConnection extends WorldInterface {
 
 	@Override
 	public void breakBlock(UUID playerUuid, int positionX, int positionY, int positionZ) {
