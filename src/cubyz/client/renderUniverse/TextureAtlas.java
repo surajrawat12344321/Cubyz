@@ -3,7 +3,7 @@ package cubyz.client.renderUniverse;
 import java.awt.image.BufferedImage;
 
 import cubyz.rendering.Texture;
-import cubyz.utils.Utils;
+import cubyz.utils.FileUtils;
 
 /**
  * Organizes the TextureAtlas. It uses a pretty simple algorithm, that just simply assumes most textures are 16×16. Textures are padded to fit that grid of resolution 16.
@@ -91,7 +91,7 @@ public class TextureAtlas {
 	}
 	
 	public void write() {
-		Utils.writeImage(atlas, "debug_atlas.png");
+		FileUtils.writeImage(atlas, "debug_atlas.png");
 	}
 	
 	public void bindTexture() {

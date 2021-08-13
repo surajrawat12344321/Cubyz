@@ -9,7 +9,7 @@ import org.lwjgl.assimp.AIMesh;
 import org.lwjgl.assimp.AIScene;
 import org.lwjgl.assimp.AIVector3D;
 
-import cubyz.utils.Utils;
+import cubyz.utils.FileUtils;
 import cubyz.utils.log.Log;
 
 import static org.lwjgl.assimp.Assimp.*;
@@ -118,7 +118,7 @@ public class Model {
 	public static Model loadModelFromID(String ID) {
 		Model model = loadedModels.get(ID); // Don't load models multiple times.
 		if(model == null) {
-			model = loadModelFromFile(Utils.idToFile(ID, "models", ".obj"));
+			model = loadModelFromFile(FileUtils.idToFile(ID, "models", ".obj"));
 			loadedModels.put(ID, model);
 		}
 		return model;

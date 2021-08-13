@@ -1,5 +1,8 @@
 package cubyz.client;
 
+import java.security.SecureRandom;
+import java.util.UUID;
+
 import cubyz.client.renderUniverse.RenderWorld;
 import cubyz.gui.Component;
 import cubyz.gui.EventListener;
@@ -34,6 +37,17 @@ public class Game {
 					SceneManager.setCurrentScene("inGame");
 					Input.grabMouse();
 					RenderWorld.world = new World();
+					UUID newID = UUID.randomUUID();
+					SecureRandom r = new SecureRandom();
+					char[] key = new char[32 + r.nextInt(16)];
+					for(int i = 0; i < key.length; i++){
+						key[i] = (char)(r.nextInt() & 0xffff);
+					}
+					// TODO: Store and access authentication data.
+					System.out.println("Authenticating: "+RenderWorld.world.authenticate(newID, key, "Your Name"));
+					System.out.println("Authenticating: "+RenderWorld.world.authenticate(newID, key, "Your Name"));
+					key[0] ^= 1;
+					System.out.println("Authenticating: "+RenderWorld.world.authenticate(newID, key, "Your Name"));
 				}
 			}
 		});

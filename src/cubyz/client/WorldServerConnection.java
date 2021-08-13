@@ -20,4 +20,10 @@ public class WorldServerConnection extends WorldInterface {
 		
 	}
 
+	@Override
+	public boolean authenticate(UUID playerUuid, char[] passphrase, String username) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

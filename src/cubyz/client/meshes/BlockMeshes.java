@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 import cubyz.client.renderUniverse.TextureAtlas;
-import cubyz.utils.Utils;
+import cubyz.utils.FileUtils;
 import cubyz.utils.datastructures.DataOrientedRegistry;
 import cubyz.utils.json.JsonObject;
 
@@ -98,7 +98,7 @@ public class BlockMeshes implements DataOrientedRegistry {
 		if(size == capacity) {
 			ensureCapacity(size*3/2);
 		}
-		BufferedImage image = Utils.readImage(Utils.idToFile(json.getString("texture", "cubyz:default"), "blocks/textures", ".png"));
+		BufferedImage image = FileUtils.readImage(FileUtils.idToFile(json.getString("texture", "cubyz:default"), "blocks/textures", ".png"));
 		opaque[size] = false;
 		transparent[size] = false;
 		// Check if any of the pixels are opaque or transparent:

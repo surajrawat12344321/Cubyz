@@ -10,6 +10,7 @@ import java.util.function.Consumer;
  */
 
 public abstract class WorldInterface {
-	public abstract void breakBlock(UUID playerUuid,int positionX,int positionY,int positionZ);
+	public abstract boolean authenticate(UUID playerUuid, char[] passphrase, String username);
+	public abstract void breakBlock(UUID playerUuid, int positionX, int positionY, int positionZ);
 	public abstract void generateVisibilityData(UUID playerUuid, int x, int y, int z, int resolution, float priority, Consumer<ChunkVisibilityData> callback);
 }

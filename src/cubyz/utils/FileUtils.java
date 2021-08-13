@@ -2,6 +2,10 @@ package cubyz.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
@@ -11,7 +15,7 @@ import cubyz.utils.log.Log;
  * A collection of methods that don't fit anywhere else (yet).
  */
 
-public class Utils {
+public class FileUtils {
 	public static String idToFile(String ID, String subPath, String ending) {
 		String[] parts = ID.split(":");
 		if(parts.length != 2) {
@@ -39,6 +43,27 @@ public class Utils {
 			Log.warning("Cannot write image in: "+path);
 			Log.severe(e);
 			return null;
+		}
+	}
+	
+	public static String readFile(File file) {
+		try {
+			Scanner scanner = new Scanner(file);
+			String res = scanner.useDelimiter("\\Z").next();
+			scanner.close();
+			return res;
+		} catch (FileNotFoundException e) {
+			Log.severe(e);
+			return "";
+		}
+	}
+	
+	public static void writeFile(File file, String content) {
+		try {
+			file.getParentFile().mkdirs();
+			Files.writeString(file.toPath(), content);
+		} catch (IOException e) {
+			Log.severe(e);
 		}
 	}
 }
